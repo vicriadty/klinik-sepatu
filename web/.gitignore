@@ -1,0 +1,22 @@
+# dependencies
+node_modules/
+
+# production
+dist/
+dist-ssr/
+*.local
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# env
+.env
+.env.*
+!.env.example

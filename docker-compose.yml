@@ -1,0 +1,95 @@
+# Klinik Sepatu — local dev stack (ADR-0010, ADR-0011).
+# backend (Laravel, artisan serve) + queue worker + PostgreSQL + MinIO (S3-compatible).
+# Dev-only credentials below. Production uses its own env, never this file.
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: klinik_sepatu
+      POSTGRES_USER: klinik
+      POSTGRES_PASSWORD: klinik_dev_only
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U klinik -d klinik_sepatu"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin-dev-local
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - miniodata:/data
+
+  minio-init:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set local http://minio:9000 minioadmin minioadmin-dev-local 2>/dev/null; do sleep 2; done;
+      mc mb --ignore-existing local/klinik-sepatu;
+      mc anonymous set download local/klinik-sepatu;
+      exit 0;"
+
+  backend:
+    build: ./backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      APP_URL: http://localhost:8000
+      APP_TIMEZONE: Asia/Jakarta
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: klinik_sepatu
+      DB_USERNAME: klinik
+      DB_PASSWORD: klinik_dev_only
+      QUEUE_CONNECTION: database
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin-dev-local
+      AWS_DEFAULT_REGION: ap-southeast-1
+      AWS_BUCKET: klinik-sepatu
+      AWS_ENDPOINT: http://minio:9000
+      AWS_USE_PATH_STYLE_ENDPOINT: "true"
+    command: ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+
+  worker:
+    build: ./backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    volumes:
+      - ./backend:/app
+    environment:
+      APP_TIMEZONE: Asia/Jakarta
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: klinik_sepatu
+      DB_USERNAME: klinik
+      DB_PASSWORD: klinik_dev_only
+      QUEUE_CONNECTION: database
+    command: ["php", "artisan", "queue:work", "database", "--tries=3", "--sleep=3", "--timeout=120"]
+
+volumes:
+  pgdata:
+  miniodata:

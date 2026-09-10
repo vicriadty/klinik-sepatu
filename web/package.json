@@ -1,0 +1,38 @@
+{
+  "name": "klinik-sepatu-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@react-jvectormap/core": "*",
+    "@react-jvectormap/world": "*",
+    "apexcharts": "*",
+    "clsx": "*",
+    "flatpickr": "*",
+    "react": "^19",
+    "react-apexcharts": "*",
+    "react-dom": "^19",
+    "react-dropzone": "*",
+    "react-helmet-async": "*",
+    "react-router": "^7",
+    "swiper": "*",
+    "tailwind-merge": "*"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "*",
+    "@types/node": "*",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "*",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vite": "*",
+    "vite-plugin-svgr": "*"
+  }
+}

@@ -1,0 +1,6 @@
+# local dev artifacts (per-app gitignores cover the rest)
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
