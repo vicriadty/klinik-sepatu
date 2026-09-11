@@ -5,6 +5,7 @@
 Dokumen ini adalah spesifikasi produk dan teknis untuk backend aplikasi POS UMKM jasa cleaning sepatu.
 
 Backend menjadi **single source of truth** untuk:
+
 - autentikasi dan otorisasi;
 - customer;
 - service cleaning dan harga;
@@ -19,6 +20,7 @@ Backend menjadi **single source of truth** untuk:
 - audit log.
 
 Backend dikonsumsi oleh dua client:
+
 1. Mobile POS berbasis React Native.
 2. Owner Dashboard berbasis React + Vite.
 
@@ -28,9 +30,11 @@ Keputusan arsitektur yang mengikat dokumen ini tercatat di `docs/adr/`
 ## 2. Scope Bisnis
 
 ### 2.1 Target
+
 Satu toko cleaning sepatu mandiri. Tidak ada kebutuhan multi-branch pada MVP.
 
 ### 2.2 Prinsip
+
 - Backend authoritative untuk seluruh nilai transaksi.
 - Harga service berasal dari backend, bukan hard-coded di client.
 - Satu order dapat memiliki banyak item sepatu.
@@ -60,6 +64,7 @@ Satu toko cleaning sepatu mandiri. Tidak ada kebutuhan multi-branch pada MVP.
 ## 4. Non-Goals MVP
 
 Tidak termasuk:
+
 - multi-branch;
 - accounting penuh;
 - payroll;
@@ -72,7 +77,9 @@ Tidak termasuk:
 ## 5. User Roles
 
 ### OWNER
+
 Hak penuh:
+
 - melihat dashboard dan seluruh laporan;
 - mengelola user;
 - mengelola service dan harga;
@@ -83,15 +90,19 @@ Hak penuh:
 - mengubah konfigurasi bisnis (settings).
 
 ### ADMIN
+
 Hak operasional dan backoffice:
+
 - mengelola customer;
 - mengelola transaksi;
 - melihat laporan yang diizinkan;
 - mengelola service bila policy mengizinkan.
-Tidak boleh mengelola owner.
+  Tidak boleh mengelola owner.
 
 ### CASHIER
+
 Hak:
+
 - login;
 - mencari/membuat customer;
 - membuat order;
@@ -100,7 +111,7 @@ Hak:
 - mengunggah foto penerimaan;
 - mengakses dashboard summary versi counts operasional (tanpa revenue,
   lihat §20).
-Tidak boleh:
+  Tidak boleh:
 - membuat user;
 - mengubah master service/discount tanpa permission;
 - menghapus transaksi secara hard delete;
@@ -109,9 +120,11 @@ Tidak boleh:
 ## 6. Order Domain
 
 ### 6.1 Order
+
 Satu order mewakili satu transaksi/customer visit.
 
 Contoh:
+
 - ORD-20260908-0001
 - Customer Budi
 - 2 pasang sepatu
@@ -122,9 +135,11 @@ Nomor order di-generate dari daily sequence dengan row-level lock
 (ADR-0009).
 
 ### 6.2 Order Item
+
 Setiap sepatu merupakan order item.
 
 Informasi minimal:
+
 - brand;
 - model/name;
 - color;
@@ -138,9 +153,11 @@ Pada MVP, order item tidak memiliki status sendiri — status hidup di level
 order (ADR-0001).
 
 ### 6.3 Service
+
 Service merupakan master priceable item.
 
 Field minimal:
+
 - name;
 - category_id;
 - description;
@@ -154,9 +171,11 @@ harga di-snapshot ke `order_item_services.unit_price` saat order dibuat
 (ADR-0004).
 
 ### 6.4 Discount
+
 Discount adalah master data milik owner (ADR-0004):
 
 Field minimal:
+
 - name;
 - type: PERCENT | FIXED;
 - value: 1–100 (PERCENT) atau nominal rupiah (FIXED);
@@ -190,6 +209,7 @@ CANCELLED            tidak             tidak          tidak          —
 ```
 
 Aturan:
+
 - status tidak boleh dilompati;
 - perubahan status harus melalui endpoint backend
   (`POST /orders/{id}/status` atau `POST /orders/{id}/cancel`);
@@ -204,17 +224,20 @@ Aturan:
 ## 8. Payment Domain
 
 Payment status (derived, dihitung server, tidak pernah input client):
+
 - UNPAID
 - PARTIAL
 - PAID
 - REFUNDED (future)
 
 Payment method MVP:
+
 - CASH
 - QRIS
 - TRANSFER
 
 Urutan wajib (order-first, ADR-0002):
+
 1. `POST /orders` membuat order dengan payment_status UNPAID;
 2. payment dicatat setelahnya via `POST /orders/{order}/payments`.
 
@@ -224,6 +247,7 @@ QRIS dan TRANSFER dicatat oleh kasir setelah verifikasi manual
 gateway).
 
 Backend bertanggung jawab menghitung:
+
 - subtotal;
 - discount;
 - grand total;
@@ -249,6 +273,7 @@ remaining = grand total - total paid
 ```
 
 Acceptance criteria:
+
 - total tersimpan secara immutable sebagai nilai transaksi;
 - perubahan harga service di masa depan tidak mengubah order lama
   (snapshot `unit_price`);
@@ -285,12 +310,14 @@ personal_access_tokens      # Sanctum (ADR-0003)
 ```
 
 Kolom audit umum:
+
 - id;
 - created_at;
 - updated_at;
 - deleted_at jika soft delete relevan.
 
 Catatan penting:
+
 - `order_items` tidak memiliki kolom status di MVP (ADR-0001);
 - `orders` menyimpan `order_subtotal`, `discount_id`, `discount_value`,
   `grand_total`, `paid_total`, `payment_status` (derived);
@@ -303,6 +330,7 @@ Catatan penting:
 ## 11. Database Constraints & Indexes
 
 Wajib:
+
 - order number unique;
 - username unique;
 - customer phone unique (kanonik `62…`);
@@ -333,8 +361,8 @@ Success example:
 
 ```json
 {
-  "data": {},
-  "meta": {}
+    "data": {},
+    "meta": {}
 }
 ```
 
@@ -342,14 +370,15 @@ Error example:
 
 ```json
 {
-  "message": "Validation failed",
-  "errors": {
-    "phone": ["The phone field is required."]
-  }
+    "message": "Validation failed",
+    "errors": {
+        "phone": ["The phone field is required."]
+    }
 }
 ```
 
 Gunakan HTTP status yang tepat:
+
 - 200 OK
 - 201 Created
 - 204 No Content
@@ -385,6 +414,7 @@ DELETE /users/{id}
 ```
 
 Owner-only operations harus dilindungi policy.
+
 ## 15. Customer API
 
 ```text
@@ -444,18 +474,18 @@ Contoh payload konseptual:
 
 ```json
 {
-  "customer_id": 10,
-  "items": [
-    {
-      "brand": "Nike",
-      "model": "Air Force 1",
-      "color": "White",
-      "shoe_type": "Sneakers",
-      "notes": "Yellowing on sole",
-      "services": [2, 5]
-    }
-  ],
-  "discount_id": null
+    "customer_id": 10,
+    "items": [
+        {
+            "brand": "Nike",
+            "model": "Air Force 1",
+            "color": "White",
+            "shoe_type": "Sneakers",
+            "notes": "Yellowing on sole",
+            "services": [2, 5]
+        }
+    ],
+    "discount_id": null
 }
 ```
 
@@ -468,6 +498,7 @@ DELETE /order-item-photos/{photo}
 ```
 
 Jenis (type — satu-satunya sumbu data foto, ADR-0007):
+
 - BEFORE
 - AFTER
 - DAMAGE
@@ -510,6 +541,7 @@ filter revenue. `dashboard/payment-methods` memakai baris payment
 (receipt basis) dan dilabeli demikian di UI.
 
 Akses role:
+
 - OWNER dan ADMIN: seluruh dashboard;
 - CASHIER: hanya `summary` versi counts operasional (orders today, in
   progress, ready for pickup, outstanding) — tanpa angka revenue.
@@ -546,6 +578,7 @@ polling status + URL download saat COMPLETED.
 ## 22. Excel Export
 
 Report minimum:
+
 - transaction report;
 - revenue report;
 - service performance report;
@@ -603,6 +636,7 @@ ORDER_COMPLETED          # terima kasih + ajakan order lagi
 ```
 
 Aturan:
+
 - pengiriman via queue; kegagalan kirim tidak membatalkan operasi bisnis;
 - setiap pengiriman tercatat di `notifications`
   (event, channel, recipient, status QUEUED/SENT/FAILED/SKIPPED,
@@ -619,6 +653,7 @@ QUEUE_CONNECTION=database
 ```
 
 Gunakan queue untuk:
+
 - Excel export;
 - notification (WhatsApp);
 - image processing (thumbnail);
@@ -629,6 +664,7 @@ Design harus memungkinkan migrasi ke Redis tanpa mengubah domain service.
 ## 25. Audit Log
 
 Simpan:
+
 - actor user id;
 - action;
 - entity type;
@@ -639,6 +675,7 @@ Simpan:
 - IP/user agent bila kebijakan privasi mengizinkan.
 
 Minimal action:
+
 - USER_CREATED;
 - USER_UPDATED;
 - SERVICE_CREATED;
@@ -671,6 +708,7 @@ Minimal action:
 Operasi yang berpotensi dikirim ulang dari mobile harus aman terhadap retry.
 
 Minimal:
+
 - create order (idempotency key / client UUID);
 - create payment;
 - payment callback (future, bila gateway digunakan).
@@ -684,6 +722,7 @@ request pertama, bukan duplikat.
 Backend tidak perlu offline. Backend harus menyediakan pola sync yang dapat digunakan mobile.
 
 Tambahkan identifier client untuk operasi yang dapat di-retry:
+
 - idempotency key (§27) untuk create order/payment;
 - order-first flow (ADR-0002) memastikan order tersimpan aman sebagai
   UNPAID bila koneksi terputus sebelum payment.
@@ -695,6 +734,7 @@ Framework: Pest (unit, feature, contract) (ADR-0011). Aturan matriks
 dataset test.
 
 Unit test:
+
 - pricing (integer rupiah, snapshot, percent floor, clamp);
 - status transition (matrix ADR-0001, guard PAID/refund);
 - payment balance (derived status, overpayment rejection);
@@ -703,6 +743,7 @@ Unit test:
 - order number generation (concurrent sequence).
 
 Feature test:
+
 - login;
 - customer CRUD + duplicate phone 409;
 - service CRUD;
@@ -716,12 +757,14 @@ Feature test:
 - notification dispatch (queued, non-blocking).
 
 Contract test:
+
 - response schema API yang dipakai mobile/dashboard harus stabil,
   divalidasi terhadap OpenAPI spec hasil Scramble (ADR-0011).
 
 ## 30. Definition of Done
 
 Backend dianggap selesai untuk MVP bila:
+
 - migration reproducible;
 - seed data tersedia;
 - auth berjalan (Sanctum PAT, username login);
@@ -741,6 +784,7 @@ Backend dianggap selesai untuk MVP bila:
 ## 31. AI Agent Implementation Rules
 
 AI Agent wajib:
+
 1. membaca file ini dan ADR terkait (`docs/adr/`) sebelum mengubah backend;
 2. tidak mengubah contract API tanpa memperbarui spesifikasi dan ADR;
 3. tidak menambahkan dependency besar tanpa alasan;
@@ -752,3 +796,5 @@ AI Agent wajib:
 9. tidak melakukan destructive migration tanpa instruksi eksplisit;
 10. menampilkan daftar file yang dibuat/diubah dan test yang dijalankan pada setiap task.
 
+opencode -s ses_f7922a049ffesnE0RCCmQDMh35
+opencode -s ses_f7922a049ffesnE0RCCmQDMh35
