@@ -17,6 +17,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Public Photo URL Base
+    |--------------------------------------------------------------------------
+    |
+    | Host-viewable base URL for shoe photos. The object storage endpoint
+    | (e.g. minio:9000) is only reachable server-side, so browsers and
+    | phones need a host-reachable base (dev: localhost MinIO,
+    | prod: CDN or public bucket URL). Empty falls back to the disk URL.
+    |
+    */
+
+    'photo_url_base' => env('PHOTO_URL_BASE'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Filesystem Disks
     |--------------------------------------------------------------------------
     |

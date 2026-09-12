@@ -86,7 +86,7 @@ class OrderController extends Controller
     {
         $this->authorize('view', $order);
 
-        $order->load(['customer', 'items.itemServices', 'discount', 'statusHistories', 'payments.receiver'])->loadCount('items');
+        $order->load(['customer', 'items.itemServices', 'items.photos', 'discount', 'statusHistories', 'payments.receiver'])->loadCount('items');
 
         return ApiResponse::ok(new OrderResource($order));
     }

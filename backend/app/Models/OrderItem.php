@@ -29,6 +29,14 @@ class OrderItem extends Model
         return $this->hasMany(OrderItemService::class);
     }
 
+    /**
+     * @return HasMany<OrderItemPhoto, $this>
+     */
+    public function photos(): HasMany
+    {
+        return $this->hasMany(OrderItemPhoto::class)->latest('id');
+    }
+
     public function subtotal(): int
     {
         return $this->itemServices->sum('unit_price');
