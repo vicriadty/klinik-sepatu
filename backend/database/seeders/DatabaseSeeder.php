@@ -5,11 +5,13 @@ namespace Database\Seeders;
 use App\Models\Customer;
 use App\Models\Discount;
 use App\Models\Order;
+use App\Models\Payment;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\User;
 use App\Services\OrderService;
 use App\Services\OrderStatusService;
+use App\Services\PaymentService;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -124,5 +126,12 @@ class DatabaseSeeder extends Seeder
         $statuses->transition($o2, Order::STATUS_ON_PROCESS);
         $statuses->transition($o3, Order::STATUS_ON_PROCESS);
         $statuses->transition($o3->refresh(), Order::STATUS_READY_FOR_PICKUP);
+
+        // One fully-paid in-progress order for realistic dashboard data.
+        app(PaymentService::class)->record($o2->refresh(), [
+            'type' => Payment::TYPE_PAYMENT,
+            'method' => Payment::METHOD_QRIS,
+            'amount' => $o2->grand_total,
+        ]);
     }
 }

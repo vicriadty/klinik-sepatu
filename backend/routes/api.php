@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CustomerController;
 use App\Http\Controllers\Api\V1\DiscountController;
 use App\Http\Controllers\Api\V1\OrderController;
+use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\ServiceCategoryController;
 use App\Http\Controllers\Api\V1\ServiceController;
 use App\Http\Controllers\Api\V1\UserController;
@@ -53,4 +54,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::put('/orders/{order}', [OrderController::class, 'update']);
     Route::post('/orders/{order}/status', [OrderController::class, 'transition']);
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel']);
+
+    Route::get('/orders/{order}/payments', [PaymentController::class, 'index']);
+    Route::post('/orders/{order}/payments', [PaymentController::class, 'store']);
 });
