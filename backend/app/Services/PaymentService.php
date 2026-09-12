@@ -18,6 +18,10 @@ use Illuminate\Validation\ValidationException;
  */
 class PaymentService
 {
+    public function __construct(private NotificationService $notifications)
+    {
+    }
+
     /**
      * @param array<string, mixed> $data Validated payload.
      * @return array{0: Payment, 1: bool} The payment and whether it was created (false = idempotent replay).
@@ -78,6 +82,14 @@ class PaymentService
                 ['order_id' => $order->id, 'type' => $type, 'method' => $payment->method, 'amount' => $payment->amount],
                 $actor
             );
+
+            if ($type === Payment::TYPE_PAYMENT) {
+                try {
+                    $this->notifications->notifyPaymentReceived($order->refresh(), $payment);
+                } catch (\Throwable $e) {
+                    report($e);
+                }
+            }
 
             return [$payment, true];
         });
