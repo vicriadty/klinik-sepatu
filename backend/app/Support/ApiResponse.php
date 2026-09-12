@@ -35,6 +35,23 @@ class ApiResponse
         ]);
     }
 
+    /**
+     * Offset-pagination envelope for pre-mapped row arrays
+     * (reports build rows in the service layer, not resources).
+     */
+    public static function paginatedData(LengthAwarePaginator $paginator): JsonResponse
+    {
+        return response()->json([
+            'data' => array_values($paginator->items()),
+            'meta' => [
+                'page' => $paginator->currentPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+                'last_page' => $paginator->lastPage(),
+            ],
+        ]);
+    }
+
     public static function perPage(Request $request, int $default = 15, int $max = 100): int
     {
         return max(1, min($request->integer('per_page', $default), $max));

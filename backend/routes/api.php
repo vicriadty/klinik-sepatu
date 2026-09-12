@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\V1\DiscountController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PhotoController;
+use App\Http\Controllers\Api\V1\ReportController;
+use App\Http\Controllers\Api\V1\ReportExportController;
 use App\Http\Controllers\Api\V1\ServiceCategoryController;
 use App\Http\Controllers\Api\V1\ServiceController;
 use App\Http\Controllers\Api\V1\UserController;
@@ -69,4 +71,13 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/dashboard/orders', [DashboardController::class, 'orders']);
     Route::get('/dashboard/top-services', [DashboardController::class, 'topServices']);
     Route::get('/dashboard/payment-methods', [DashboardController::class, 'paymentMethods']);
+
+    Route::get('/reports/transactions', [ReportController::class, 'transactions']);
+    Route::get('/reports/revenue', [ReportController::class, 'revenue']);
+    Route::get('/reports/services', [ReportController::class, 'services']);
+    Route::get('/reports/customers', [ReportController::class, 'customers']);
+    Route::post('/reports/exports', [ReportExportController::class, 'store']);
+    Route::get('/reports/exports', [ReportExportController::class, 'index']);
+    Route::get('/reports/exports/{export}', [ReportExportController::class, 'show']);
+    Route::get('/reports/exports/{export}/download', [ReportExportController::class, 'download']);
 });
