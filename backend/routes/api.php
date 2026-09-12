@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CustomerController;
+use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\DiscountController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\PaymentController;
@@ -62,4 +63,10 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/order-items/{item}/photos', [PhotoController::class, 'index']);
     Route::post('/order-items/{item}/photos', [PhotoController::class, 'store']);
     Route::delete('/order-item-photos/{photo}', [PhotoController::class, 'destroy']);
+
+    Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
+    Route::get('/dashboard/revenue', [DashboardController::class, 'revenue']);
+    Route::get('/dashboard/orders', [DashboardController::class, 'orders']);
+    Route::get('/dashboard/top-services', [DashboardController::class, 'topServices']);
+    Route::get('/dashboard/payment-methods', [DashboardController::class, 'paymentMethods']);
 });
