@@ -9,6 +9,8 @@ import DashboardPage from "./features/dashboard/DashboardPage";
 import TransactionListPage from "./features/transactions/TransactionListPage";
 import TransactionDetailPage from "./features/transactions/TransactionDetailPage";
 import ReportsPage from "./features/reports/ReportsPage";
+import ServicesPage from "./features/services/ServicesPage";
+import ServiceFormPage from "./features/services/ServiceFormPage";
 
 export default function App() {
   return (
@@ -33,15 +35,9 @@ export default function App() {
               element={<TransactionDetailPage />}
             />
             <Route path="/reports" element={<ReportsPage />} />
-            <Route
-              path="/services"
-              element={
-                <PlaceholderPage
-                  title="Layanan"
-                  description="Kelola kategori, layanan, dan harga."
-                />
-              }
-            />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/services/new" element={<ServiceFormPage />} />
+            <Route path="/services/:id/edit" element={<ServiceFormPage />} />
             <Route
               path="/users"
               element={
