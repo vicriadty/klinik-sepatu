@@ -8,6 +8,7 @@ import PlaceholderPage from "./pages/PlaceholderPage";
 import DashboardPage from "./features/dashboard/DashboardPage";
 import TransactionListPage from "./features/transactions/TransactionListPage";
 import TransactionDetailPage from "./features/transactions/TransactionDetailPage";
+import ReportsPage from "./features/reports/ReportsPage";
 
 export default function App() {
   return (
@@ -31,15 +32,7 @@ export default function App() {
               path="/transactions/:id"
               element={<TransactionDetailPage />}
             />
-            <Route
-              path="/reports"
-              element={
-                <PlaceholderPage
-                  title="Laporan"
-                  description="Laporan transaksi, revenue, layanan, dan customer."
-                />
-              }
-            />
+            <Route path="/reports" element={<ReportsPage />} />
             <Route
               path="/services"
               element={
