@@ -11,6 +11,8 @@ import TransactionDetailPage from "./features/transactions/TransactionDetailPage
 import ReportsPage from "./features/reports/ReportsPage";
 import ServicesPage from "./features/services/ServicesPage";
 import ServiceFormPage from "./features/services/ServiceFormPage";
+import UsersPage from "./features/users/UsersPage";
+import UserFormPage from "./features/users/UserFormPage";
 
 export default function App() {
   return (
@@ -38,15 +40,9 @@ export default function App() {
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/services/new" element={<ServiceFormPage />} />
             <Route path="/services/:id/edit" element={<ServiceFormPage />} />
-            <Route
-              path="/users"
-              element={
-                <PlaceholderPage
-                  title="Pengguna"
-                  description="Kelola akun Owner, Admin, dan Kasir."
-                />
-              }
-            />
+            <Route path="/users" element={<UsersPage />} />
+            <Route path="/users/new" element={<UserFormPage />} />
+            <Route path="/users/:id/edit" element={<UserFormPage />} />
             <Route
               path="/settings"
               element={
