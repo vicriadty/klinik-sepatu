@@ -21,6 +21,13 @@ class UserPolicy
             : Response::deny('Only owners and admins can view financial figures.');
     }
 
+    public function manageSettings(User $actor): Response
+    {
+        return $this->isOwner($actor)
+            ? Response::allow()
+            : Response::deny('Only owners can manage business settings.');
+    }
+
     public function view(User $actor, User $target): Response
     {
         return $this->viewAny($actor);

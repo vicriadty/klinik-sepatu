@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PhotoController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\ReportExportController;
+use App\Http\Controllers\Api\V1\SettingsController;
 use App\Http\Controllers\Api\V1\ServiceCategoryController;
 use App\Http\Controllers\Api\V1\ServiceController;
 use App\Http\Controllers\Api\V1\UserController;
@@ -80,4 +81,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/reports/exports', [ReportExportController::class, 'index']);
     Route::get('/reports/exports/{export}', [ReportExportController::class, 'show']);
     Route::get('/reports/exports/{export}/download', [ReportExportController::class, 'download']);
+
+    Route::get('/settings', [SettingsController::class, 'show']);
+    Route::put('/settings', [SettingsController::class, 'update']);
 });
