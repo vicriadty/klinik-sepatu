@@ -5,6 +5,7 @@ import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import RequireAuth from "./features/auth/RequireAuth";
 import PlaceholderPage from "./pages/PlaceholderPage";
+import DashboardPage from "./features/dashboard/DashboardPage";
 
 export default function App() {
   return (
@@ -22,15 +23,7 @@ export default function App() {
             }
           >
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route
-              path="/dashboard"
-              element={
-                <PlaceholderPage
-                  title="Dashboard"
-                  description="Ringkasan performa toko hari ini."
-                />
-              }
-            />
+            <Route path="/dashboard" element={<DashboardPage />} />
             <Route
               path="/transactions"
               element={
