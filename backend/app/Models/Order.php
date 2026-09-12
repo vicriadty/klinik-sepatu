@@ -93,6 +93,14 @@ class Order extends Model
         return $this->hasMany(OrderStatusHistory::class)->latest('id');
     }
 
+    /**
+     * @return HasMany<Payment, $this>
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class)->oldest('id');
+    }
+
     public function remainingBalance(): int
     {
         return $this->grand_total - $this->paid_total;

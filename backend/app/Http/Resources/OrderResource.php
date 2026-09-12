@@ -29,6 +29,7 @@ class OrderResource extends JsonResource
             'paid_total' => (int) $this->paid_total,
             'remaining_balance' => (int) ($this->grand_total - $this->paid_total),
             'notes' => $this->notes,
+            'payments' => PaymentResource::collection($this->whenLoaded('payments')),
             'status_histories' => $this->whenLoaded('statusHistories', fn () => $this->statusHistories->map(
                 fn ($h) => [
                     'from_status' => $h->from_status,
