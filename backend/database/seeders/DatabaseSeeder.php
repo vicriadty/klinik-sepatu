@@ -4,9 +4,12 @@ namespace Database\Seeders;
 
 use App\Models\Customer;
 use App\Models\Discount;
+use App\Models\Order;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\User;
+use App\Services\OrderService;
+use App\Services\OrderStatusService;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -19,9 +22,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Master catalog is safe and required in every environment.
+        $this->seedCatalog();
+
+        // Demo credentials and sample transactions only ever in local dev.
+        // Production gets its first owner via `php artisan make:user`.
+        if (app()->isLocal()) {
+            $this->seedDemoStaff();
+            Customer::factory()->count(5)->create();
+            $this->seedDemoOrders();
+        }
+    }
+
+    private function seedDemoStaff(): void
+    {
         // Development seed accounts only (password: "password").
-        // Provision real users (including the first production owner)
-        // with `php artisan make:user`. See ADR-0003.
         User::factory()->create([
             'name' => 'Owner',
             'username' => 'owner',
@@ -39,9 +54,10 @@ class DatabaseSeeder extends Seeder
             'username' => 'kasir',
             'role' => User::ROLE_CASHIER,
         ]);
+    }
 
-        Customer::factory()->count(5)->create();
-
+    private function seedCatalog(): void
+    {
         $cleaning = ServiceCategory::query()->create(['name' => 'Cleaning']);
         $repair = ServiceCategory::query()->create(['name' => 'Repair & Repaint']);
         $treatment = ServiceCategory::query()->create(['name' => 'Treatment']);
@@ -76,5 +92,37 @@ class DatabaseSeeder extends Seeder
             'value' => 15000,
             'min_order_subtotal' => 100000,
         ]);
+    }
+
+    private function seedDemoOrders(): void
+    {
+        $orders = app(OrderService::class);
+        $statuses = app(OrderStatusService::class);
+        $customers = Customer::query()->take(3)->get();
+        $serviceIds = Service::query()->orderBy('id')->take(3)->pluck('id')->all();
+        $discount = Discount::query()->first();
+
+        if ($customers->count() < 3 || count($serviceIds) < 3 || ! $discount) {
+            return;
+        }
+
+        $payload = fn (int $customerIndex, array $shoes) => [
+            'customer_id' => $customers[$customerIndex]->id,
+            'discount_id' => $discount->id,
+            'items' => array_map(fn (string $brand) => [
+                'brand' => $brand,
+                'model' => 'Demo',
+                'shoe_type' => 'Sneakers',
+                'services' => [$serviceIds[0], $serviceIds[1]],
+            ], $shoes),
+        ];
+
+        [$o1] = $orders->create($payload(0, ['Nike']));
+        [$o2] = $orders->create($payload(1, ['Adidas', 'Puma']));
+        [$o3] = $orders->create($payload(2, ['Vans']));
+
+        $statuses->transition($o2, Order::STATUS_ON_PROCESS);
+        $statuses->transition($o3, Order::STATUS_ON_PROCESS);
+        $statuses->transition($o3->refresh(), Order::STATUS_READY_FOR_PICKUP);
     }
 }
