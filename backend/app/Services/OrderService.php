@@ -19,8 +19,10 @@ use Illuminate\Validation\ValidationException;
  */
 class OrderService
 {
-    public function __construct(private OrderNumberGenerator $numbers)
-    {
+    public function __construct(
+        private OrderNumberGenerator $numbers,
+        private NotificationService $notifications,
+    ) {
     }
 
     /**
@@ -107,8 +109,22 @@ class OrderService
                 'grand_total' => $order->grand_total,
             ], $actor);
 
+            $this->notifySafely(fn () => $this->notifications->notifyOrderReceived($order->refresh()));
+
             return [$order, true];
         });
+    }
+
+    /**
+     * Notifications must never break the business transaction.
+     */
+    private function notifySafely(\Closure $notify): void
+    {
+        try {
+            $notify();
+        } catch (\Throwable $e) {
+            report($e);
+        }
     }
 
     private function discountValue(?Discount $discount, int $subtotal): int

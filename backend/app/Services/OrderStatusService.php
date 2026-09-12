@@ -18,6 +18,10 @@ use Illuminate\Validation\ValidationException;
  */
 class OrderStatusService
 {
+    public function __construct(private NotificationService $notifications)
+    {
+    }
+
     public function transition(Order $order, string $to, ?User $actor = null, ?string $note = null): Order
     {
         $from = $order->status;
@@ -56,6 +60,16 @@ class OrderStatusService
             if ($to === Order::STATUS_CANCELLED) {
                 AuditLog::record('ORDER_CANCELLED', 'order', $order->id,
                     ['status' => $from], ['status' => $to], $actor);
+            }
+
+            try {
+                match ($to) {
+                    Order::STATUS_READY_FOR_PICKUP => $this->notifications->notifyReadyForPickup($order->refresh()),
+                    Order::STATUS_COMPLETED => $this->notifications->notifyCompleted($order->refresh()),
+                    default => null,
+                };
+            } catch (\Throwable $e) {
+                report($e);
             }
 
             return $order;
