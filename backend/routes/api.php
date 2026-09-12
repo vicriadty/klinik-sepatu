@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\CustomerController;
 use App\Http\Controllers\Api\V1\DiscountController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\PaymentController;
+use App\Http\Controllers\Api\V1\PhotoController;
 use App\Http\Controllers\Api\V1\ServiceCategoryController;
 use App\Http\Controllers\Api\V1\ServiceController;
 use App\Http\Controllers\Api\V1\UserController;
@@ -57,4 +58,8 @@ Route::middleware('auth:sanctum')->group(function (): void {
 
     Route::get('/orders/{order}/payments', [PaymentController::class, 'index']);
     Route::post('/orders/{order}/payments', [PaymentController::class, 'store']);
+
+    Route::get('/order-items/{item}/photos', [PhotoController::class, 'index']);
+    Route::post('/order-items/{item}/photos', [PhotoController::class, 'store']);
+    Route::delete('/order-item-photos/{photo}', [PhotoController::class, 'destroy']);
 });

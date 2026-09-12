@@ -20,6 +20,7 @@ class OrderItemResource extends JsonResource
             'shoe_type' => $this->shoe_type,
             'customer_note' => $this->customer_note,
             'internal_note' => $this->internal_note,
+            'photos' => PhotoResource::collection($this->whenLoaded('photos')),
             'services' => $this->whenLoaded('itemServices', fn () => $this->itemServices->map(
                 fn ($row) => [
                     'service_id' => $row->service_id,
