@@ -26,7 +26,7 @@ class DiscountFactory extends Factory
                 ? fake()->numberBetween(5, 25)
                 : fake()->randomElement([5000, 10000, 15000, 25000]),
             'active' => true,
-            'min_order_subtotal' => fake()->optional()->randomElement([50000, 100000]),
+            'min_order_subtotal' => null,
         ];
     }
 }
