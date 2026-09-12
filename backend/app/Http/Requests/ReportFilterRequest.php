@@ -19,6 +19,7 @@ class ReportFilterRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'period' => ['sometimes', Rule::in(['today', '7d', '30d', 'custom'])],
             'start_date' => ['sometimes', 'date_format:Y-m-d'],
             'end_date' => ['sometimes', 'date_format:Y-m-d', 'after_or_equal:start_date'],
             'status' => ['sometimes', Rule::in(Order::STATUSES)],

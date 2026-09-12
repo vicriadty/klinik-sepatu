@@ -21,11 +21,17 @@ class ReportService
      */
     public function period(array $filters): array
     {
+        // Explicit dates always win; presets map server-side so day
+        // boundaries stay in Asia/Jakarta regardless of client timezone.
         if (! empty($filters['start_date']) && ! empty($filters['end_date'])) {
             return [Carbon::parse($filters['start_date'])->startOfDay(), Carbon::parse($filters['end_date'])->endOfDay()];
         }
 
-        return [today()->subDays(29)->startOfDay(), today()->endOfDay()];
+        return match ($filters['period'] ?? '30d') {
+            'today' => [today()->startOfDay(), today()->endOfDay()],
+            '7d' => [today()->subDays(6)->startOfDay(), today()->endOfDay()],
+            default => [today()->subDays(29)->startOfDay(), today()->endOfDay()],
+        };
     }
 
     /**

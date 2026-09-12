@@ -95,6 +95,8 @@ export interface OrderListParams {
   search?: string;
   status?: string;
   payment_status?: string;
+  payment_method?: string;
+  service_id?: number;
   date_from?: string;
   date_to?: string;
 }

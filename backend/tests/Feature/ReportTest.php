@@ -216,3 +216,33 @@ it('validates export requests and guards access', function (): void {
         ->postJson('/api/v1/reports/exports', ['type' => 'transactions'])
         ->assertForbidden();
 });
+
+it('resolves period presets server-side', function (): void {
+    ['owner' => $owner] = reportFixtures();
+    $today = today()->toDateString();
+
+    // Only today's unpaid order falls in the today preset.
+    $this->actingAs($owner, 'sanctum')
+        ->getJson('/api/v1/reports/revenue?period=today')
+        ->assertOk()
+        ->assertJsonPath('data.total_orders', 1)
+        ->assertJsonPath('data.total_revenue', 60000);
+
+    // 7d covers everything in the fixture except nothing is older.
+    $this->actingAs($owner, 'sanctum')
+        ->getJson('/api/v1/reports/revenue?period=7d')
+        ->assertOk()
+        ->assertJsonPath('data.total_orders', 2);
+
+    // Explicit dates still win over presets.
+    $twelveDaysAgo = today()->subDays(12)->toDateString();
+
+    $this->actingAs($owner, 'sanctum')
+        ->getJson("/api/v1/reports/revenue?period=7d&start_date={$twelveDaysAgo}&end_date={$today}")
+        ->assertOk()
+        ->assertJsonPath('data.total_orders', 3);
+
+    $this->actingAs($owner, 'sanctum')
+        ->getJson('/api/v1/reports/revenue?period=bogus')
+        ->assertUnprocessable();
+});
