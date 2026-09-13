@@ -3,7 +3,13 @@ import PageMeta from "../../components/common/PageMeta";
 import ActionAlert from "../../components/common/ActionAlert";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import { Modal } from "../../components/ui/modal";
-import { PencilIcon, PlusIcon, TrashBinIcon } from "../../icons";
+import {
+  CheckLineIcon,
+  CloseLineIcon,
+  PencilIcon,
+  PlusIcon,
+  TrashBinIcon,
+} from "../../icons";
 import QueryState from "../dashboard/components/QueryState";
 import { formatDateID } from "../../utils/format";
 import { toApiError } from "../../services/api";
@@ -50,6 +56,11 @@ export default function UsersPage() {
     id: number;
     name: string;
   } | null>(null);
+  const [toggleTarget, setToggleTarget] = useState<{
+    id: number;
+    name: string;
+    next: boolean;
+  } | null>(null);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const { user: currentUser } = useAuth();
 
@@ -84,20 +95,26 @@ export default function UsersPage() {
     setFeedback({ variant: "success", title: "Berhasil", message });
   };
 
-  const toggleActive = (id: number, name: string, next: boolean) => {
-    setFeedback(null);
+  const confirmToggle = () => {
+    if (!toggleTarget) return;
+    const { id, name, next } = toggleTarget;
     statusMutation.mutate(
       { id, is_active: next },
       {
-        onSuccess: () =>
+        onSuccess: () => {
+          setToggleTarget(null);
           setFeedback({
             variant: "success",
             title: "Berhasil",
             message: next
               ? `User "${name}" diaktifkan.`
               : `User "${name}" dinonaktifkan.`,
-          }),
-        onError: showError("Gagal mengubah status."),
+          });
+        },
+        onError: (error: unknown) => {
+          setToggleTarget(null);
+          showError("Gagal mengubah status.")(error);
+        },
       }
     );
   };
@@ -232,7 +249,7 @@ export default function UsersPage() {
                           {user.is_active ? "Aktif" : "Nonaktif"}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-gray-500">
+                      <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
                         {user.last_login_at
                           ? formatDateID(user.last_login_at.slice(0, 10))
                           : "—"}
@@ -256,12 +273,28 @@ export default function UsersPage() {
                             title={
                               user.is_active ? "Nonaktifkan" : "Aktifkan"
                             }
-                            onClick={() =>
-                              toggleActive(user.id, user.name, !user.is_active)
-                            }
-                            className="rounded-lg px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-white/5"
+                            aria-label={`${
+                              user.is_active ? "Nonaktifkan" : "Aktifkan"
+                            } ${user.username}`}
+                            onClick={() => {
+                              setFeedback(null);
+                              setToggleTarget({
+                                id: user.id,
+                                name: user.name,
+                                next: !user.is_active,
+                              });
+                            }}
+                            className={`inline-flex items-center justify-center rounded-lg p-2 ${
+                              user.is_active
+                                ? "text-warning-500 hover:bg-warning-500/10 hover:text-warning-600 dark:text-warning-400"
+                                : "text-success-500 hover:bg-success-500/10 hover:text-success-600 dark:text-success-400"
+                            }`}
                           >
-                            {user.is_active ? "Nonaktifkan" : "Aktifkan"}
+                            {user.is_active ? (
+                              <CloseLineIcon className="size-5" />
+                            ) : (
+                              <CheckLineIcon className="size-5" />
+                            )}
                           </button>
                           <button
                             type="button"
@@ -372,6 +405,24 @@ export default function UsersPage() {
         }}
         onClose={() => {
           if (!deleteMutation.isPending) setDeleteTarget(null);
+        }}
+      />
+
+      <ConfirmModal
+        isOpen={toggleTarget !== null}
+        title={toggleTarget?.next ? "Aktifkan user?" : "Nonaktifkan user?"}
+        message={
+          toggleTarget
+            ? toggleTarget.next
+              ? `Akun "${toggleTarget.name}" akan dapat masuk kembali ke dashboard.`
+              : `Akun "${toggleTarget.name}" tidak akan bisa masuk ke dashboard sampai diaktifkan kembali.`
+            : ""
+        }
+        confirmLabel={toggleTarget?.next ? "Ya, aktifkan" : "Ya, nonaktifkan"}
+        pending={statusMutation.isPending}
+        onConfirm={confirmToggle}
+        onClose={() => {
+          if (!statusMutation.isPending) setToggleTarget(null);
         }}
       />
     </>

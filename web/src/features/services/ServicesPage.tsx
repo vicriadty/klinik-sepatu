@@ -3,7 +3,13 @@ import PageMeta from "../../components/common/PageMeta";
 import ActionAlert from "../../components/common/ActionAlert";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import { Modal } from "../../components/ui/modal";
-import { PencilIcon, PlusIcon, TrashBinIcon } from "../../icons";
+import {
+  CheckLineIcon,
+  CloseLineIcon,
+  PencilIcon,
+  PlusIcon,
+  TrashBinIcon,
+} from "../../icons";
 import QueryState from "../dashboard/components/QueryState";
 import { formatDateID, formatIDR, formatNumberID } from "../../utils/format";
 import { toApiError } from "../../services/api";
@@ -46,6 +52,11 @@ export default function ServicesPage() {
     id: number;
     name: string;
   } | null>(null);
+  const [toggleTarget, setToggleTarget] = useState<{
+    id: number;
+    name: string;
+    next: boolean;
+  } | null>(null);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
 
   const categoriesQuery = useServiceCategories();
@@ -67,20 +78,26 @@ export default function ServicesPage() {
     });
   };
 
-  const toggleActive = (id: number, name: string, next: boolean) => {
-    setFeedback(null);
+  const confirmToggle = () => {
+    if (!toggleTarget) return;
+    const { id, name, next } = toggleTarget;
     statusMutation.mutate(
       { id, active: next },
       {
-        onSuccess: () =>
+        onSuccess: () => {
+          setToggleTarget(null);
           setFeedback({
             variant: "success",
             title: "Berhasil",
             message: next
               ? `Layanan "${name}" diaktifkan.`
               : `Layanan "${name}" dinonaktifkan.`,
-          }),
-        onError: notifyError("Gagal mengubah status."),
+          });
+        },
+        onError: (error: unknown) => {
+          setToggleTarget(null);
+          notifyError("Gagal mengubah status.")(error);
+        },
       }
     );
   };
@@ -238,7 +255,7 @@ export default function ServicesPage() {
                           {service.active ? "Aktif" : "Nonaktif"}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-gray-500">
+                      <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
                         {formatDateID(service.updated_at.slice(0, 10))}
                       </td>
                       <td className="px-4 py-3">
@@ -264,16 +281,28 @@ export default function ServicesPage() {
                             title={
                               service.active ? "Nonaktifkan" : "Aktifkan"
                             }
-                            onClick={() =>
-                              toggleActive(
-                                service.id,
-                                service.name,
-                                !service.active
-                              )
-                            }
-                            className="rounded-lg px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-white/5"
+                            aria-label={`${
+                              service.active ? "Nonaktifkan" : "Aktifkan"
+                            } ${service.name}`}
+                            onClick={() => {
+                              setFeedback(null);
+                              setToggleTarget({
+                                id: service.id,
+                                name: service.name,
+                                next: !service.active,
+                              });
+                            }}
+                            className={`inline-flex items-center justify-center rounded-lg p-2 ${
+                              service.active
+                                ? "text-warning-500 hover:bg-warning-500/10 hover:text-warning-600 dark:text-warning-400"
+                                : "text-success-500 hover:bg-success-500/10 hover:text-success-600 dark:text-success-400"
+                            }`}
                           >
-                            {service.active ? "Nonaktifkan" : "Aktifkan"}
+                            {service.active ? (
+                              <CloseLineIcon className="size-5" />
+                            ) : (
+                              <CheckLineIcon className="size-5" />
+                            )}
                           </button>
                           <button
                             type="button"
@@ -379,6 +408,26 @@ export default function ServicesPage() {
         }}
         onClose={() => {
           if (!deleteMutation.isPending) setDeleteTarget(null);
+        }}
+      />
+
+      <ConfirmModal
+        isOpen={toggleTarget !== null}
+        title={
+          toggleTarget?.next ? "Aktifkan layanan?" : "Nonaktifkan layanan?"
+        }
+        message={
+          toggleTarget
+            ? toggleTarget.next
+              ? `Layanan "${toggleTarget.name}" akan tersedia kembali pada pilihan order baru.`
+              : `Layanan "${toggleTarget.name}" tidak akan muncul pada pilihan order baru. Layanan ini tetap tersimpan pada order lama.`
+            : ""
+        }
+        confirmLabel={toggleTarget?.next ? "Ya, aktifkan" : "Ya, nonaktifkan"}
+        pending={statusMutation.isPending}
+        onConfirm={confirmToggle}
+        onClose={() => {
+          if (!statusMutation.isPending) setToggleTarget(null);
         }}
       />
     </>

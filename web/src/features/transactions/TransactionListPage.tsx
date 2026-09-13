@@ -197,7 +197,7 @@ export default function TransactionListPage() {
                           {ORDER_STATUS_LABELS[order.status]}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-gray-500">
+                      <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
                         {formatDateID(order.created_at.slice(0, 10))}
                       </td>
                       <td className="px-4 py-3">

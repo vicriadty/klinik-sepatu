@@ -127,7 +127,9 @@ export default function UserForm({
             {isCreate ? (
               <span className="text-error-500">*</span>
             ) : (
-              <span className="text-gray-500">(opsional)</span>
+              <span className="text-gray-500 dark:text-gray-400">
+                (opsional)
+              </span>
             )}
           </Label>
           <Input
