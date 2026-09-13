@@ -3,6 +3,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Input from "../../../components/form/input/InputField";
 import Button from "../../../components/ui/button/Button";
+import ActionAlert from "../../../components/common/ActionAlert";
+import ConfirmModal from "../../../components/common/ConfirmModal";
+import { TrashBinIcon } from "../../../icons";
 import { toApiError } from "../../../services/api";
 import {
   categorySchema,
@@ -12,8 +15,14 @@ import { useCreateCategory, useDeleteCategory, useServiceCategories } from "../u
 import QueryState from "../../dashboard/components/QueryState";
 
 export default function CategoryManager() {
-  const [confirmId, setConfirmId] = useState<number | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
+  const [feedback, setFeedback] = useState<{
+    variant: "success" | "error";
+    message: string;
+  } | null>(null);
   const categoriesQuery = useServiceCategories();
   const createMutation = useCreateCategory();
   const deleteMutation = useDeleteCategory();
@@ -26,24 +35,41 @@ export default function CategoryManager() {
   } = useForm<CategoryFormValues>({ resolver: zodResolver(categorySchema) });
 
   const submit = (values: CategoryFormValues) => {
-    setActionError(null);
+    setFeedback(null);
     createMutation.mutate(values, {
-      onSuccess: () => reset(),
+      onSuccess: (category) => {
+        reset();
+        setFeedback({
+          variant: "success",
+          message: `Kategori "${category.name}" ditambahkan.`,
+        });
+      },
       onError: (error: unknown) => {
-        const apiError = toApiError(error, "Gagal menambah kategori.");
-        setActionError(apiError.message);
+        setFeedback({
+          variant: "error",
+          message: toApiError(error, "Gagal menambah kategori.").message,
+        });
       },
     });
   };
 
-  const remove = (id: number) => {
-    setActionError(null);
+  const remove = () => {
+    if (!deleteTarget) return;
+    const { id, name } = deleteTarget;
     deleteMutation.mutate(id, {
-      onSuccess: () => setConfirmId(null),
+      onSuccess: () => {
+        setDeleteTarget(null);
+        setFeedback({
+          variant: "success",
+          message: `Kategori "${name}" dihapus.`,
+        });
+      },
       onError: (error: unknown) => {
-        const apiError = toApiError(error, "Gagal menghapus kategori.");
-        setActionError(apiError.message);
-        setConfirmId(null);
+        setDeleteTarget(null);
+        setFeedback({
+          variant: "error",
+          message: toApiError(error, "Gagal menghapus kategori.").message,
+        });
       },
     });
   };
@@ -53,6 +79,16 @@ export default function CategoryManager() {
       <h3 className="mb-4 font-semibold text-gray-800 text-theme-xl dark:text-white/90">
         Kategori Layanan
       </h3>
+      {feedback && (
+        <div className="mb-4">
+          <ActionAlert
+            variant={feedback.variant}
+            title={feedback.variant === "success" ? "Berhasil" : "Gagal"}
+            message={feedback.message}
+            onClose={() => setFeedback(null)}
+          />
+        </div>
+      )}
       <QueryState
         isLoading={categoriesQuery.isLoading}
         isError={categoriesQuery.isError}
@@ -72,36 +108,18 @@ export default function CategoryManager() {
                   {category.services_count ?? 0} layanan
                 </span>
               </span>
-              {confirmId === category.id ? (
-                <span className="flex items-center gap-2">
-                  <span className="text-xs text-gray-500">Yakin?</span>
-                  <button
-                    type="button"
-                    onClick={() => remove(category.id)}
-                    className="text-xs font-medium text-error-500 hover:text-error-600"
-                  >
-                    Ya
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setConfirmId(null)}
-                    className="text-xs text-gray-500 hover:text-gray-700"
-                  >
-                    Batal
-                  </button>
-                </span>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActionError(null);
-                    setConfirmId(category.id);
-                  }}
-                  className="text-xs font-medium text-error-500 hover:text-error-600"
-                >
-                  Hapus
-                </button>
-              )}
+              <button
+                type="button"
+                title={`Hapus kategori ${category.name}`}
+                aria-label={`Hapus kategori ${category.name}`}
+                onClick={() => {
+                  setFeedback(null);
+                  setDeleteTarget({ id: category.id, name: category.name });
+                }}
+                className="inline-flex items-center justify-center rounded-lg p-2 text-error-500 hover:bg-error-500/10 hover:text-error-600"
+              >
+                <TrashBinIcon className="size-5" />
+              </button>
             </li>
           ))}
         </ul>
@@ -124,11 +142,23 @@ export default function CategoryManager() {
           {createMutation.isPending ? "Menambah…" : "Tambah"}
         </Button>
       </form>
-      {actionError && (
-        <p role="alert" className="mt-2 text-sm text-error-500">
-          {actionError}
-        </p>
-      )}
+
+      <ConfirmModal
+        isOpen={deleteTarget !== null}
+        title="Hapus kategori?"
+        message={
+          deleteTarget
+            ? `Kategori "${deleteTarget.name}" akan dihapus permanen. Kategori yang masih memiliki layanan tidak dapat dihapus.`
+            : ""
+        }
+        confirmLabel="Ya, hapus"
+        danger
+        pending={deleteMutation.isPending}
+        onConfirm={remove}
+        onClose={() => {
+          if (!deleteMutation.isPending) setDeleteTarget(null);
+        }}
+      />
     </div>
   );
 }

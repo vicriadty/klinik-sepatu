@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams } from "react-router";
 import axios from "axios";
 import PageMeta from "../../components/common/PageMeta";
+import ActionAlert from "../../components/common/ActionAlert";
 import Button from "../../components/ui/button/Button";
 import QueryState from "../dashboard/components/QueryState";
 import {
@@ -83,8 +84,8 @@ export default function TransactionDetailPage() {
           setActionError("Anda tidak memiliki akses untuk aksi ini.");
           return;
         }
-        const apiError = toApiError(error, "Gagal mengubah status.");
-        setActionError(`Gagal mengubah status. ${apiError.message}`);
+        const apiError = toApiError(error, "Terjadi kesalahan server.");
+        setActionError(apiError.message);
       }
     );
   };
@@ -147,7 +148,7 @@ export default function TransactionDetailPage() {
                       setTargetStatus(event.target.value as OrderStatus)
                     }
                     disabled={isPending}
-                    className="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-gray-800 dark:border-gray-700 dark:text-white/90"
+                    className="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:[color-scheme:dark]"
                   >
                     <option value="">Pilih status…</option>
                     {ALL_ORDER_STATUSES.filter((s) => s !== order.status).map(
@@ -181,9 +182,12 @@ export default function TransactionDetailPage() {
                 </Button>
               </div>
               {actionError && (
-                <p role="alert" className="mt-3 text-sm text-error-500">
-                  {actionError}
-                </p>
+                <ActionAlert
+                  variant="error"
+                  title="Gagal"
+                  message={actionError}
+                  onClose={() => setActionError(null)}
+                />
               )}
               <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                 Aturan backend berlaku: Selesai wajib lunas; batal hanya
@@ -315,7 +319,7 @@ export default function TransactionDetailPage() {
                           <td className="px-2 py-2">
                             {formatIDR(payment.amount)}
                           </td>
-                          <td className="px-2 py-2 text-gray-500">
+                          <td className="px-2 py-2 text-gray-500 dark:text-gray-400">
                             {payment.note ?? "—"}
                           </td>
                         </tr>

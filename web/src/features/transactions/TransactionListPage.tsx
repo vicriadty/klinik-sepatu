@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import PageMeta from "../../components/common/PageMeta";
+import DateField from "../../components/form/DateField";
+import { EyeIcon } from "../../icons";
 import QueryState from "../dashboard/components/QueryState";
 import { formatDateID, formatIDR } from "../../utils/format";
 import { useOrdersList } from "./useOrders";
@@ -38,7 +40,7 @@ function FilterSelect({
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-gray-800 dark:border-gray-700 dark:text-white/90"
+        className="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:[color-scheme:dark]"
       >
         <option value="">{allLabel}</option>
         {options.map((option) => (
@@ -128,29 +130,20 @@ export default function TransactionListPage() {
               }))}
               allLabel="Semua"
             />
-            <label className="flex flex-col gap-1 text-sm">
-              <span className="text-gray-500 dark:text-gray-400">
-                Dari tanggal
-              </span>
-              <input
-                type="date"
-                value={filters.dateFrom}
-                onChange={(event) => update({ dateFrom: event.target.value })}
-                className="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-gray-800 dark:border-gray-700 dark:text-white/90"
-              />
-            </label>
-            <label className="flex flex-col gap-1 text-sm">
-              <span className="text-gray-500 dark:text-gray-400">
-                Sampai tanggal
-              </span>
-              <input
-                type="date"
-                value={filters.dateTo}
-                min={filters.dateFrom || undefined}
-                onChange={(event) => update({ dateTo: event.target.value })}
-                className="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-gray-800 dark:border-gray-700 dark:text-white/90"
-              />
-            </label>
+            <DateField
+              id="filter-date-from"
+              label="Dari tanggal"
+              value={filters.dateFrom}
+              max={filters.dateTo || undefined}
+              onChange={(dateFrom) => update({ dateFrom })}
+            />
+            <DateField
+              id="filter-date-to"
+              label="Sampai tanggal"
+              value={filters.dateTo}
+              min={filters.dateFrom || undefined}
+              onChange={(dateTo) => update({ dateTo })}
+            />
           </div>
         </div>
 
@@ -204,16 +197,18 @@ export default function TransactionListPage() {
                           {ORDER_STATUS_LABELS[order.status]}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-gray-500">
+                      <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
                         {formatDateID(order.created_at.slice(0, 10))}
                       </td>
                       <td className="px-4 py-3">
                         <button
                           type="button"
+                          title="Lihat detail"
+                          aria-label={`Lihat detail ${order.order_number}`}
                           onClick={() => navigate(`/transactions/${order.id}`)}
-                          className="text-sm font-medium text-brand-500 hover:text-brand-600 dark:text-brand-400"
+                          className="inline-flex items-center justify-center rounded-lg p-2 text-brand-500 hover:bg-brand-500/10 hover:text-brand-600 dark:text-brand-400"
                         >
-                          Detail
+                          <EyeIcon className="size-5" />
                         </button>
                       </td>
                     </tr>

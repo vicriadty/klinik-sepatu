@@ -9,9 +9,7 @@ import TransactionListPage from "./features/transactions/TransactionListPage";
 import TransactionDetailPage from "./features/transactions/TransactionDetailPage";
 import ReportsPage from "./features/reports/ReportsPage";
 import ServicesPage from "./features/services/ServicesPage";
-import ServiceFormPage from "./features/services/ServiceFormPage";
 import UsersPage from "./features/users/UsersPage";
-import UserFormPage from "./features/users/UserFormPage";
 import SettingsPage from "./features/settings/SettingsPage";
 
 export default function App() {
@@ -38,11 +36,7 @@ export default function App() {
             />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/services" element={<ServicesPage />} />
-            <Route path="/services/new" element={<ServiceFormPage />} />
-            <Route path="/services/:id/edit" element={<ServiceFormPage />} />
             <Route path="/users" element={<UsersPage />} />
-            <Route path="/users/new" element={<UserFormPage />} />
-            <Route path="/users/:id/edit" element={<UserFormPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
 

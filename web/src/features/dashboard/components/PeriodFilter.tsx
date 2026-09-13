@@ -1,4 +1,5 @@
 import { PERIOD_LABELS, type PeriodFilter, type PeriodPreset } from "../period";
+import DateField from "../../../components/form/DateField";
 
 interface PeriodFilterProps {
   value: PeriodFilter;
@@ -27,27 +28,20 @@ export default function PeriodFilter({ value, onChange }: PeriodFilterProps) {
         ))}
       </div>
       {value.preset === "custom" && (
-        <div className="flex items-center gap-2">
-          <input
-            type="date"
-            aria-label="Tanggal mulai"
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <DateField
+            id="period-start"
+            label="Tanggal mulai"
             value={value.startDate ?? ""}
             max={value.endDate || undefined}
-            onChange={(event) =>
-              onChange({ ...value, startDate: event.target.value })
-            }
-            className="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-800 dark:border-gray-700 dark:text-white/90"
+            onChange={(startDate) => onChange({ ...value, startDate })}
           />
-          <span className="text-sm text-gray-500">s/d</span>
-          <input
-            type="date"
-            aria-label="Tanggal selesai"
+          <DateField
+            id="period-end"
+            label="Tanggal selesai"
             value={value.endDate ?? ""}
             min={value.startDate || undefined}
-            onChange={(event) =>
-              onChange({ ...value, endDate: event.target.value })
-            }
-            className="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-800 dark:border-gray-700 dark:text-white/90"
+            onChange={(endDate) => onChange({ ...value, endDate })}
           />
         </div>
       )}

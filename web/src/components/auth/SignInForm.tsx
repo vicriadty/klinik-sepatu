@@ -7,6 +7,7 @@ import { EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Button from "../ui/button/Button";
+import ActionAlert from "../common/ActionAlert";
 import {
   loginSchema,
   type LoginFormValues,
@@ -107,12 +108,12 @@ export default function SignInForm() {
                   </div>
                 </div>
                 {formError && (
-                  <div
-                    role="alert"
-                    className="rounded-lg border border-error-500/30 bg-error-500/10 px-4 py-2.5 text-sm text-error-600 dark:text-error-400"
-                  >
-                    {formError}
-                  </div>
+                  <ActionAlert
+                    variant="error"
+                    title="Gagal masuk"
+                    message={formError}
+                    onClose={() => setFormError(null)}
+                  />
                 )}
                 <div>
                   <Button

@@ -1,124 +1,39 @@
-import { useNavigate, useParams } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import PageMeta from "../../components/common/PageMeta";
 import Label from "../../components/form/Label";
 import Input from "../../components/form/input/InputField";
 import Checkbox from "../../components/form/input/Checkbox";
 import Button from "../../components/ui/button/Button";
-import QueryState from "../dashboard/components/QueryState";
-import { toApiError } from "../../services/api";
 import { serviceSchema, type ServiceFormValues } from "./schemas";
-import {
-  useCreateService,
-  useService,
-  useServiceCategories,
-  useUpdateService,
-} from "./useServices";
-import { useState } from "react";
 
-export default function ServiceFormPage() {
-  const { id } = useParams();
-  const isEdit = id !== undefined && id !== "";
-  const navigate = useNavigate();
-  const categoriesQuery = useServiceCategories();
-  const serviceQuery = useService(isEdit ? id : undefined);
-  const createMutation = useCreateService();
-  const updateMutation = useUpdateService(id ?? "");
-  const [submitError, setSubmitError] = useState<string | null>(null);
-
-  const pending = createMutation.isPending || updateMutation.isPending;
-
-  if (isEdit && (serviceQuery.isLoading || serviceQuery.isError)) {
-    return (
-      <QueryState
-        isLoading={serviceQuery.isLoading}
-        isError={serviceQuery.isError}
-        isEmpty={false}
-        emptyText=""
-        onRetry={() => serviceQuery.refetch()}
-      >
-        <div />
-      </QueryState>
-    );
-  }
-
-  return (
-    <>
-      <PageMeta
-        title={`${isEdit ? "Ubah" : "Tambah"} Layanan | Klinik Sepatu`}
-        description="Form layanan cleaning."
-      />
-      <div className="max-w-2xl">
-        <h2 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white/90">
-          {isEdit ? "Ubah Layanan" : "Tambah Layanan"}
-        </h2>
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
-          <ServiceForm
-            key={serviceQuery.data?.updated_at ?? "new"}
-            initialName={serviceQuery.data?.name ?? ""}
-            initialCategoryId={serviceQuery.data?.category_id}
-            initialDescription={serviceQuery.data?.description ?? ""}
-            initialPrice={serviceQuery.data?.price}
-            initialDuration={
-              serviceQuery.data?.estimated_duration_days ?? null
-            }
-            initialActive={serviceQuery.data?.active ?? true}
-            isEdit={isEdit}
-            pending={pending}
-            submitError={submitError}
-            categories={
-              (categoriesQuery.data ?? []).map((category) => ({
-                id: category.id,
-                name: category.name,
-              }))
-            }
-            onSubmit={(values) => {
-              setSubmitError(null);
-              const mutate = isEdit
-                ? updateMutation.mutateAsync(values)
-                : createMutation.mutateAsync(values);
-              mutate.then(
-                () => navigate("/services"),
-                (error: unknown) => {
-                  setSubmitError(
-                    toApiError(error, "Gagal menyimpan layanan.").message
-                  );
-                }
-              );
-            }}
-          />
-        </div>
-      </div>
-    </>
-  );
+export interface ServiceFormInitial {
+  name: string;
+  category_id?: number;
+  description: string;
+  price?: number;
+  estimated_duration_days: number | null;
+  active: boolean;
 }
 
-function ServiceForm({
-  initialName,
-  initialCategoryId,
-  initialDescription,
-  initialPrice,
-  initialDuration,
-  initialActive,
-  isEdit,
-  pending,
-  submitError,
-  categories,
-  onSubmit,
-}: {
-  initialName: string;
-  initialCategoryId?: number;
-  initialDescription: string;
-  initialPrice?: number;
-  initialDuration: number | null;
-  initialActive: boolean;
-  isEdit: boolean;
-  pending: boolean;
-  submitError: string | null;
+interface ServiceFormProps {
+  initial: ServiceFormInitial;
+  originalPrice?: number;
   categories: { id: number; name: string }[];
+  pending: boolean;
+  submitLabel: string;
+  submitError: string | null;
   onSubmit: (values: ServiceFormValues) => void;
-}) {
+}
+
+export default function ServiceForm({
+  initial,
+  originalPrice,
+  categories,
+  pending,
+  submitLabel,
+  submitError,
+  onSubmit,
+}: ServiceFormProps) {
   const {
     register,
     handleSubmit,
@@ -128,19 +43,19 @@ function ServiceForm({
   } = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceSchema),
     defaultValues: {
-      name: initialName,
-      category_id: initialCategoryId,
-      description: initialDescription === "" ? null : initialDescription,
-      price: initialPrice,
-      estimated_duration_days: initialDuration,
-      active: initialActive,
+      name: initial.name,
+      category_id: initial.category_id,
+      description: initial.description === "" ? null : initial.description,
+      price: initial.price,
+      estimated_duration_days: initial.estimated_duration_days,
+      active: initial.active,
     },
   });
 
   const active = watch("active");
   const watchedPrice = watch("price");
   const priceChanged =
-    isEdit && initialPrice !== undefined && watchedPrice !== initialPrice;
+    originalPrice !== undefined && watchedPrice !== originalPrice;
 
   return (
     <form
@@ -176,7 +91,7 @@ function ServiceForm({
             id="service-category"
             disabled={pending}
             {...register("category_id", { valueAsNumber: true })}
-            className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 dark:border-gray-700 dark:text-white/90"
+            className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:[color-scheme:dark]"
           >
             <option value="">Pilih kategori…</option>
             {categories.map((category) => (
@@ -261,10 +176,18 @@ function ServiceForm({
         )}
         <div>
           <Button className="w-full sm:w-auto" size="sm" disabled={pending}>
-            {pending ? "Menyimpan…" : isEdit ? "Simpan Perubahan" : "Tambah"}
+            {pending ? "Menyimpan…" : submitLabel}
           </Button>
         </div>
       </div>
     </form>
   );
 }
+
+export const BLANK_SERVICE_FORM: ServiceFormInitial = {
+  name: "",
+  description: "",
+  price: undefined,
+  estimated_duration_days: null,
+  active: true,
+};

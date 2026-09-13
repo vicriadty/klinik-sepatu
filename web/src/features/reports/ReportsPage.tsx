@@ -1,5 +1,6 @@
 import { useState } from "react";
 import PageMeta from "../../components/common/PageMeta";
+import ActionAlert from "../../components/common/ActionAlert";
 import QueryState from "../dashboard/components/QueryState";
 import PeriodFilter from "../dashboard/components/PeriodFilter";
 import {
@@ -116,7 +117,7 @@ export default function ReportsPage() {
               <select
                 value={paymentMethod}
                 onChange={(event) => setPaymentMethod(event.target.value)}
-                className="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-gray-800 dark:border-gray-700 dark:text-white/90"
+                className="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:[color-scheme:dark]"
               >
                 <option value="">Semua</option>
                 {PAYMENT_METHODS.map((method) => (
@@ -131,7 +132,7 @@ export default function ReportsPage() {
               <select
                 value={serviceId}
                 onChange={(event) => setServiceId(event.target.value)}
-                className="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-gray-800 dark:border-gray-700 dark:text-white/90"
+                className="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:[color-scheme:dark]"
               >
                 <option value="">Semua</option>
                 {(serviceOptions.data ?? []).map((service) => (
@@ -152,9 +153,12 @@ export default function ReportsPage() {
               {requestExport.isPending ? "Meminta…" : "Export Excel"}
             </button>
             {requestExport.isError && (
-              <p role="alert" className="text-sm text-error-500">
-                Gagal meminta export. Coba lagi.
-              </p>
+              <ActionAlert
+                variant="error"
+                title="Gagal"
+                message="Gagal meminta export. Coba lagi."
+                onClose={() => requestExport.reset()}
+              />
             )}
             {period.preset === "custom" && !filtersReady && (
               <p className="text-sm text-gray-500 dark:text-gray-400">
