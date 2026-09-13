@@ -1,30 +1,57 @@
 import { useState } from "react";
-import { Link } from "react-router";
 import PageMeta from "../../components/common/PageMeta";
+import ActionAlert from "../../components/common/ActionAlert";
+import ConfirmModal from "../../components/common/ConfirmModal";
+import { Modal } from "../../components/ui/modal";
+import { PencilIcon, PlusIcon, TrashBinIcon } from "../../icons";
 import QueryState from "../dashboard/components/QueryState";
 import { formatDateID } from "../../utils/format";
 import { toApiError } from "../../services/api";
-import { ROLE_LABELS, type UserRole } from "../../services/authApi";
+import { ROLE_LABELS } from "../../services/authApi";
+import { useAuth } from "../auth/AuthContext";
+import { availableRoles } from "./schemas";
+import UserForm from "./UserForm";
+import type {
+  CreateUserFormValues,
+  UpdateUserFormValues,
+} from "./schemas";
 import {
+  useCreateUser,
   useDeleteUser,
   useSetUserActive,
+  useUpdateUser,
+  useUser,
   useUsers,
 } from "./useUsers";
+import type { ApiUserSummary } from "../../services/userApi";
 
-const ROLE_OPTIONS: { value: string; label: string }[] = [
+const ROLE_OPTIONS = [
   { value: "", label: "Semua role" },
   { value: "owner", label: "Owner" },
   { value: "admin", label: "Admin" },
   { value: "cashier", label: "Kasir" },
 ];
 
+interface Feedback {
+  variant: "success" | "error";
+  title: string;
+  message: string;
+}
+
+type UserModal = { mode: "create" } | { mode: "edit"; id: string };
+
 export default function UsersPage() {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [role, setRole] = useState("");
   const [page, setPage] = useState(1);
-  const [confirmId, setConfirmId] = useState<number | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
+  const [modal, setModal] = useState<UserModal | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const { user: currentUser } = useAuth();
 
   const listQuery = useUsers({
     page,
@@ -43,26 +70,44 @@ export default function UsersPage() {
     setSearch(searchInput);
   };
 
-  const toggleActive = (id: number, next: boolean) => {
-    setActionError(null);
+  const showError = (fallback: string) => (error: unknown) => {
+    setFeedback({
+      variant: "error",
+      title: "Gagal",
+      message: toApiError(error, fallback).message,
+    });
+  };
+
+  const showSuccess = (message: string) => {
+    setModal(null);
+    setDeleteTarget(null);
+    setFeedback({ variant: "success", title: "Berhasil", message });
+  };
+
+  const toggleActive = (id: number, name: string, next: boolean) => {
+    setFeedback(null);
     statusMutation.mutate(
       { id, is_active: next },
       {
-        onError: (error: unknown) => {
-          setActionError(toApiError(error, "Gagal mengubah status.").message);
-        },
+        onSuccess: () =>
+          setFeedback({
+            variant: "success",
+            title: "Berhasil",
+            message: next
+              ? `User "${name}" diaktifkan.`
+              : `User "${name}" dinonaktifkan.`,
+          }),
+        onError: showError("Gagal mengubah status."),
       }
     );
   };
 
-  const remove = (id: number) => {
-    setActionError(null);
+  const confirmDelete = () => {
+    if (!deleteTarget) return;
+    const { id, name } = deleteTarget;
     deleteMutation.mutate(id, {
-      onSuccess: () => setConfirmId(null),
-      onError: (error: unknown) => {
-        setActionError(toApiError(error, "Gagal menghapus user.").message);
-        setConfirmId(null);
-      },
+      onSuccess: () => showSuccess(`User "${name}" dihapus.`),
+      onError: showError("Gagal menghapus user."),
     });
   };
 
@@ -77,12 +122,17 @@ export default function UsersPage() {
           <h2 className="text-xl font-semibold text-gray-800 dark:text-white/90">
             Pengguna
           </h2>
-          <Link
-            to="/users/new"
-            className="rounded-lg bg-brand-500 px-4 py-2 text-center text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600"
+          <button
+            type="button"
+            onClick={() => {
+              setFeedback(null);
+              setModal({ mode: "create" });
+            }}
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600"
           >
+            <PlusIcon className="size-5" />
             Tambah User
-          </Link>
+          </button>
         </div>
 
         <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
@@ -98,7 +148,7 @@ export default function UsersPage() {
                     if (event.key === "Enter") applySearch();
                   }}
                   placeholder="Nama / username"
-                  className="h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-gray-800 placeholder:text-gray-400 dark:border-gray-700 dark:text-white/90"
+                  className="h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-gray-800 placeholder:text-gray-400 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
                 />
                 <button
                   type="button"
@@ -117,7 +167,7 @@ export default function UsersPage() {
                   setRole(event.target.value);
                   setPage(1);
                 }}
-                className="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-gray-800 dark:border-gray-700 dark:text-white/90"
+                className="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:[color-scheme:dark]"
               >
                 {ROLE_OPTIONS.map((option) => (
                   <option key={option.label} value={option.value}>
@@ -129,10 +179,13 @@ export default function UsersPage() {
           </div>
         </div>
 
-        {actionError && (
-          <p role="alert" className="text-sm text-error-500">
-            {actionError}
-          </p>
+        {feedback && (
+          <ActionAlert
+            variant={feedback.variant}
+            title={feedback.title}
+            message={feedback.message}
+            onClose={() => setFeedback(null)}
+          />
         )}
 
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
@@ -166,7 +219,7 @@ export default function UsersPage() {
                       </td>
                       <td className="px-4 py-3">@{user.username}</td>
                       <td className="px-4 py-3">
-                        {ROLE_LABELS[user.role as UserRole] ?? user.role}
+                        {ROLE_LABELS[user.role] ?? user.role}
                       </td>
                       <td className="px-4 py-3">
                         <span
@@ -185,50 +238,46 @@ export default function UsersPage() {
                           : "—"}
                       </td>
                       <td className="px-4 py-3">
-                        <span className="flex items-center gap-3">
-                          <Link
-                            to={`/users/${user.id}/edit`}
-                            className="font-medium text-brand-500 hover:text-brand-600 dark:text-brand-400"
-                          >
-                            Ubah
-                          </Link>
+                        <span className="flex items-center gap-1">
                           <button
                             type="button"
-                            onClick={() => toggleActive(user.id, !user.is_active)}
-                            className="font-medium text-gray-600 hover:text-gray-800 dark:text-gray-300"
+                            title="Ubah user"
+                            aria-label={`Ubah ${user.username}`}
+                            onClick={() => {
+                              setFeedback(null);
+                              setModal({ mode: "edit", id: String(user.id) });
+                            }}
+                            className="inline-flex items-center justify-center rounded-lg p-2 text-brand-500 hover:bg-brand-500/10 hover:text-brand-600 dark:text-brand-400"
+                          >
+                            <PencilIcon className="size-5" />
+                          </button>
+                          <button
+                            type="button"
+                            title={
+                              user.is_active ? "Nonaktifkan" : "Aktifkan"
+                            }
+                            onClick={() =>
+                              toggleActive(user.id, user.name, !user.is_active)
+                            }
+                            className="rounded-lg px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-white/5"
                           >
                             {user.is_active ? "Nonaktifkan" : "Aktifkan"}
                           </button>
-                          {confirmId === user.id ? (
-                            <span className="flex items-center gap-2 text-xs">
-                              <span className="text-gray-500">Yakin?</span>
-                              <button
-                                type="button"
-                                onClick={() => remove(user.id)}
-                                className="font-medium text-error-500 hover:text-error-600"
-                              >
-                                Ya
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => setConfirmId(null)}
-                                className="text-gray-500 hover:text-gray-700"
-                              >
-                                Batal
-                              </button>
-                            </span>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setActionError(null);
-                                setConfirmId(user.id);
-                              }}
-                              className="font-medium text-error-500 hover:text-error-600"
-                            >
-                              Hapus
-                            </button>
-                          )}
+                          <button
+                            type="button"
+                            title="Hapus user"
+                            aria-label={`Hapus ${user.username}`}
+                            onClick={() => {
+                              setFeedback(null);
+                              setDeleteTarget({
+                                id: user.id,
+                                name: user.name,
+                              });
+                            }}
+                            className="inline-flex items-center justify-center rounded-lg p-2 text-error-500 hover:bg-error-500/10 hover:text-error-600"
+                          >
+                            <TrashBinIcon className="size-5" />
+                          </button>
                         </span>
                       </td>
                     </tr>
@@ -265,6 +314,171 @@ export default function UsersPage() {
           </QueryState>
         </div>
       </div>
+
+      <Modal
+        isOpen={modal !== null}
+        onClose={() => setModal(null)}
+        className="mx-4 max-w-2xl p-6 sm:p-8"
+      >
+        {modal?.mode === "create" && (
+          <>
+            <h3 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white/90">
+              Tambah User
+            </h3>
+            <CreateUserForm
+              roles={availableRoles(currentUser?.role)}
+              onDone={(name) => showSuccess(`User "${name}" ditambahkan.`)}
+              onError={(message) =>
+                setFeedback({ variant: "error", title: "Gagal", message })
+              }
+            />
+          </>
+        )}
+        {modal?.mode === "edit" && (
+          <>
+            <h3 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white/90">
+              Ubah User
+            </h3>
+            <EditUserForm
+              id={modal.id}
+              roles={availableRoles(currentUser?.role)}
+              onDone={(name) => showSuccess(`User "${name}" diubah.`)}
+              onError={(message) =>
+                setFeedback({ variant: "error", title: "Gagal", message })
+              }
+            />
+          </>
+        )}
+      </Modal>
+
+      <ConfirmModal
+        isOpen={deleteTarget !== null}
+        title="Hapus user?"
+        message={
+          deleteTarget
+            ? `Akun "${deleteTarget.name}" akan dihapus dan tidak bisa masuk lagi. Aksi ini tidak dapat dibatalkan.`
+            : ""
+        }
+        confirmLabel="Ya, hapus"
+        danger
+        pending={deleteMutation.isPending}
+        onConfirm={() => {
+          if (!deleteTarget) return;
+          const { id, name } = deleteTarget;
+          deleteMutation.mutate(id, {
+            onSuccess: () => showSuccess(`User "${name}" dihapus.`),
+            onError: showError("Gagal menghapus user."),
+          });
+        }}
+        onClose={() => {
+          if (!deleteMutation.isPending) setDeleteTarget(null);
+        }}
+      />
     </>
+  );
+}
+
+function CreateUserForm({
+  roles,
+  onDone,
+  onError,
+}: {
+  roles: ReturnType<typeof availableRoles>;
+  onDone: (name: string) => void;
+  onError: (message: string) => void;
+}) {
+  const createMutation = useCreateUser();
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  return (
+    <UserForm
+      mode="create"
+      initial={{ name: "", email: "", role: roles[0] ?? "cashier" }}
+      roles={roles}
+      pending={createMutation.isPending}
+      submitLabel="Tambah"
+      submitError={submitError}
+      onSubmit={(values) => {
+        const payload = values as CreateUserFormValues;
+        setSubmitError(null);
+        createMutation.mutate(payload, {
+          onSuccess: (user) => onDone(user.name),
+          onError: (error: unknown) => {
+            const message = toApiError(error, "Gagal menambah user.").message;
+            setSubmitError(message);
+            onError(message);
+          },
+        });
+      }}
+    />
+  );
+}
+
+function EditUserForm({
+  id,
+  roles,
+  onDone,
+  onError,
+}: {
+  id: string;
+  roles: ReturnType<typeof availableRoles>;
+  onDone: (name: string) => void;
+  onError: (message: string) => void;
+}) {
+  const detailQuery = useUser(id);
+  const updateMutation = useUpdateUser(id);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  if (detailQuery.isLoading || detailQuery.isError || !detailQuery.data) {
+    return (
+      <QueryState
+        isLoading={detailQuery.isLoading}
+        isError={detailQuery.isError}
+        isEmpty={false}
+        emptyText=""
+        onRetry={() => detailQuery.refetch()}
+      >
+        <div />
+      </QueryState>
+    );
+  }
+
+  const user = detailQuery.data;
+
+  return (
+    <UserForm
+      key={user.updated_at}
+      mode="edit"
+      initial={{
+        name: user.name,
+        email: user.email ?? "",
+        role: roles.includes(user.role) ? user.role : roles[0] ?? "cashier",
+      }}
+      roles={roles}
+      pending={updateMutation.isPending}
+      submitLabel="Simpan Perubahan"
+      submitError={submitError}
+      onSubmit={(values) => {
+        const payload = values as UpdateUserFormValues;
+        setSubmitError(null);
+        updateMutation.mutate(
+          {
+            ...payload,
+            password: payload.password || undefined,
+          },
+          {
+            onSuccess: (updated: ApiUserSummary) => onDone(updated.name),
+            onError: (error: unknown) => {
+              const message = toApiError(
+                error,
+                "Gagal mengubah user."
+              ).message;
+              setSubmitError(message);
+              onError(message);
+            },
+          }
+        );
+      }}
+    />
   );
 }

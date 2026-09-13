@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import PageMeta from "../../components/common/PageMeta";
+import ActionAlert from "../../components/common/ActionAlert";
 import Label from "../../components/form/Label";
 import Input from "../../components/form/input/InputField";
 import Button from "../../components/ui/button/Button";
@@ -49,6 +50,7 @@ export default function SettingsPage() {
                   initial={settingsQuery.data.settings}
                   pending={updateMutation.isPending}
                   submitError={submitError}
+                  onDismissError={() => setSubmitError(null)}
                   onSubmit={(values) => {
                     setSaved(false);
                     setSubmitError(null);
@@ -64,9 +66,12 @@ export default function SettingsPage() {
                   }}
                 />
                 {saved && (
-                  <p role="status" className="mt-3 text-sm text-green-600 dark:text-green-400">
-                    Pengaturan tersimpan.
-                  </p>
+                  <ActionAlert
+                    variant="success"
+                    title="Berhasil"
+                    message="Pengaturan tersimpan."
+                    onClose={() => setSaved(false)}
+                  />
                 )}
               </div>
               <NotificationCard health={settingsQuery.data.notifications} />
@@ -82,11 +87,13 @@ function SettingsForm({
   initial,
   pending,
   submitError,
+  onDismissError,
   onSubmit,
 }: {
   initial: SettingsFormValues;
   pending: boolean;
   submitError: string | null;
+  onDismissError: () => void;
   onSubmit: (values: SettingsFormValues) => void;
 }) {
   const {
@@ -140,7 +147,7 @@ function SettingsForm({
               id="settings-timezone"
               disabled={pending}
               {...register("timezone")}
-              className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 dark:border-gray-700 dark:text-white/90"
+              className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:[color-scheme:dark]"
             >
               {TIMEZONE_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -181,9 +188,12 @@ function SettingsForm({
           />
         </div>
         {submitError && (
-          <p role="alert" className="text-sm text-error-500">
-            {submitError}
-          </p>
+          <ActionAlert
+            variant="error"
+            title="Gagal"
+            message={submitError}
+            onClose={onDismissError}
+          />
         )}
         <div>
           <Button className="w-full sm:w-auto" size="sm" disabled={pending}>

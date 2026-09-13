@@ -2,11 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
+import ConfirmModal from "../common/ConfirmModal";
 import { useAuth } from "../../features/auth/AuthContext";
 import { ROLE_LABELS } from "../../services/authApi";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -20,8 +23,14 @@ export default function UserDropdown() {
 
   async function handleLogout() {
     closeDropdown();
-    await logout();
-    navigate("/login", { replace: true });
+    setConfirmOpen(false);
+    setLoggingOut(true);
+    try {
+      await logout();
+    } finally {
+      setLoggingOut(false);
+      navigate("/login", { replace: true });
+    }
   }
 
   const initial = (user?.name ?? "?").charAt(0).toUpperCase();
@@ -77,7 +86,10 @@ export default function UserDropdown() {
         <ul className="flex flex-col gap-1 pt-4">
           <li>
             <DropdownItem
-              onItemClick={handleLogout}
+              onItemClick={() => {
+                closeDropdown();
+                setConfirmOpen(true);
+              }}
               className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
             >
               <svg
@@ -100,6 +112,17 @@ export default function UserDropdown() {
           </li>
         </ul>
       </Dropdown>
+      <ConfirmModal
+        isOpen={confirmOpen}
+        title="Keluar dari dashboard?"
+        message="Sesi Anda akan diakhiri dan harus masuk kembali untuk melanjutkan."
+        confirmLabel="Ya, keluar"
+        pending={loggingOut}
+        onConfirm={handleLogout}
+        onClose={() => {
+          if (!loggingOut) setConfirmOpen(false);
+        }}
+      />
     </div>
   );
 }
