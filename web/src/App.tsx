@@ -4,7 +4,6 @@ import NotFound from "./pages/OtherPage/NotFound";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import RequireAuth from "./features/auth/RequireAuth";
-import PlaceholderPage from "./pages/PlaceholderPage";
 import DashboardPage from "./features/dashboard/DashboardPage";
 import TransactionListPage from "./features/transactions/TransactionListPage";
 import TransactionDetailPage from "./features/transactions/TransactionDetailPage";
@@ -13,6 +12,7 @@ import ServicesPage from "./features/services/ServicesPage";
 import ServiceFormPage from "./features/services/ServiceFormPage";
 import UsersPage from "./features/users/UsersPage";
 import UserFormPage from "./features/users/UserFormPage";
+import SettingsPage from "./features/settings/SettingsPage";
 
 export default function App() {
   return (
@@ -43,15 +43,7 @@ export default function App() {
             <Route path="/users" element={<UsersPage />} />
             <Route path="/users/new" element={<UserFormPage />} />
             <Route path="/users/:id/edit" element={<UserFormPage />} />
-            <Route
-              path="/settings"
-              element={
-                <PlaceholderPage
-                  title="Pengaturan"
-                  description="Profil toko dan konfigurasi notifikasi."
-                />
-              }
-            />
+            <Route path="/settings" element={<SettingsPage />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />
