@@ -5,12 +5,19 @@ export interface ApiFieldErrors {
 export class ApiError extends Error {
   status?: number;
   fields: ApiFieldErrors;
+  payload: unknown;
 
-  constructor(message: string, status?: number, fields: ApiFieldErrors = {}) {
+  constructor(
+    message: string,
+    status?: number,
+    fields: ApiFieldErrors = {},
+    payload: unknown = null
+  ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
     this.fields = fields;
+    this.payload = payload;
   }
 }
 
@@ -82,7 +89,8 @@ export async function apiFetch<T>(
     throw new ApiError(
       errorPayload.message ?? "Terjadi kesalahan pada server.",
       response.status,
-      errorPayload.errors ?? {}
+      errorPayload.errors ?? {},
+      payload
     );
   }
 
