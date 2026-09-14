@@ -40,15 +40,24 @@ interface RequestOptions {
   method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: unknown;
   skipUnauthorizedHandler?: boolean;
+  headers?: Record<string, string>;
 }
 
 export async function apiFetch<T>(
   path: string,
   options: RequestOptions = {}
 ): Promise<T> {
-  const { method = "GET", body, skipUnauthorizedHandler = false } = options;
+  const {
+    method = "GET",
+    body,
+    skipUnauthorizedHandler = false,
+    headers: extraHeaders,
+  } = options;
 
-  const headers: Record<string, string> = { Accept: "application/json" };
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+    ...extraHeaders,
+  };
   if (body !== undefined) {
     headers["Content-Type"] = "application/json";
   }
