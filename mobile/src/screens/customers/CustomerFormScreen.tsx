@@ -22,7 +22,8 @@ import {
 import AppButton from "../../components/AppButton";
 import AppTextField from "../../components/AppTextField";
 import type { AppStackParamList } from "../../navigation/types";
-import { colors } from "../../theme/colors";
+import type { Theme } from "../../theme/tokens";
+import { useThemedStyles } from "../../theme/useTheme";
 import { apiErrorMessage } from "../../utils/errors";
 import { normalizePhone } from "../../utils/phone";
 
@@ -45,6 +46,7 @@ export type CustomerFormValues = z.infer<typeof customerSchema>;
 export default function CustomerFormScreen() {
   const navigation = useNavigation<Navigation>();
   const queryClient = useQueryClient();
+  const styles = useThemedStyles(createStyles);
   const [duplicate, setDuplicate] = useState<ApiCustomer | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -155,7 +157,7 @@ export default function CustomerFormScreen() {
               </Text>
               <AppButton
                 title="Cari pelanggan ini"
-                variant="outline"
+                variant="secondary"
                 onPress={() =>
                   navigation.navigate("Customers", {
                     search: duplicate.phone,
@@ -176,41 +178,46 @@ export default function CustomerFormScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  flex: {
-    flex: 1,
-  },
-  content: {
-    padding: 20,
-    gap: 16,
-  },
-  preview: {
-    fontSize: 13,
-    color: colors.textSecondary,
-  },
-  duplicate: {
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.brand,
-    backgroundColor: colors.surface,
-    padding: 14,
-    gap: 8,
-  },
-  duplicateTitle: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: colors.textPrimary,
-  },
-  duplicateBody: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  submitError: {
-    fontSize: 14,
-    color: colors.danger,
-  },
-});
+const createStyles = ({
+  colors,
+  radius,
+  spacing,
+  typography,
+}: Theme) =>
+  StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.canvas,
+    },
+    flex: {
+      flex: 1,
+    },
+    content: {
+      padding: spacing.xl,
+      gap: spacing.lg,
+    },
+    preview: {
+      ...typography.caption,
+      color: colors.mute,
+    },
+    duplicate: {
+      borderRadius: radius.lg,
+      backgroundColor: colors.bone,
+      borderLeftWidth: 3,
+      borderLeftColor: colors.ink,
+      padding: spacing.lg,
+      gap: spacing.md,
+    },
+    duplicateTitle: {
+      ...typography.subtitle,
+      color: colors.ink,
+    },
+    duplicateBody: {
+      ...typography.body,
+      color: colors.mute,
+    },
+    submitError: {
+      ...typography.caption,
+      color: colors.danger,
+    },
+  });

@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,7 +6,8 @@ import {
   View,
   type TextInputProps,
 } from "react-native";
-import { colors } from "../theme/colors";
+import type { Theme } from "../theme/tokens";
+import { useTheme, useThemedStyles } from "../theme/useTheme";
 
 interface AppTextFieldProps extends TextInputProps {
   label: string;
@@ -14,48 +15,75 @@ interface AppTextFieldProps extends TextInputProps {
 }
 
 const AppTextField = forwardRef<TextInput, AppTextFieldProps>(
-  ({ label, error, style, ...inputProps }, ref) => (
-    <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
-      <TextInput
-        ref={ref}
-        style={[styles.input, error ? styles.inputError : null, style]}
-        placeholderTextColor={colors.textMuted}
-        {...inputProps}
-      />
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-    </View>
-  )
+  ({ label, error, style, onFocus, onBlur, ...inputProps }, ref) => {
+    const theme = useTheme();
+    const styles = useThemedStyles(createStyles);
+    const [focused, setFocused] = useState(false);
+
+    return (
+      <View style={styles.container}>
+        <Text style={styles.label}>{label}</Text>
+        <TextInput
+          ref={ref}
+          style={[
+            styles.input,
+            focused && styles.inputFocused,
+            error ? styles.inputError : null,
+            style,
+          ]}
+          placeholderTextColor={theme.colors.stone}
+          onFocus={(event) => {
+            setFocused(true);
+            onFocus?.(event);
+          }}
+          onBlur={(event) => {
+            setFocused(false);
+            onBlur?.(event);
+          }}
+          {...inputProps}
+        />
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+      </View>
+    );
+  }
 );
 
 AppTextField.displayName = "AppTextField";
 
-const styles = StyleSheet.create({
-  container: {
-    gap: 6,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: colors.textSecondary,
-  },
-  input: {
-    height: 48,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    fontSize: 15,
-    color: colors.textPrimary,
-    backgroundColor: colors.surface,
-  },
-  inputError: {
-    borderColor: colors.danger,
-  },
-  error: {
-    fontSize: 13,
-    color: colors.danger,
-  },
-});
+const createStyles = ({
+  colors,
+  radius,
+  spacing,
+  typography,
+}: Theme) =>
+  StyleSheet.create({
+    container: {
+      gap: spacing.xs,
+    },
+    label: {
+      ...typography.caption,
+      color: colors.mute,
+    },
+    input: {
+      height: 44,
+      borderWidth: 1,
+      borderColor: colors.hairline,
+      borderRadius: radius.sm,
+      paddingHorizontal: 20,
+      ...typography.body,
+      color: colors.ink,
+      backgroundColor: colors.card,
+    },
+    inputFocused: {
+      borderColor: colors.ink,
+    },
+    inputError: {
+      borderColor: colors.danger,
+    },
+    error: {
+      ...typography.caption,
+      color: colors.danger,
+    },
+  });
 
 export default AppTextField;
