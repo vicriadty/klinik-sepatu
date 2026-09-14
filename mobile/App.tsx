@@ -1,20 +1,34 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { ApiError } from "./src/api/client";
+import { bootstrapSession } from "./src/auth/session";
+import RootNavigator from "./src/navigation/RootNavigator";
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: (failureCount, error) =>
+        error instanceof ApiError && error.status === 401
+          ? false
+          : failureCount < 1,
+      staleTime: 30_000,
+    },
   },
 });
+
+export default function App() {
+  useEffect(() => {
+    bootstrapSession();
+  }, []);
+
+  return (
+    <SafeAreaProvider>
+      <QueryClientProvider client={queryClient}>
+        <StatusBar style="dark" />
+        <RootNavigator />
+      </QueryClientProvider>
+    </SafeAreaProvider>
+  );
+}
