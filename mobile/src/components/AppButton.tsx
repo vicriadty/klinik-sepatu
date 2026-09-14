@@ -1,7 +1,8 @@
 import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
-import { colors } from "../theme/colors";
+import type { Theme } from "../theme/tokens";
+import { useTheme, useThemedStyles } from "../theme/useTheme";
 
-type ButtonVariant = "primary" | "outline";
+type ButtonVariant = "primary" | "secondary" | "ghost";
 
 interface AppButtonProps {
   title: string;
@@ -18,8 +19,17 @@ export default function AppButton({
   disabled = false,
   variant = "primary",
 }: AppButtonProps) {
+  const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
   const isDisabled = disabled || loading;
-  const isOutline = variant === "outline";
+  const showDisabled = disabled && !loading;
+
+  const spinnerColor =
+    variant === "primary" ? theme.colors.onPrimary : theme.colors.ink;
+  const pressedStyle =
+    variant === "primary" ? styles.primaryPressed : styles.neutralPressed;
+  const labelStyle =
+    variant === "primary" ? styles.primaryLabel : styles.neutralLabel;
 
   return (
     <Pressable
@@ -29,15 +39,17 @@ export default function AppButton({
       onPress={onPress}
       style={({ pressed }) => [
         styles.base,
-        isOutline ? styles.outline : styles.primary,
-        pressed && !isDisabled && styles.pressed,
-        isDisabled && styles.disabled,
+        styles[variant],
+        pressed && !isDisabled && pressedStyle,
+        showDisabled && styles.disabled,
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={isOutline ? colors.brand : colors.white} />
+        <ActivityIndicator color={spinnerColor} />
       ) : (
-        <Text style={[styles.label, isOutline && styles.outlineLabel]}>
+        <Text
+          style={[styles.label, labelStyle, showDisabled && styles.disabledLabel]}
+        >
           {title}
         </Text>
       )}
@@ -45,35 +57,51 @@ export default function AppButton({
   );
 }
 
-const styles = StyleSheet.create({
-  base: {
-    height: 48,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 16,
-  },
-  primary: {
-    backgroundColor: colors.brand,
-  },
-  outline: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  pressed: {
-    opacity: 0.85,
-  },
-  disabled: {
-    backgroundColor: colors.disabled,
-    borderColor: colors.disabled,
-  },
-  label: {
-    color: colors.white,
-    fontSize: 15,
-    fontWeight: "600",
-  },
-  outlineLabel: {
-    color: colors.textPrimary,
-  },
-});
+const createStyles = ({
+  colors,
+  radius,
+  spacing,
+  typography,
+}: Theme) =>
+  StyleSheet.create({
+    base: {
+      height: 44,
+      borderRadius: radius.sm,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: spacing.xl,
+    },
+    primary: {
+      backgroundColor: colors.primary,
+    },
+    secondary: {
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.hairline,
+    },
+    ghost: {
+      backgroundColor: "transparent",
+    },
+    primaryPressed: {
+      backgroundColor: colors.primaryPressed,
+    },
+    neutralPressed: {
+      backgroundColor: colors.bone,
+    },
+    disabled: {
+      backgroundColor: colors.disabledSurface,
+      borderColor: colors.hairline,
+    },
+    label: {
+      ...typography.button,
+    },
+    primaryLabel: {
+      color: colors.onPrimary,
+    },
+    neutralLabel: {
+      color: colors.ink,
+    },
+    disabledLabel: {
+      color: colors.disabledText,
+    },
+  });

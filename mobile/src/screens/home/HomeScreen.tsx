@@ -16,7 +16,8 @@ import EmptyState from "../../components/EmptyState";
 import FullScreenLoader from "../../components/FullScreenLoader";
 import SummaryCard from "../../components/SummaryCard";
 import type { AppStackParamList } from "../../navigation/types";
-import { colors } from "../../theme/colors";
+import type { Theme } from "../../theme/tokens";
+import { useTheme, useThemedStyles } from "../../theme/useTheme";
 import { formatIDR } from "../../utils/format";
 
 type Navigation = NativeStackNavigationProp<AppStackParamList, "Home">;
@@ -24,6 +25,8 @@ type Navigation = NativeStackNavigationProp<AppStackParamList, "Home">;
 export default function HomeScreen() {
   const user = useAuthStore((state) => state.user);
   const navigation = useNavigation<Navigation>();
+  const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
   const summaryQuery = useQuery({
     queryKey: ["dashboard-summary"],
     queryFn: fetchDashboardSummary,
@@ -43,6 +46,7 @@ export default function HomeScreen() {
           <RefreshControl
             refreshing={summaryQuery.isRefetching}
             onRefresh={() => summaryQuery.refetch()}
+            tintColor={theme.colors.ink}
           />
         }
       >
@@ -92,35 +96,34 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    padding: 20,
-    gap: 8,
-  },
-  greeting: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: colors.textPrimary,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-    marginTop: 12,
-  },
-  sectionTitle: {
-    marginTop: 24,
-    marginBottom: 8,
-    fontSize: 16,
-    fontWeight: "600",
-    color: colors.textPrimary,
-  },
-});
+const createStyles = ({ colors, spacing, typography }: Theme) =>
+  StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.canvas,
+    },
+    content: {
+      padding: spacing.xl,
+      gap: spacing.xs,
+    },
+    greeting: {
+      ...typography.headingSm,
+      color: colors.ink,
+    },
+    subtitle: {
+      ...typography.body,
+      color: colors.mute,
+    },
+    grid: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: spacing.md,
+      marginTop: spacing.xl,
+    },
+    sectionTitle: {
+      marginTop: spacing.xl,
+      marginBottom: spacing.sm,
+      ...typography.subtitle,
+      color: colors.ink,
+    },
+  });

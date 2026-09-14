@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
-import { colors } from "../theme/colors";
+import type { Theme } from "../theme/tokens";
+import { useThemedStyles } from "../theme/useTheme";
 
 interface EmptyStateProps {
   title: string;
@@ -7,6 +8,8 @@ interface EmptyStateProps {
 }
 
 export default function EmptyState({ title, message }: EmptyStateProps) {
+  const styles = useThemedStyles(createStyles);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
@@ -15,23 +18,23 @@ export default function EmptyState({ title, message }: EmptyStateProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 32,
-    paddingHorizontal: 16,
-    gap: 6,
-  },
-  title: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: colors.textPrimary,
-    textAlign: "center",
-  },
-  message: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    textAlign: "center",
-  },
-});
+const createStyles = ({ colors, spacing, typography }: Theme) =>
+  StyleSheet.create({
+    container: {
+      alignItems: "center",
+      justifyContent: "center",
+      paddingVertical: spacing.xxl,
+      paddingHorizontal: spacing.lg,
+      gap: spacing.xs,
+    },
+    title: {
+      ...typography.subtitle,
+      color: colors.ink,
+      textAlign: "center",
+    },
+    message: {
+      ...typography.body,
+      color: colors.mute,
+      textAlign: "center",
+    },
+  });

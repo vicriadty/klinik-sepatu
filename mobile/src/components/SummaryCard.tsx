@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
-import { colors } from "../theme/colors";
+import type { Theme } from "../theme/tokens";
+import { useThemedStyles } from "../theme/useTheme";
 
 interface SummaryCardProps {
   label: string;
@@ -12,6 +13,8 @@ export default function SummaryCard({
   value,
   highlight = false,
 }: SummaryCardProps) {
+  const styles = useThemedStyles(createStyles);
+
   return (
     <View style={[styles.card, highlight && styles.highlight]}>
       <Text style={styles.label}>{label}</Text>
@@ -20,27 +23,32 @@ export default function SummaryCard({
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    flex: 1,
-    minWidth: "45%",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    padding: 14,
-    gap: 6,
-  },
-  highlight: {
-    borderColor: colors.brand,
-  },
-  label: {
-    fontSize: 13,
-    color: colors.textSecondary,
-  },
-  value: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: colors.textPrimary,
-  },
-});
+const createStyles = ({
+  colors,
+  radius,
+  spacing,
+  typography,
+}: Theme) =>
+  StyleSheet.create({
+    card: {
+      flex: 1,
+      minWidth: "45%",
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: colors.hairline,
+      backgroundColor: colors.card,
+      padding: spacing.lg,
+      gap: spacing.sm,
+    },
+    highlight: {
+      borderColor: colors.warning,
+    },
+    label: {
+      ...typography.caption,
+      color: colors.mute,
+    },
+    value: {
+      ...typography.title,
+      color: colors.ink,
+    },
+  });

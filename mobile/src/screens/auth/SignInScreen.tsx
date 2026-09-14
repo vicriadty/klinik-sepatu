@@ -15,7 +15,8 @@ import { login } from "../../api/auth";
 import { useAuthStore } from "../../auth/useAuthStore";
 import AppButton from "../../components/AppButton";
 import AppTextField from "../../components/AppTextField";
-import { colors } from "../../theme/colors";
+import type { Theme } from "../../theme/tokens";
+import { useThemedStyles } from "../../theme/useTheme";
 import { loginErrorMessage } from "../../utils/errors";
 
 export const signInSchema = z.object({
@@ -27,6 +28,7 @@ export type SignInValues = z.infer<typeof signInSchema>;
 
 export default function SignInScreen() {
   const signIn = useAuthStore((state) => state.signIn);
+  const styles = useThemedStyles(createStyles);
   const {
     control,
     handleSubmit,
@@ -108,11 +110,7 @@ export default function SignInScreen() {
               </Text>
             ) : null}
 
-            <AppButton
-              title="Masuk"
-              onPress={onSubmit}
-              loading={pending}
-            />
+            <AppButton title="Masuk" onPress={onSubmit} loading={pending} />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -120,35 +118,35 @@ export default function SignInScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  flex: {
-    flex: 1,
-  },
-  content: {
-    flexGrow: 1,
-    justifyContent: "center",
-    padding: 24,
-    gap: 8,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "700",
-    color: colors.textPrimary,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: colors.textSecondary,
-  },
-  form: {
-    marginTop: 24,
-    gap: 16,
-  },
-  submitError: {
-    fontSize: 14,
-    color: colors.danger,
-  },
-});
+const createStyles = ({ colors, spacing, typography }: Theme) =>
+  StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.canvas,
+    },
+    flex: {
+      flex: 1,
+    },
+    content: {
+      flexGrow: 1,
+      justifyContent: "center",
+      padding: spacing.xl,
+      gap: spacing.xs,
+    },
+    title: {
+      ...typography.headingSm,
+      color: colors.ink,
+    },
+    subtitle: {
+      ...typography.body,
+      color: colors.mute,
+    },
+    form: {
+      marginTop: spacing.xl,
+      gap: spacing.lg,
+    },
+    submitError: {
+      ...typography.caption,
+      color: colors.danger,
+    },
+  });

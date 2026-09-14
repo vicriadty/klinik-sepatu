@@ -16,7 +16,8 @@ import AppButton from "../../components/AppButton";
 import EmptyState from "../../components/EmptyState";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import type { AppStackParamList } from "../../navigation/types";
-import { colors } from "../../theme/colors";
+import type { Theme } from "../../theme/tokens";
+import { useTheme, useThemedStyles } from "../../theme/useTheme";
 
 type Navigation = NativeStackNavigationProp<AppStackParamList, "Customers">;
 type Route = RouteProp<AppStackParamList, "Customers">;
@@ -26,6 +27,8 @@ const PAGE_SIZE = 20;
 export default function CustomersScreen() {
   const navigation = useNavigation<Navigation>();
   const route = useRoute<Route>();
+  const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
   const [searchInput, setSearchInput] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
   const search = useDebouncedValue(searchInput.trim(), 300);
@@ -71,13 +74,17 @@ export default function CustomersScreen() {
           value={searchInput}
           onChangeText={setSearchInput}
           placeholder="Cari nama atau nomor telepon"
-          placeholderTextColor={colors.textMuted}
+          placeholderTextColor={theme.colors.stone}
           autoCapitalize="none"
           autoCorrect={false}
           style={styles.searchInput}
           accessibilityLabel="Cari pelanggan"
         />
-        <AppButton title="Tambah Pelanggan" onPress={openCreateForm} />
+        <AppButton
+          title="Tambah Pelanggan"
+          variant="secondary"
+          onPress={openCreateForm}
+        />
         {notice ? (
           <View style={styles.notice}>
             <Text style={styles.noticeText}>{notice}</Text>
@@ -88,7 +95,7 @@ export default function CustomersScreen() {
       {isInitialLoading ? (
         <ActivityIndicator
           size="large"
-          color={colors.brand}
+          color={theme.colors.ink}
           style={styles.loader}
         />
       ) : customersQuery.isError ? (
@@ -123,7 +130,7 @@ export default function CustomersScreen() {
             customersQuery.isFetchingNextPage ? (
               <ActivityIndicator
                 size="small"
-                color={colors.brand}
+                color={theme.colors.ink}
                 style={styles.footerLoader}
               />
             ) : null
@@ -134,62 +141,67 @@ export default function CustomersScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    padding: 16,
-    gap: 12,
-  },
-  searchInput: {
-    height: 48,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    fontSize: 15,
-    color: colors.textPrimary,
-    backgroundColor: colors.surface,
-  },
-  notice: {
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.success,
-    backgroundColor: "#ecfdf3",
-    padding: 12,
-  },
-  noticeText: {
-    fontSize: 14,
-    color: "#027a48",
-  },
-  loader: {
-    marginTop: 32,
-  },
-  listContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 24,
-  },
-  row: {
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    padding: 14,
-    marginBottom: 10,
-    gap: 4,
-  },
-  rowName: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: colors.textPrimary,
-  },
-  rowPhone: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  footerLoader: {
-    marginVertical: 12,
-  },
-});
+const createStyles = ({
+  colors,
+  radius,
+  spacing,
+  typography,
+}: Theme) =>
+  StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.canvas,
+    },
+    header: {
+      padding: spacing.lg,
+      gap: spacing.md,
+    },
+    searchInput: {
+      height: 44,
+      borderWidth: 1,
+      borderColor: colors.hairline,
+      borderRadius: radius.sm,
+      paddingHorizontal: 20,
+      ...typography.body,
+      color: colors.ink,
+      backgroundColor: colors.card,
+    },
+    notice: {
+      borderRadius: radius.lg,
+      backgroundColor: colors.bone,
+      borderLeftWidth: 3,
+      borderLeftColor: colors.success,
+      padding: spacing.lg,
+    },
+    noticeText: {
+      ...typography.body,
+      color: colors.ink,
+    },
+    loader: {
+      marginTop: spacing.xxl,
+    },
+    listContent: {
+      paddingHorizontal: spacing.lg,
+      paddingBottom: spacing.xl,
+    },
+    row: {
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: colors.hairline,
+      backgroundColor: colors.card,
+      padding: spacing.lg,
+      marginBottom: spacing.sm,
+      gap: spacing.xs,
+    },
+    rowName: {
+      ...typography.subtitle,
+      color: colors.ink,
+    },
+    rowPhone: {
+      ...typography.body,
+      color: colors.mute,
+    },
+    footerLoader: {
+      marginVertical: spacing.md,
+    },
+  });
