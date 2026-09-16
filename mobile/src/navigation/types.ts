@@ -10,6 +10,7 @@ export type AppStackParamList = {
   OrderItems: undefined;
   OrderItemForm: { itemId?: string } | undefined;
   OrderItemServices: { itemId: string };
+  OrderItemPhotos: { itemId: string };
   OrderReview: undefined;
   OrderSuccess: {
     orderId: number;

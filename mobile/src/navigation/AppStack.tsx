@@ -5,6 +5,7 @@ import CustomersScreen from "../screens/customers/CustomersScreen";
 import HomeScreen from "../screens/home/HomeScreen";
 import OrderCustomerScreen from "../screens/orders/OrderCustomerScreen";
 import OrderItemFormScreen from "../screens/orders/OrderItemFormScreen";
+import OrderItemPhotosScreen from "../screens/orders/OrderItemPhotosScreen";
 import OrderItemServicesScreen from "../screens/orders/OrderItemServicesScreen";
 import OrderItemsScreen from "../screens/orders/OrderItemsScreen";
 import OrderPaymentScreen from "../screens/orders/OrderPaymentScreen";
@@ -64,6 +65,11 @@ export default function AppStack() {
         name="OrderItemServices"
         component={OrderItemServicesScreen}
         options={{ title: "Pilih Layanan" }}
+      />
+      <Stack.Screen
+        name="OrderItemPhotos"
+        component={OrderItemPhotosScreen}
+        options={{ title: "Foto Sepatu" }}
       />
       <Stack.Screen
         name="OrderReview"

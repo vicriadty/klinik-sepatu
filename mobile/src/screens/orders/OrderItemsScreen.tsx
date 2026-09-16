@@ -9,6 +9,7 @@ import EmptyState from "../../components/EmptyState";
 import type { AppStackParamList } from "../../navigation/types";
 import { itemSubtotal } from "../../order/pricing";
 import { useOrderWizardStore } from "../../order/orderWizardStore";
+import { usePhotoStore } from "../../order/photoStore";
 import type { Theme } from "../../theme/tokens";
 import { useThemedStyles } from "../../theme/useTheme";
 import { formatIDR } from "../../utils/format";
@@ -21,6 +22,7 @@ export default function OrderItemsScreen() {
   const customer = useOrderWizardStore((state) => state.customer);
   const items = useOrderWizardStore((state) => state.items);
   const removeItem = useOrderWizardStore((state) => state.removeItem);
+  const photoDrafts = usePhotoStore((state) => state.drafts);
 
   const servicesQuery = useQuery({
     queryKey: ["services", "active"],
@@ -79,6 +81,15 @@ export default function OrderItemsScreen() {
                     : "Belum ada layanan — tap untuk memilih"}
                 </Text>
                 <View style={styles.cardActions}>
+                  <AppButton
+                    title={`Foto (${(photoDrafts[item.id] ?? []).length})`}
+                    variant="ghost"
+                    onPress={() =>
+                      navigation.navigate("OrderItemPhotos", {
+                        itemId: item.id,
+                      })
+                    }
+                  />
                   <AppButton
                     title="Ubah"
                     variant="ghost"

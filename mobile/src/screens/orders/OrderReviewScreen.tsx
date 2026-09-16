@@ -18,6 +18,7 @@ import {
   orderSubtotal,
 } from "../../order/pricing";
 import { useOrderWizardStore } from "../../order/orderWizardStore";
+import { usePhotoStore } from "../../order/photoStore";
 import type { Theme } from "../../theme/tokens";
 import { useThemedStyles } from "../../theme/useTheme";
 import { apiErrorMessage } from "../../utils/errors";
@@ -36,6 +37,8 @@ export default function OrderReviewScreen() {
     (state) => state.ensureIdempotencyKey
   );
   const reset = useOrderWizardStore((state) => state.reset);
+  const photoDrafts = usePhotoStore((state) => state.drafts);
+  const enqueueFromOrder = usePhotoStore((state) => state.enqueueFromOrder);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const servicesQuery = useQuery({
@@ -83,6 +86,17 @@ export default function OrderReviewScreen() {
     },
     onSuccess: (order) => {
       const customerName = order.customer?.name ?? customer?.name ?? "";
+      const createdItems = order.items ?? [];
+
+      enqueueFromOrder(
+        items
+          .map((item, index) => ({
+            itemId: item.id,
+            orderItemId: createdItems[index]?.id ?? 0,
+          }))
+          .filter((entry) => entry.orderItemId > 0)
+      );
+
       reset();
       navigation.replace("OrderSuccess", {
         orderId: order.id,
@@ -156,6 +170,9 @@ export default function OrderReviewScreen() {
                 </View>
               );
             })}
+            <Text style={styles.itemMeta}>
+              {(photoDrafts[item.id] ?? []).length} foto
+            </Text>
           </View>
         ))}
 
@@ -313,6 +330,11 @@ const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
     servicePrice: {
       ...typography.body,
       color: colors.body,
+    },
+    itemMeta: {
+      ...typography.caption,
+      color: colors.mute,
+      marginTop: spacing.xs,
     },
     sectionTitle: {
       marginTop: spacing.xl,
