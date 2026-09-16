@@ -93,6 +93,11 @@ export default function HomeScreen() {
             onPress={() => navigation.navigate("OrderCustomer")}
           />
           <AppButton
+            title="Pesanan"
+            variant="secondary"
+            onPress={() => navigation.navigate("Orders")}
+          />
+          <AppButton
             title="Cari / Tambah Pelanggan"
             variant="secondary"
             onPress={() => navigation.navigate("Customers")}
