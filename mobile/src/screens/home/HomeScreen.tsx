@@ -87,10 +87,17 @@ export default function HomeScreen() {
         )}
 
         <Text style={styles.sectionTitle}>Aksi cepat</Text>
-        <AppButton
-          title="Cari / Tambah Pelanggan"
-          onPress={() => navigation.navigate("Customers")}
-        />
+        <View style={styles.actions}>
+          <AppButton
+            title="Order Baru"
+            onPress={() => navigation.navigate("OrderCustomer")}
+          />
+          <AppButton
+            title="Cari / Tambah Pelanggan"
+            variant="secondary"
+            onPress={() => navigation.navigate("Customers")}
+          />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -125,5 +132,8 @@ const createStyles = ({ colors, spacing, typography }: Theme) =>
       marginBottom: spacing.sm,
       ...typography.subtitle,
       color: colors.ink,
+    },
+    actions: {
+      gap: spacing.md,
     },
   });

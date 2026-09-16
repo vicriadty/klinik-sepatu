@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -16,6 +17,7 @@ import AppButton from "../../components/AppButton";
 import EmptyState from "../../components/EmptyState";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import type { AppStackParamList } from "../../navigation/types";
+import { useOrderWizardStore } from "../../order/orderWizardStore";
 import type { Theme } from "../../theme/tokens";
 import { useTheme, useThemedStyles } from "../../theme/useTheme";
 
@@ -29,9 +31,17 @@ export default function CustomersScreen() {
   const route = useRoute<Route>();
   const theme = useTheme();
   const styles = useThemedStyles(createStyles);
+  const selectMode = route.params?.select === true;
+  const setWizardCustomer = useOrderWizardStore((state) => state.setCustomer);
   const [searchInput, setSearchInput] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
   const search = useDebouncedValue(searchInput.trim(), 300);
+
+  useEffect(() => {
+    if (selectMode) {
+      navigation.setOptions({ title: "Pilih Pelanggan" });
+    }
+  }, [selectMode, navigation]);
 
   useEffect(() => {
     const created = route.params?.created;
@@ -121,10 +131,22 @@ export default function CustomersScreen() {
             }
           }}
           renderItem={({ item }) => (
-            <View style={styles.row}>
+            <Pressable
+              disabled={!selectMode}
+              accessibilityRole={selectMode ? "button" : undefined}
+              accessibilityLabel={selectMode ? `Pilih ${item.name}` : undefined}
+              onPress={() => {
+                setWizardCustomer(item);
+                navigation.goBack();
+              }}
+              style={({ pressed }) => [
+                styles.row,
+                selectMode && pressed && styles.rowPressed,
+              ]}
+            >
               <Text style={styles.rowName}>{item.name}</Text>
               <Text style={styles.rowPhone}>{item.phone_display}</Text>
-            </View>
+            </Pressable>
           )}
           ListFooterComponent={
             customersQuery.isFetchingNextPage ? (
@@ -192,6 +214,9 @@ const createStyles = ({
       padding: spacing.lg,
       marginBottom: spacing.sm,
       gap: spacing.xs,
+    },
+    rowPressed: {
+      opacity: 0.85,
     },
     rowName: {
       ...typography.subtitle,

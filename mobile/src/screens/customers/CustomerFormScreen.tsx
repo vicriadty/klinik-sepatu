@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute, type RouteProp } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -22,12 +22,14 @@ import {
 import AppButton from "../../components/AppButton";
 import AppTextField from "../../components/AppTextField";
 import type { AppStackParamList } from "../../navigation/types";
+import { useOrderWizardStore } from "../../order/orderWizardStore";
 import type { Theme } from "../../theme/tokens";
 import { useThemedStyles } from "../../theme/useTheme";
 import { apiErrorMessage } from "../../utils/errors";
 import { normalizePhone } from "../../utils/phone";
 
 type Navigation = NativeStackNavigationProp<AppStackParamList, "CustomerForm">;
+type Route = RouteProp<AppStackParamList, "CustomerForm">;
 
 export const customerSchema = z.object({
   name: z.string().trim().min(1, "Nama wajib diisi."),
@@ -45,8 +47,11 @@ export type CustomerFormValues = z.infer<typeof customerSchema>;
 
 export default function CustomerFormScreen() {
   const navigation = useNavigation<Navigation>();
+  const route = useRoute<Route>();
   const queryClient = useQueryClient();
   const styles = useThemedStyles(createStyles);
+  const selectMode = route.params?.select === true;
+  const setWizardCustomer = useOrderWizardStore((state) => state.setCustomer);
   const [duplicate, setDuplicate] = useState<ApiCustomer | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -71,6 +76,11 @@ export default function CustomerFormScreen() {
       }),
     onSuccess: (customer) => {
       void queryClient.invalidateQueries({ queryKey: ["customers"] });
+      if (selectMode) {
+        setWizardCustomer(customer);
+        navigation.navigate("OrderCustomer");
+        return;
+      }
       navigation.navigate("Customers", {
         created: customer.name,
         search: customer.phone,
@@ -161,6 +171,7 @@ export default function CustomerFormScreen() {
                 onPress={() =>
                   navigation.navigate("Customers", {
                     search: duplicate.phone,
+                    ...(selectMode ? { select: true } : {}),
                   })
                 }
               />

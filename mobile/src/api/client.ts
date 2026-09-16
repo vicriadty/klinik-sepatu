@@ -1,3 +1,5 @@
+import Constants from "expo-constants";
+
 export interface ApiFieldErrors {
   [field: string]: string[];
 }
@@ -32,23 +34,47 @@ export function setUnauthorizedHandler(handler: (() => void) | null): void {
   unauthorizedHandler = handler;
 }
 
+/**
+ * Dev builds derive the API host from the Metro dev server, so a DHCP IP
+ * change does not break the app. `EXPO_PUBLIC_API_URL` is the explicit
+ * override (required for production builds, and for tunnel mode).
+ */
 export function getApiBaseUrl(): string {
-  return process.env.EXPO_PUBLIC_API_URL ?? "http://10.0.2.2:8000/api/v1";
+  const configured = process.env.EXPO_PUBLIC_API_URL?.trim();
+  if (configured) {
+    return configured;
+  }
+
+  const metroHost = Constants.expoConfig?.hostUri?.split(":")[0];
+  if (metroHost) {
+    return `http://${metroHost}:8000/api/v1`;
+  }
+
+  return "http://10.0.2.2:8000/api/v1";
 }
 
 interface RequestOptions {
   method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: unknown;
   skipUnauthorizedHandler?: boolean;
+  headers?: Record<string, string>;
 }
 
 export async function apiFetch<T>(
   path: string,
   options: RequestOptions = {}
 ): Promise<T> {
-  const { method = "GET", body, skipUnauthorizedHandler = false } = options;
+  const {
+    method = "GET",
+    body,
+    skipUnauthorizedHandler = false,
+    headers: extraHeaders,
+  } = options;
 
-  const headers: Record<string, string> = { Accept: "application/json" };
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+    ...extraHeaders,
+  };
   if (body !== undefined) {
     headers["Content-Type"] = "application/json";
   }

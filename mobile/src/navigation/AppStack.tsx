@@ -3,6 +3,12 @@ import LogoutButton from "../components/LogoutButton";
 import CustomerFormScreen from "../screens/customers/CustomerFormScreen";
 import CustomersScreen from "../screens/customers/CustomersScreen";
 import HomeScreen from "../screens/home/HomeScreen";
+import OrderCustomerScreen from "../screens/orders/OrderCustomerScreen";
+import OrderItemFormScreen from "../screens/orders/OrderItemFormScreen";
+import OrderItemServicesScreen from "../screens/orders/OrderItemServicesScreen";
+import OrderItemsScreen from "../screens/orders/OrderItemsScreen";
+import OrderReviewScreen from "../screens/orders/OrderReviewScreen";
+import OrderSuccessScreen from "../screens/orders/OrderSuccessScreen";
 import { useTheme } from "../theme/useTheme";
 import type { AppStackParamList } from "./types";
 
@@ -37,6 +43,40 @@ export default function AppStack() {
         name="CustomerForm"
         component={CustomerFormScreen}
         options={{ title: "Pelanggan Baru", presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="OrderCustomer"
+        component={OrderCustomerScreen}
+        options={{ title: "Order Baru" }}
+      />
+      <Stack.Screen
+        name="OrderItems"
+        component={OrderItemsScreen}
+        options={{ title: "Sepatu & Layanan" }}
+      />
+      <Stack.Screen
+        name="OrderItemForm"
+        component={OrderItemFormScreen}
+        options={{ title: "Sepatu", presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="OrderItemServices"
+        component={OrderItemServicesScreen}
+        options={{ title: "Pilih Layanan" }}
+      />
+      <Stack.Screen
+        name="OrderReview"
+        component={OrderReviewScreen}
+        options={{ title: "Review Order" }}
+      />
+      <Stack.Screen
+        name="OrderSuccess"
+        component={OrderSuccessScreen}
+        options={{
+          title: "Order Dibuat",
+          headerBackVisible: false,
+          gestureEnabled: false,
+        }}
       />
     </Stack.Navigator>
   );

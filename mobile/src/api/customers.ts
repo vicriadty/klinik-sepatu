@@ -1,4 +1,5 @@
 import { apiFetch } from "./client";
+import type { Paginated } from "./types";
 
 export interface ApiCustomer {
   id: number;
@@ -11,16 +12,6 @@ export interface ApiCustomer {
   wa_opt_out: boolean;
   created_at: string | null;
   updated_at: string | null;
-}
-
-export interface Paginated<T> {
-  data: T[];
-  meta: {
-    page: number;
-    per_page: number;
-    total: number;
-    last_page: number;
-  };
 }
 
 export interface CustomerSearchParams {
