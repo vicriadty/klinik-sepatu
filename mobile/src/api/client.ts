@@ -58,6 +58,7 @@ interface RequestOptions {
   body?: unknown;
   skipUnauthorizedHandler?: boolean;
   headers?: Record<string, string>;
+  formData?: FormData;
 }
 
 export async function apiFetch<T>(
@@ -69,13 +70,14 @@ export async function apiFetch<T>(
     body,
     skipUnauthorizedHandler = false,
     headers: extraHeaders,
+    formData,
   } = options;
 
   const headers: Record<string, string> = {
     Accept: "application/json",
     ...extraHeaders,
   };
-  if (body !== undefined) {
+  if (formData === undefined && body !== undefined) {
     headers["Content-Type"] = "application/json";
   }
   if (authToken) {
@@ -87,7 +89,12 @@ export async function apiFetch<T>(
     response = await fetch(`${getApiBaseUrl()}${path}`, {
       method,
       headers,
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body:
+        formData !== undefined
+          ? formData
+          : body === undefined
+            ? undefined
+            : JSON.stringify(body),
     });
   } catch {
     throw new ApiError("Tidak dapat terhubung ke server.");

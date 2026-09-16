@@ -5,6 +5,7 @@ import { fetchDiscounts } from "../../../api/discounts";
 import { createOrder } from "../../../api/orders";
 import { fetchServices } from "../../../api/services";
 import { useOrderWizardStore } from "../../../order/orderWizardStore";
+import { usePhotoStore } from "../../../order/photoStore";
 import OrderReviewScreen from "../OrderReviewScreen";
 
 jest.mock("react-native-safe-area-context", () =>
@@ -148,11 +149,29 @@ describe("OrderReviewScreen", () => {
 
   it("creates the order with an idempotency key and resets the wizard", async () => {
     seedWizard();
+    usePhotoStore.setState({ drafts: {}, queue: [] });
+    usePhotoStore
+      .getState()
+      .addDraft("item-1", {
+        uri: "file:///photo.jpg",
+        angle: "front",
+        type: "BEFORE",
+      });
     createOrderMock.mockResolvedValue({
       id: 9,
       order_number: "ORD-20260914-0001",
       customer_id: 3,
       customer,
+      items: [
+        {
+          id: 101,
+          brand: "Nike",
+          model: "Air Max",
+          color: null,
+          shoe_type: "Sneakers",
+          customer_note: null,
+        },
+      ],
       status: "RECEIVED",
       payment_status: "UNPAID",
       subtotal: 60000,
@@ -191,6 +210,9 @@ describe("OrderReviewScreen", () => {
     });
     expect(useOrderWizardStore.getState().customer).toBeNull();
     expect(useOrderWizardStore.getState().items).toHaveLength(0);
+    expect(usePhotoStore.getState().queue).toEqual([
+      expect.objectContaining({ orderItemId: 101, status: "pending" }),
+    ]);
   });
 
   it("shows an Indonesian error when creation fails", async () => {
