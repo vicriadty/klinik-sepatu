@@ -15,8 +15,3 @@ BUG DAN FIX
 - gunakan alert setiap aksi yang berhasil atau gagal, gunakan yang tersedia di /src/components/ui/alert
 
 Eksekusi beberapa perbaikan pada web dashboard, tetap di branch ini.
-- pada mode darkmode, warna content juga berubah dengan menyesuaikan kontrast
-- tombol tambah layanan juga menggunakan icon yang tersedia di /src/icons/  {icon} Tambah Layanan
-- tombol tambah pengguna juga menggunakan icon yang tersedia di /src/icons/  {icon} Tambah User
-- pada data table, aksi nonaktifkan/aktifkan juga menggunakan icon yang tersedia di /src/icons/
-- setiap user mengklik tombol nonaktifkan/aktifkan, munculkan dialog konfirmasi sebelum diubah status

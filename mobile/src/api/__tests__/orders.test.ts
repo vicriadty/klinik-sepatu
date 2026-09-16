@@ -1,4 +1,4 @@
-import { createOrder } from "../orders";
+import { createOrder, fetchOrder, recordPayment } from "../orders";
 
 const fetchMock = jest.fn();
 
@@ -70,5 +70,56 @@ describe("orders api", () => {
     await expect(
       createOrder({ customer_id: 1, items: [] }, "key-1")
     ).resolves.toMatchObject({ id: 9 });
+  });
+
+  it("fetches an order with its payments", async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(200, {
+        data: {
+          id: 9,
+          order_number: "ORD-1",
+          payment_status: "PARTIAL",
+          remaining_balance: 27000,
+          payments: [{ id: 1, method: "CASH", amount: 27000 }],
+        },
+      })
+    );
+
+    const order = await fetchOrder(9);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://test.local/api/v1/orders/9",
+      expect.objectContaining({ method: "GET" })
+    );
+    expect(order.payment_status).toBe("PARTIAL");
+    expect(order.payments).toHaveLength(1);
+  });
+
+  it("records a payment with the idempotency key header", async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(201, {
+        data: { id: 5, method: "QRIS", amount: 54000, type: "payment" },
+      })
+    );
+
+    const payment = await recordPayment(
+      9,
+      { method: "QRIS", amount: 54000, note: "Diterima" },
+      "pay-key-1"
+    );
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://test.local/api/v1/orders/9/payments",
+      expect.objectContaining({
+        method: "POST",
+        headers: expect.objectContaining({ "Idempotency-Key": "pay-key-1" }),
+        body: JSON.stringify({
+          method: "QRIS",
+          amount: 54000,
+          note: "Diterima",
+        }),
+      })
+    );
+    expect(payment).toMatchObject({ id: 5, method: "QRIS" });
   });
 });
