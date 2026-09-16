@@ -7,6 +7,7 @@ import OrderCustomerScreen from "../screens/orders/OrderCustomerScreen";
 import OrderItemFormScreen from "../screens/orders/OrderItemFormScreen";
 import OrderItemServicesScreen from "../screens/orders/OrderItemServicesScreen";
 import OrderItemsScreen from "../screens/orders/OrderItemsScreen";
+import OrderPaymentScreen from "../screens/orders/OrderPaymentScreen";
 import OrderReviewScreen from "../screens/orders/OrderReviewScreen";
 import OrderSuccessScreen from "../screens/orders/OrderSuccessScreen";
 import { useTheme } from "../theme/useTheme";
@@ -77,6 +78,11 @@ export default function AppStack() {
           headerBackVisible: false,
           gestureEnabled: false,
         }}
+      />
+      <Stack.Screen
+        name="OrderPayment"
+        component={OrderPaymentScreen}
+        options={{ title: "Pembayaran" }}
       />
     </Stack.Navigator>
   );

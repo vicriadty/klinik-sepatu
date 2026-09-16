@@ -184,6 +184,7 @@ describe("OrderReviewScreen", () => {
       "test-uuid"
     );
     expect(mockReplace).toHaveBeenCalledWith("OrderSuccess", {
+      orderId: 9,
       orderNumber: "ORD-20260914-0001",
       customerName: "Emma",
       grandTotal: 60000,

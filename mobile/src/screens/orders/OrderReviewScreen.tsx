@@ -85,6 +85,7 @@ export default function OrderReviewScreen() {
       const customerName = order.customer?.name ?? customer?.name ?? "";
       reset();
       navigation.replace("OrderSuccess", {
+        orderId: order.id,
         orderNumber: order.order_number,
         customerName,
         grandTotal: order.grand_total,

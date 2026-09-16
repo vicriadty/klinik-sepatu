@@ -15,7 +15,7 @@ export default function OrderSuccessScreen() {
   const navigation = useNavigation<Navigation>();
   const route = useRoute<Route>();
   const styles = useThemedStyles(createStyles);
-  const { orderNumber, customerName, grandTotal } = route.params;
+  const { orderId, orderNumber, customerName, grandTotal } = route.params;
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
@@ -38,13 +38,16 @@ export default function OrderSuccessScreen() {
           </View>
         </View>
 
-        <Text style={styles.note}>
-          Pembayaran dan unggah foto akan tersedia pada fase berikutnya.
-        </Text>
-
         <View style={styles.actions}>
           <AppButton
+            title="Lanjut ke Pembayaran"
+            onPress={() =>
+              navigation.navigate("OrderPayment", { orderId })
+            }
+          />
+          <AppButton
             title="Order Baru"
+            variant="secondary"
             onPress={() => navigation.replace("OrderCustomer")}
           />
           <AppButton
@@ -101,11 +104,6 @@ const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
       color: colors.ink,
       flexShrink: 1,
       textAlign: "right",
-    },
-    note: {
-      ...typography.caption,
-      color: colors.mute,
-      marginTop: spacing.lg,
     },
     actions: {
       marginTop: "auto",
