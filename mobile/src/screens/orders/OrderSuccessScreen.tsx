@@ -1,26 +1,18 @@
 import { useNavigation, useRoute, type RouteProp } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { uploadItemPhoto } from "../../api/photos";
 import AppButton from "../../components/AppButton";
 import type { AppStackParamList } from "../../navigation/types";
-import { usePhotoStore, type UploadStatus } from "../../order/photoStore";
+import { uploadQueuedPhotos } from "../../order/photoUpload";
+import { UPLOAD_STATUS_LABELS, usePhotoStore } from "../../order/photoStore";
 import type { Theme } from "../../theme/tokens";
 import { useThemedStyles } from "../../theme/useTheme";
-import { apiErrorMessage } from "../../utils/errors";
 import { formatIDR } from "../../utils/format";
 
 type Navigation = NativeStackNavigationProp<AppStackParamList, "OrderSuccess">;
 type Route = RouteProp<AppStackParamList, "OrderSuccess">;
-
-const UPLOAD_STATUS_LABELS: Record<UploadStatus, string> = {
-  pending: "Menunggu",
-  uploading: "Mengunggah…",
-  uploaded: "Terunggah",
-  failed: "Gagal",
-};
 
 export default function OrderSuccessScreen() {
   const navigation = useNavigation<Navigation>();
@@ -28,45 +20,9 @@ export default function OrderSuccessScreen() {
   const styles = useThemedStyles(createStyles);
   const { orderId, orderNumber, customerName, grandTotal } = route.params;
   const queue = usePhotoStore((state) => state.queue);
-  const setStatus = usePhotoStore((state) => state.setStatus);
-  const uploadingRef = useRef(false);
-
-  const uploadPending = async () => {
-    if (uploadingRef.current) {
-      return;
-    }
-    uploadingRef.current = true;
-
-    try {
-      const pending = usePhotoStore
-        .getState()
-        .queue.filter(
-          (entry) => entry.status === "pending" || entry.status === "failed"
-        );
-
-      for (const entry of pending) {
-        setStatus(entry.id, "uploading");
-        try {
-          await uploadItemPhoto(entry.orderItemId, {
-            uri: entry.uri,
-            type: entry.type,
-          });
-          setStatus(entry.id, "uploaded");
-        } catch (error) {
-          setStatus(
-            entry.id,
-            "failed",
-            apiErrorMessage(error, "Gagal mengunggah foto.")
-          );
-        }
-      }
-    } finally {
-      uploadingRef.current = false;
-    }
-  };
 
   useEffect(() => {
-    void uploadPending();
+    void uploadQueuedPhotos();
   }, []);
 
   const uploadedCount = queue.filter(
@@ -122,7 +78,7 @@ export default function OrderSuccessScreen() {
               <AppButton
                 title="Unggah Ulang"
                 variant="secondary"
-                onPress={() => void uploadPending()}
+                onPress={() => void uploadQueuedPhotos()}
               />
             ) : null}
           </View>

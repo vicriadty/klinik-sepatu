@@ -62,10 +62,10 @@ describe("OrderItemPhotosScreen", () => {
     const drafts = usePhotoStore.getState().drafts["item-1"];
     expect(drafts).toHaveLength(1);
     expect(drafts![0]).toMatchObject({
-      uri: "file:///photo.jpg",
       angle: "front",
       type: "BEFORE",
     });
+    expect(drafts![0]!.uri).toContain("/order-photos/");
     expect(await screen.findByText("Depan ✓ 1")).toBeTruthy();
   });
 

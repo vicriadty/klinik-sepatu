@@ -1,5 +1,7 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Crypto from "expo-crypto";
 import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 import type { ApiCustomer } from "../api/customers";
 
 export interface WizardItemInput {
@@ -32,57 +34,77 @@ interface OrderWizardState {
 
 let nextItemNumber = 1;
 
-export const useOrderWizardStore = create<OrderWizardState>((set, get) => ({
-  customer: null,
-  items: [],
-  discountId: null,
-  idempotencyKey: null,
+/**
+ * Persisted as the local order draft (prd-mobile §22): the wizard survives
+ * app restarts, and the idempotency key survives a crash mid-submit so a
+ * retry cannot create a duplicate order (ADR-0002).
+ */
+export const useOrderWizardStore = create<OrderWizardState>()(
+  persist(
+    (set, get) => ({
+      customer: null,
+      items: [],
+      discountId: null,
+      idempotencyKey: null,
 
-  setCustomer: (customer) => set({ customer }),
+      setCustomer: (customer) => set({ customer }),
 
-  addItem: (input) => {
-    const id = `item-${nextItemNumber++}`;
-    set((state) => ({
-      items: [...state.items, { id, ...input, serviceIds: [] }],
-    }));
-    return id;
-  },
+      addItem: (input) => {
+        const id = `item-${nextItemNumber++}`;
+        set((state) => ({
+          items: [...state.items, { id, ...input, serviceIds: [] }],
+        }));
+        return id;
+      },
 
-  updateItem: (id, input) =>
-    set((state) => ({
-      items: state.items.map((item) =>
-        item.id === id ? { ...item, ...input } : item
-      ),
-    })),
+      updateItem: (id, input) =>
+        set((state) => ({
+          items: state.items.map((item) =>
+            item.id === id ? { ...item, ...input } : item
+          ),
+        })),
 
-  removeItem: (id) =>
-    set((state) => ({
-      items: state.items.filter((item) => item.id !== id),
-    })),
+      removeItem: (id) =>
+        set((state) => ({
+          items: state.items.filter((item) => item.id !== id),
+        })),
 
-  setItemServices: (id, serviceIds) =>
-    set((state) => ({
-      items: state.items.map((item) =>
-        item.id === id ? { ...item, serviceIds } : item
-      ),
-    })),
+      setItemServices: (id, serviceIds) =>
+        set((state) => ({
+          items: state.items.map((item) =>
+            item.id === id ? { ...item, serviceIds } : item
+          ),
+        })),
 
-  setDiscountId: (discountId) => set({ discountId }),
+      setDiscountId: (discountId) => set({ discountId }),
 
-  /**
-   * Satu key per percobaan order; retry memakai key yang sama sehingga
-   * backend mengembalikan order yang sudah ada (ADR-0002).
-   */
-  ensureIdempotencyKey: () => {
-    const existing = get().idempotencyKey;
-    if (existing) {
-      return existing;
+      ensureIdempotencyKey: () => {
+        const existing = get().idempotencyKey;
+        if (existing) {
+          return existing;
+        }
+        const generated = Crypto.randomUUID();
+        set({ idempotencyKey: generated });
+        return generated;
+      },
+
+      reset: () =>
+        set({
+          customer: null,
+          items: [],
+          discountId: null,
+          idempotencyKey: null,
+        }),
+    }),
+    {
+      name: "ks-order-draft",
+      storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => ({
+        customer: state.customer,
+        items: state.items,
+        discountId: state.discountId,
+        idempotencyKey: state.idempotencyKey,
+      }),
     }
-    const key = Crypto.randomUUID();
-    set({ idempotencyKey: key });
-    return key;
-  },
-
-  reset: () =>
-    set({ customer: null, items: [], discountId: null, idempotencyKey: null }),
-}));
+  )
+);

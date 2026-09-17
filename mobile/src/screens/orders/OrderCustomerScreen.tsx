@@ -1,11 +1,13 @@
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AppButton from "../../components/AppButton";
 import EmptyState from "../../components/EmptyState";
 import type { AppStackParamList } from "../../navigation/types";
 import { useOrderWizardStore } from "../../order/orderWizardStore";
+import { deletePhotoFiles } from "../../order/photoFiles";
+import { usePhotoStore } from "../../order/photoStore";
 import type { Theme } from "../../theme/tokens";
 import { useThemedStyles } from "../../theme/useTheme";
 
@@ -15,12 +17,47 @@ export default function OrderCustomerScreen() {
   const navigation = useNavigation<Navigation>();
   const styles = useThemedStyles(createStyles);
   const customer = useOrderWizardStore((state) => state.customer);
+  const items = useOrderWizardStore((state) => state.items);
+  const reset = useOrderWizardStore((state) => state.reset);
+  const hasDraft = customer !== null || items.length > 0;
+
+  const discardDraft = () => {
+    Alert.alert(
+      "Mulai order baru?",
+      "Draft order yang tersimpan akan dihapus.",
+      [
+        { text: "Batal", style: "cancel" },
+        {
+          text: "Ya, mulai baru",
+          style: "destructive",
+          onPress: () => {
+            const drafts = usePhotoStore.getState().drafts;
+            deletePhotoFiles(
+              Object.values(drafts)
+                .flat()
+                .map((photo) => photo.uri)
+            );
+            usePhotoStore.getState().clear();
+            reset();
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
       <View style={styles.content}>
         <Text style={styles.step}>Langkah 1 dari 3</Text>
         <Text style={styles.title}>Pelanggan</Text>
+
+        {hasDraft ? (
+          <View style={styles.draftNotice}>
+            <Text style={styles.draftText}>
+              Draft order tersimpan dan dipulihkan otomatis.
+            </Text>
+          </View>
+        ) : null}
 
         {customer ? (
           <View style={styles.card}>
@@ -45,6 +82,13 @@ export default function OrderCustomerScreen() {
             onPress={() => navigation.navigate("OrderItems")}
             disabled={!customer}
           />
+          {hasDraft ? (
+            <AppButton
+              title="Mulai Baru"
+              variant="ghost"
+              onPress={discardDraft}
+            />
+          ) : null}
         </View>
       </View>
     </SafeAreaView>
@@ -68,6 +112,18 @@ const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
     },
     title: {
       ...typography.headingSm,
+      color: colors.ink,
+    },
+    draftNotice: {
+      marginTop: spacing.lg,
+      borderRadius: radius.lg,
+      backgroundColor: colors.bone,
+      borderLeftWidth: 3,
+      borderLeftColor: colors.ink,
+      padding: spacing.lg,
+    },
+    draftText: {
+      ...typography.body,
       color: colors.ink,
     },
     card: {
