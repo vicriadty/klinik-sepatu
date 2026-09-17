@@ -1,5 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { StyleSheet, View } from "react-native";
 import LogoutButton from "../components/LogoutButton";
+import OfflineBanner from "../components/OfflineBanner";
 import CustomerFormScreen from "../screens/customers/CustomerFormScreen";
 import CustomersScreen from "../screens/customers/CustomersScreen";
 import HomeScreen from "../screens/home/HomeScreen";
@@ -22,14 +24,15 @@ export default function AppStack() {
   const theme = useTheme();
 
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerStyle: { backgroundColor: theme.colors.canvas },
-        headerTintColor: theme.colors.ink,
-        headerTitleStyle: { fontSize: 16, fontWeight: "500" },
-        contentStyle: { backgroundColor: theme.colors.canvas },
-      }}
-    >
+    <View style={styles.container}>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: { backgroundColor: theme.colors.canvas },
+          headerTintColor: theme.colors.ink,
+          headerTitleStyle: { fontSize: 16, fontWeight: "500" },
+          contentStyle: { backgroundColor: theme.colors.canvas },
+        }}
+      >
       <Stack.Screen
         name="Home"
         component={HomeScreen}
@@ -102,6 +105,14 @@ export default function AppStack() {
         component={OrderDetailScreen}
         options={{ title: "Detail Order" }}
       />
-    </Stack.Navigator>
+      </Stack.Navigator>
+      <OfflineBanner />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
