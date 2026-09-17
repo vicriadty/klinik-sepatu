@@ -1,0 +1,134 @@
+import { act, fireEvent, render, screen } from "@testing-library/react-native";
+import { Alert } from "react-native";
+import { useOrderWizardStore } from "../../../order/orderWizardStore";
+import { deletePhotoFiles } from "../../../order/photoFiles";
+import { usePhotoStore } from "../../../order/photoStore";
+import OrderCustomerScreen from "../OrderCustomerScreen";
+
+jest.mock("react-native-safe-area-context", () =>
+  jest.requireActual("react-native-safe-area-context/jest/mock").default
+);
+
+const mockNavigate = jest.fn();
+
+jest.mock("@react-navigation/native", () => ({
+  useNavigation: () => ({ navigate: mockNavigate }),
+}));
+
+jest.mock("../../../order/photoFiles", () => ({
+  deletePhotoFiles: jest.fn(),
+}));
+
+const deleteFilesMock = deletePhotoFiles as jest.MockedFunction<
+  typeof deletePhotoFiles
+>;
+
+const customer = {
+  id: 3,
+  name: "Emma",
+  phone: "6281234567890",
+  phone_display: "+6281234567890",
+  email: null,
+  address: null,
+  notes: null,
+  wa_opt_out: false,
+  created_at: null,
+  updated_at: null,
+};
+
+function seedDraft() {
+  useOrderWizardStore.setState({
+    customer,
+    items: [
+      {
+        id: "item-1",
+        brand: "Nike",
+        model: "",
+        color: "",
+        shoeType: "Sneakers",
+        customerNote: "",
+        serviceIds: [1],
+      },
+    ],
+    discountId: null,
+    idempotencyKey: null,
+  });
+  usePhotoStore.setState({
+    drafts: {
+      "item-1": [
+        {
+          id: "photo-1",
+          uri: "file:///document/order-photos/photo-1.jpg",
+          angle: "front",
+          type: "BEFORE",
+        },
+      ],
+    },
+    queue: [],
+  });
+}
+
+describe("OrderCustomerScreen", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    useOrderWizardStore.setState({
+      customer: null,
+      items: [],
+      discountId: null,
+      idempotencyKey: null,
+    });
+    usePhotoStore.setState({ drafts: {}, queue: [] });
+  });
+
+  it("restores the persisted draft with a notice", async () => {
+    seedDraft();
+
+    await render(<OrderCustomerScreen />);
+
+    expect(
+      await screen.findByText("Draft order tersimpan dan dipulihkan otomatis.")
+    ).toBeTruthy();
+    expect(screen.getByText("Emma")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Mulai Baru" })).toBeTruthy();
+  });
+
+  it("discards the draft, its photos and the wizard state", async () => {
+    seedDraft();
+    const alertSpy = jest
+      .spyOn(Alert, "alert")
+      .mockImplementation(() => undefined);
+
+    await render(<OrderCustomerScreen />);
+    await fireEvent.press(screen.getByRole("button", { name: "Mulai Baru" }));
+
+    const buttons = (
+      alertSpy.mock.calls[0] as unknown as [
+        string,
+        string,
+        { text: string; onPress?: () => void }[],
+      ]
+    )[2];
+    const confirm = buttons.find((button) => button.text === "Ya, mulai baru");
+
+    await act(async () => {
+      confirm?.onPress?.();
+    });
+
+    expect(deleteFilesMock).toHaveBeenCalledWith([
+      "file:///document/order-photos/photo-1.jpg",
+    ]);
+    expect(useOrderWizardStore.getState().customer).toBeNull();
+    expect(useOrderWizardStore.getState().items).toHaveLength(0);
+    expect(usePhotoStore.getState().drafts).toEqual({});
+    expect(screen.queryByText("Draft order tersimpan dan dipulihkan otomatis.")).toBeNull();
+
+    alertSpy.mockRestore();
+  });
+
+  it("offers no draft actions without a draft", async () => {
+    await render(<OrderCustomerScreen />);
+
+    expect(screen.queryByRole("button", { name: "Mulai Baru" })).toBeNull();
+    expect(await screen.findByText("Belum ada pelanggan dipilih.")).toBeTruthy();
+  });
+});

@@ -15,6 +15,7 @@ import AppButton from "../../components/AppButton";
 import EmptyState from "../../components/EmptyState";
 import type { AppStackParamList } from "../../navigation/types";
 import { useOrderWizardStore } from "../../order/orderWizardStore";
+import { deletePhotoFile, persistPhotoFile } from "../../order/photoFiles";
 import {
   angleLabel,
   PHOTO_ANGLES,
@@ -96,8 +97,9 @@ export default function OrderItemPhotosScreen() {
         return;
       }
 
+      const durableUri = await persistPhotoFile(asset.uri);
       addDraft(itemId, {
-        uri: asset.uri,
+        uri: durableUri,
         angle,
         type: typeForAngle(angle),
       });
@@ -193,7 +195,10 @@ export default function OrderItemPhotosScreen() {
               <AppButton
                 title="Hapus"
                 variant="ghost"
-                onPress={() => removeDraft(itemId, photo.id)}
+                onPress={() => {
+                  deletePhotoFile(photo.uri);
+                  removeDraft(itemId, photo.id);
+                }}
               />
             </View>
           ))

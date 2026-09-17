@@ -14,7 +14,9 @@ import {
   transitionOrder,
   type ApiOrder,
 } from "../../../api/orders";
+import { uploadItemPhoto } from "../../../api/photos";
 import { useAuthStore } from "../../../auth/useAuthStore";
+import { usePhotoStore } from "../../../order/photoStore";
 import OrderDetailScreen from "../OrderDetailScreen";
 
 jest.mock("react-native-safe-area-context", () =>
@@ -56,6 +58,15 @@ jest.mock("../../../api/orders", () => {
     recordPayment: jest.fn(),
   };
 });
+
+jest.mock("../../../api/photos", () => {
+  const actual = jest.requireActual("../../../api/photos");
+  return { ...actual, uploadItemPhoto: jest.fn() };
+});
+
+const uploadMock = uploadItemPhoto as jest.MockedFunction<
+  typeof uploadItemPhoto
+>;
 
 const fetchOrderMock = fetchOrder as jest.MockedFunction<typeof fetchOrder>;
 const transitionMock = transitionOrder as jest.MockedFunction<
@@ -152,6 +163,7 @@ describe("OrderDetailScreen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     setRole("owner");
+    usePhotoStore.setState({ drafts: {}, queue: [] });
     fetchOrderMock.mockResolvedValue(makeOrder());
     transitionMock.mockResolvedValue(makeOrder({ status: "ON_PROCESS" }));
     cancelMock.mockResolvedValue(makeOrder({ status: "CANCELLED" }));
@@ -270,5 +282,57 @@ describe("OrderDetailScreen", () => {
     await waitFor(() =>
       expect(screen.getByText("Refund Rp25.000 tercatat.")).toBeTruthy()
     );
+  });
+
+  it("retries pending photo uploads for this order", async () => {
+    usePhotoStore.setState({
+      drafts: {},
+      queue: [
+        {
+          id: "photo-1",
+          orderItemId: 101,
+          uri: "file:///document/order-photos/photo-1.jpg",
+          type: "BEFORE",
+          status: "failed",
+          error: "Gagal mengunggah foto.",
+        },
+        {
+          id: "photo-2",
+          orderItemId: 999,
+          uri: "file:///document/order-photos/photo-2.jpg",
+          type: "BEFORE",
+          status: "failed",
+          error: "Gagal mengunggah foto.",
+        },
+      ],
+    });
+    uploadMock.mockResolvedValue({
+      id: 1,
+      order_item_id: 101,
+      type: "BEFORE",
+      url: "http://example.test/photo.jpg",
+      thumbnail_url: null,
+      mime: "image/jpeg",
+      size: 1000,
+      created_at: null,
+    });
+
+    await renderScreen();
+
+    expect(
+      await screen.findByText("Foto belum terunggah (1)")
+    ).toBeTruthy();
+
+    await fireEvent.press(
+      screen.getByRole("button", { name: "Unggah Sekarang" })
+    );
+
+    await waitFor(() =>
+      expect(uploadMock).toHaveBeenCalledWith(101, {
+        uri: "file:///document/order-photos/photo-1.jpg",
+        type: "BEFORE",
+      })
+    );
+    expect(uploadMock).toHaveBeenCalledTimes(1);
   });
 });

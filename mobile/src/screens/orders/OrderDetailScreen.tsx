@@ -25,6 +25,8 @@ import FilterChip from "../../components/FilterChip";
 import FullScreenLoader from "../../components/FullScreenLoader";
 import StatusPill from "../../components/StatusPill";
 import type { AppStackParamList } from "../../navigation/types";
+import { uploadQueuedPhotos } from "../../order/photoUpload";
+import { UPLOAD_STATUS_LABELS, usePhotoStore } from "../../order/photoStore";
 import {
   blockedTransitionHint,
   legalTransitions,
@@ -58,6 +60,7 @@ export default function OrderDetailScreen() {
     queryFn: () => fetchOrder(orderId),
   });
   const order = orderQuery.data;
+  const photoQueue = usePhotoStore((state) => state.queue);
 
   const invalidate = async () => {
     await queryClient.invalidateQueries({ queryKey: ["order", orderId] });
@@ -169,6 +172,17 @@ export default function OrderDetailScreen() {
 
   const transitions = legalTransitions(order);
   const hint = blockedTransitionHint(order);
+  const orderItemIds = (order.items ?? []).map((item) => item.id);
+  const pendingUploads = photoQueue.filter(
+    (entry) =>
+      orderItemIds.includes(entry.orderItemId) && entry.status !== "uploaded"
+  );
+
+  const retryUploads = async () => {
+    await uploadQueuedPhotos({ onlyItemIds: orderItemIds });
+    await invalidate();
+  };
+
   const canRefund =
     (user?.role === "owner" || user?.role === "admin") &&
     order.paid_total > 0 &&
@@ -362,6 +376,37 @@ export default function OrderDetailScreen() {
           </View>
         ) : null}
 
+        {pendingUploads.length > 0 ? (
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>
+              Foto belum terunggah ({pendingUploads.length})
+            </Text>
+            {pendingUploads.map((entry) => (
+              <View key={entry.id} style={styles.uploadRow}>
+                <Image source={{ uri: entry.uri }} style={styles.uploadPhoto} />
+                <View style={styles.uploadInfo}>
+                  <Text style={styles.paymentMethod}>
+                    {entry.type === "DAMAGE" ? "Kerusakan" : "Before"}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.paymentMeta,
+                      entry.status === "failed" && styles.uploadError,
+                    ]}
+                  >
+                    {entry.error ?? UPLOAD_STATUS_LABELS[entry.status]}
+                  </Text>
+                </View>
+              </View>
+            ))}
+            <AppButton
+              title="Unggah Sekarang"
+              variant="secondary"
+              onPress={() => void retryUploads()}
+            />
+          </View>
+        ) : null}
+
         {transitions.length > 0 ? (
           <View style={styles.actions}>
             {transitions.map((transition) => (
@@ -536,6 +581,24 @@ const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
       flexWrap: "wrap",
       gap: spacing.sm,
       marginTop: spacing.xs,
+    },
+    uploadRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.md,
+    },
+    uploadPhoto: {
+      width: 44,
+      height: 44,
+      borderRadius: radius.sm,
+      backgroundColor: colors.bone,
+    },
+    uploadInfo: {
+      flex: 1,
+      gap: spacing.xxs,
+    },
+    uploadError: {
+      color: colors.danger,
     },
     photo: {
       width: 64,
