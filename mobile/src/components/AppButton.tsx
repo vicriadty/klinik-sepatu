@@ -2,7 +2,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
 import type { Theme } from "../theme/tokens";
 import { useTheme, useThemedStyles } from "../theme/useTheme";
 
-type ButtonVariant = "primary" | "secondary" | "ghost";
+type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 
 interface AppButtonProps {
   title: string;
@@ -25,11 +25,19 @@ export default function AppButton({
   const showDisabled = disabled && !loading;
 
   const spinnerColor =
-    variant === "primary" ? theme.colors.onPrimary : theme.colors.ink;
+    variant === "primary" || variant === "danger"
+      ? theme.colors.onPrimary
+      : theme.colors.ink;
   const pressedStyle =
-    variant === "primary" ? styles.primaryPressed : styles.neutralPressed;
+    variant === "primary"
+      ? styles.primaryPressed
+      : variant === "danger"
+        ? styles.dangerPressed
+        : styles.neutralPressed;
   const labelStyle =
-    variant === "primary" ? styles.primaryLabel : styles.neutralLabel;
+    variant === "primary" || variant === "danger"
+      ? styles.primaryLabel
+      : styles.neutralLabel;
 
   return (
     <Pressable
@@ -82,8 +90,14 @@ const createStyles = ({
     ghost: {
       backgroundColor: "transparent",
     },
+    danger: {
+      backgroundColor: colors.danger,
+    },
     primaryPressed: {
       backgroundColor: colors.primaryPressed,
+    },
+    dangerPressed: {
+      opacity: 0.85,
     },
     neutralPressed: {
       backgroundColor: colors.bone,

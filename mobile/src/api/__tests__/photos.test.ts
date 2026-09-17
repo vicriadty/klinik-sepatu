@@ -1,4 +1,9 @@
-import { deleteItemPhoto, fetchItemPhotos, uploadItemPhoto } from "../photos";
+import {
+  deleteItemPhoto,
+  fetchItemPhotos,
+  photoUrl,
+  uploadItemPhoto,
+} from "../photos";
 
 const fetchMock = jest.fn();
 
@@ -85,5 +90,25 @@ describe("photos api", () => {
       "http://test.local/api/v1/order-item-photos/3",
       expect.objectContaining({ method: "DELETE" })
     );
+  });
+
+  it("rewrites localhost photo URLs to the API host in dev", () => {
+    process.env.EXPO_PUBLIC_API_URL = "http://192.168.1.50:8000/api/v1";
+
+    expect(photoUrl("http://localhost:9000/klinik-sepatu/photos/a.jpg")).toBe(
+      "http://192.168.1.50:9000/klinik-sepatu/photos/a.jpg"
+    );
+    expect(photoUrl("http://127.0.0.1:9000/klinik-sepatu/photos/a.jpg")).toBe(
+      "http://192.168.1.50:9000/klinik-sepatu/photos/a.jpg"
+    );
+  });
+
+  it("keeps production photo URLs untouched", () => {
+    process.env.EXPO_PUBLIC_API_URL = "http://192.168.1.50:8000/api/v1";
+
+    expect(photoUrl("https://cdn.example.com/photos/a.jpg")).toBe(
+      "https://cdn.example.com/photos/a.jpg"
+    );
+    expect(photoUrl(null)).toBeNull();
   });
 });

@@ -19,4 +19,6 @@ export type AppStackParamList = {
     grandTotal: number;
   };
   OrderPayment: { orderId: number };
+  Orders: undefined;
+  OrderDetail: { orderId: number };
 };

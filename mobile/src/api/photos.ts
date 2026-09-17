@@ -1,4 +1,4 @@
-import { apiFetch } from "./client";
+import { apiFetch, getApiBaseUrl } from "./client";
 
 export type PhotoType = "BEFORE" | "AFTER" | "DAMAGE" | "QC";
 
@@ -53,4 +53,27 @@ export async function uploadItemPhoto(
 
 export async function deleteItemPhoto(photoId: number): Promise<void> {
   await apiFetch<void>(`/order-item-photos/${photoId}`, { method: "DELETE" });
+}
+
+/**
+ * Dev-only host rewrite: the backend serves photo URLs with the configured
+ * PHOTO_URL_BASE (localhost in dev), which a phone cannot reach. Production
+ * URLs (CDN) pass through untouched.
+ */
+export function photoUrl(url: string | null): string | null {
+  if (!url) {
+    return null;
+  }
+
+  const match = url.match(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/.*)?$/);
+  if (!match) {
+    return url;
+  }
+
+  const apiHost = getApiBaseUrl()
+    .replace(/^https?:\/\//, "")
+    .split("/")[0]
+    .split(":")[0];
+
+  return `http://${apiHost}${match[2] ?? ""}${match[3] ?? ""}`;
 }

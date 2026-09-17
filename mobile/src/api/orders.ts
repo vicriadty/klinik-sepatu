@@ -1,5 +1,14 @@
 import { apiFetch } from "./client";
 import type { ApiCustomer } from "./customers";
+import type { ApiPhoto } from "./photos";
+import type { Paginated } from "./types";
+
+export type OrderStatus =
+  | "RECEIVED"
+  | "ON_PROCESS"
+  | "READY_FOR_PICKUP"
+  | "COMPLETED"
+  | "CANCELLED";
 
 export interface CreateOrderItemPayload {
   brand: string;
@@ -30,6 +39,7 @@ export interface ApiOrderItem {
   color: string | null;
   shoe_type: string;
   customer_note: string | null;
+  photos?: ApiPhoto[];
   services?: ApiOrderService[];
   item_subtotal?: number;
 }
@@ -67,6 +77,7 @@ export interface RecordPaymentPayload {
   method: PaymentMethod;
   amount: number;
   note?: string;
+  type?: "payment" | "refund";
 }
 
 export interface ApiOrder {
@@ -75,7 +86,8 @@ export interface ApiOrder {
   customer_id: number;
   customer?: ApiCustomer;
   items?: ApiOrderItem[];
-  status: string;
+  items_count?: number;
+  status: OrderStatus;
   payment_status: PaymentStatus;
   subtotal: number;
   discount_id: number | null;
@@ -84,6 +96,13 @@ export interface ApiOrder {
   paid_total: number;
   remaining_balance: number;
   payments?: ApiPayment[];
+  status_histories?: {
+    from_status: OrderStatus | null;
+    to_status: OrderStatus;
+    actor_user_id: number | null;
+    note: string | null;
+    created_at: string | null;
+  }[];
   created_at: string | null;
 }
 
@@ -106,6 +125,60 @@ export async function createOrder(
 
 export async function fetchOrder(orderId: number): Promise<ApiOrder> {
   const response = await apiFetch<{ data: ApiOrder }>(`/orders/${orderId}`);
+  return response.data;
+}
+
+export interface OrderListParams {
+  search?: string;
+  status?: OrderStatus;
+  payment_status?: PaymentStatus;
+  page?: number;
+  per_page?: number;
+}
+
+export async function fetchOrders(
+  params: OrderListParams = {}
+): Promise<Paginated<ApiOrder>> {
+  const query = new URLSearchParams();
+  if (params.search) query.set("search", params.search);
+  if (params.status) query.set("status", params.status);
+  if (params.payment_status) {
+    query.set("payment_status", params.payment_status);
+  }
+  if (params.page) query.set("page", String(params.page));
+  if (params.per_page) query.set("per_page", String(params.per_page));
+
+  const qs = query.toString();
+
+  return apiFetch<Paginated<ApiOrder>>(`/orders${qs ? `?${qs}` : ""}`);
+}
+
+export async function transitionOrder(
+  orderId: number,
+  status: OrderStatus,
+  note?: string
+): Promise<ApiOrder> {
+  const response = await apiFetch<{ data: ApiOrder }>(
+    `/orders/${orderId}/status`,
+    {
+      method: "POST",
+      body: { status, ...(note ? { note } : {}) },
+    }
+  );
+  return response.data;
+}
+
+export async function cancelOrder(
+  orderId: number,
+  reason?: string
+): Promise<ApiOrder> {
+  const response = await apiFetch<{ data: ApiOrder }>(
+    `/orders/${orderId}/cancel`,
+    {
+      method: "POST",
+      body: { ...(reason ? { reason } : {}) },
+    }
+  );
   return response.data;
 }
 
