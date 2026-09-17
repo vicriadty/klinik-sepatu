@@ -18,6 +18,14 @@ jest.mock("@react-native-async-storage/async-storage", () =>
   require("@react-native-async-storage/async-storage/jest/async-storage-mock")
 );
 
+jest.mock("expo-network", () => ({
+  useNetworkState: jest.fn(() => ({
+    isConnected: true,
+    isInternetReachable: true,
+    type: "WIFI",
+  })),
+}));
+
 jest.mock("expo-file-system", () => {
   class MockFile {
     uri: string;
