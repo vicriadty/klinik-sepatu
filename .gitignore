@@ -4,3 +4,6 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Windows download metadata sidecars
+*:Zone.Identifier
