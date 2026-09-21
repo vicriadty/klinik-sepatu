@@ -1,0 +1,2747 @@
+{
+  "version": "2.18",
+  "children": [
+    {
+      "type": "frame",
+      "id": "bi8Au",
+      "x": 80,
+      "y": 60,
+      "name": "POS Login • Mobile",
+      "clip": true,
+      "width": 390,
+      "height": 844,
+      "fill": "#ffffffff",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "srFcN",
+          "x": 96,
+          "y": 103,
+          "name": "Brand Mark",
+          "width": 197,
+          "height": 124,
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "assets/icon.png",
+            "mode": "fill"
+          },
+          "cornerRadius": 12
+        },
+        {
+          "type": "text",
+          "id": "FI0TT",
+          "x": 32,
+          "y": 251,
+          "name": "Welcome Caption",
+          "fill": "#666666",
+          "textGrowth": "fixed-width",
+          "width": 326,
+          "content": "Welcome Back!",
+          "lineHeight": 1.5,
+          "textAlign": "center",
+          "fontFamily": "Geist",
+          "fontSize": 20,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "O2MEBX",
+          "x": 32,
+          "y": 316,
+          "name": "Email Label",
+          "fill": "#171717",
+          "content": "USERNAME",
+          "fontFamily": "Geist",
+          "fontSize": 12,
+          "fontWeight": "500"
+        },
+        {
+          "type": "frame",
+          "id": "F9LNJ",
+          "x": 32,
+          "y": 338,
+          "name": "Email Input",
+          "width": 326,
+          "height": 52,
+          "fill": "#FFFFFF",
+          "cornerRadius": 6,
+          "stroke": "#EBEBEB",
+          "strokeWidth": 1
+        },
+        {
+          "type": "icon",
+          "id": "c28Sf",
+          "x": 48,
+          "y": 354,
+          "name": "Email Icon",
+          "width": 20,
+          "height": 20,
+          "icon": "mail",
+          "library": "lucide",
+          "fill": "#666666"
+        },
+        {
+          "type": "text",
+          "id": "X1h4Db",
+          "x": 80,
+          "y": 353,
+          "name": "Email Placeholder",
+          "fill": "#808080",
+          "content": "admin",
+          "fontFamily": "Geist",
+          "fontSize": 15,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "w1Ypg",
+          "x": 32,
+          "y": 418,
+          "name": "Password Label",
+          "fill": "#171717",
+          "content": "PASSWORD",
+          "fontFamily": "Geist",
+          "fontSize": 12,
+          "fontWeight": "500"
+        },
+        {
+          "type": "frame",
+          "id": "Rf9to",
+          "x": 32,
+          "y": 440,
+          "name": "Password Input",
+          "width": 326,
+          "height": 52,
+          "fill": "#FFFFFF",
+          "cornerRadius": 6,
+          "stroke": "#EBEBEB",
+          "strokeWidth": 1
+        },
+        {
+          "type": "icon",
+          "id": "v1HB22",
+          "x": 48,
+          "y": 456,
+          "name": "Password Icon",
+          "width": 20,
+          "height": 20,
+          "icon": "lock",
+          "library": "lucide",
+          "fill": "#666666"
+        },
+        {
+          "type": "text",
+          "id": "O7zXC",
+          "x": 80,
+          "y": 455,
+          "name": "Password Placeholder",
+          "fill": "#808080",
+          "content": "••••••••",
+          "fontFamily": "Geist",
+          "fontSize": 15,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "icon",
+          "id": "VdwWy",
+          "x": 320,
+          "y": 556,
+          "name": "Show Password",
+          "width": 20,
+          "height": 20,
+          "icon": "eye",
+          "library": "lucide",
+          "fill": "#666666"
+        },
+        {
+          "type": "frame",
+          "id": "m6aOKu",
+          "x": 32,
+          "y": 524,
+          "name": "Login Button",
+          "width": 326,
+          "height": 52,
+          "fill": "#171717",
+          "cornerRadius": 6
+        },
+        {
+          "type": "text",
+          "id": "r0NbA",
+          "x": 32,
+          "y": 541,
+          "name": "Login Button Label",
+          "fill": "#FFFFFF",
+          "textGrowth": "fixed-width",
+          "width": 326,
+          "content": "Masuk",
+          "textAlign": "center",
+          "fontFamily": "Geist",
+          "fontSize": 14,
+          "fontWeight": "500"
+        },
+        {
+          "type": "text",
+          "id": "GpNsM",
+          "x": 32,
+          "y": 796,
+          "name": "Version",
+          "fill": "#808080",
+          "textGrowth": "fixed-width",
+          "width": 326,
+          "content": "SOLECARE POS  •  v1.0.0",
+          "textAlign": "center",
+          "fontFamily": "Geist Mono",
+          "fontSize": 11,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "aRTiO",
+      "x": 507,
+      "y": 60,
+      "name": "POS Home • Mobile",
+      "clip": true,
+      "width": 390,
+      "height": 844,
+      "fill": "#FAFAFA",
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "k9vLYX",
+          "x": 69,
+          "y": 29,
+          "name": "Home Greeting",
+          "fill": "#666666",
+          "content": "Halo, ",
+          "fontFamily": "Poppins",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "tDPwP",
+          "x": 69,
+          "y": 52,
+          "name": "Home Greeting",
+          "fill": "#666666",
+          "content": "Admin Klinik Sepatu",
+          "fontFamily": "Poppins",
+          "fontSize": 11,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "BEvOD",
+          "x": 110,
+          "y": 29,
+          "name": "Cashier Name",
+          "fill": "#171717",
+          "content": " Alya Pratama",
+          "fontFamily": "Poppins",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "aaiiW",
+          "x": 330,
+          "y": 29,
+          "name": "Profile Avatar",
+          "width": 36,
+          "height": 36,
+          "fill": "#171717",
+          "cornerRadius": 18
+        },
+        {
+          "type": "text",
+          "id": "i4hTm",
+          "x": 330,
+          "y": 38,
+          "name": "Avatar Initial",
+          "fill": "#FFFFFF",
+          "textGrowth": "fixed-width",
+          "width": 36,
+          "content": "AP",
+          "textAlign": "center",
+          "fontFamily": "Geist",
+          "fontSize": 13,
+          "fontWeight": "500"
+        },
+        {
+          "type": "text",
+          "id": "jsWP5",
+          "x": 23,
+          "y": 469,
+          "name": "Recent Orders Heading",
+          "fill": "#171717",
+          "content": "Order terbaru",
+          "fontFamily": "Geist",
+          "fontSize": 17,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "w4bMA",
+          "x": 291,
+          "y": 472,
+          "name": "See All Orders",
+          "fill": "#0072F5",
+          "content": "Lihat semua",
+          "fontFamily": "Geist",
+          "fontSize": 12,
+          "fontWeight": "500"
+        },
+        {
+          "type": "frame",
+          "id": "ZWah6",
+          "x": 23,
+          "y": 503,
+          "name": "Order Card 001",
+          "width": 342,
+          "height": 62,
+          "fill": "#FFFFFF",
+          "cornerRadius": 8,
+          "stroke": "#EBEBEB",
+          "strokeWidth": 1,
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "HRR93",
+              "x": 16,
+              "y": 12,
+              "name": "Order 001 Id",
+              "fill": "#171717",
+              "content": "#SC-240918",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "JH7WK",
+              "x": 16,
+              "y": 33,
+              "name": "Order 001 Customer",
+              "fill": "#666666",
+              "content": "Raka Wijaya  •  2 items",
+              "fontFamily": "Geist",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "AMVCN",
+              "x": 250,
+              "y": 14,
+              "name": "Order 001 Status",
+              "fill": "#2B9A66",
+              "content": "SIAP DIAMBIL",
+              "fontFamily": "Geist",
+              "fontSize": 11,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "k01yQM",
+              "x": 250,
+              "y": 35,
+              "name": "Order 001 Price",
+              "fill": "#171717",
+              "content": "Rp 180.000",
+              "fontFamily": "Geist",
+              "fontSize": 12,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "jGz6M",
+          "x": 23,
+          "y": 575,
+          "name": "Order Card 002",
+          "width": 342,
+          "height": 62,
+          "fill": "#FFFFFF",
+          "cornerRadius": 8,
+          "stroke": "#EBEBEB",
+          "strokeWidth": 1,
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "Bcwhc",
+              "x": 16,
+              "y": 12,
+              "name": "Order 002 Id",
+              "fill": "#171717",
+              "content": "#SC-240917",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "jn2MA",
+              "x": 16,
+              "y": 33,
+              "name": "Order 002 Customer",
+              "fill": "#666666",
+              "content": "Nadia Putri  •  1 item",
+              "fontFamily": "Geist",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "HMqfE",
+              "x": 250,
+              "y": 14,
+              "name": "Order 002 Status",
+              "fill": "#0072F5",
+              "content": "DICUCI",
+              "fontFamily": "Geist",
+              "fontSize": 11,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "K1Vhi",
+              "x": 250,
+              "y": 35,
+              "name": "Order 002 Price",
+              "fill": "#171717",
+              "content": "Rp 95.000",
+              "fontFamily": "Geist",
+              "fontSize": 12,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "id": "TiLWi",
+          "type": "ref",
+          "ref": "w3fma",
+          "name": "Bottom Navigation Instance",
+          "x": 0,
+          "y": 782,
+          "width": 390,
+          "height": 62
+        },
+        {
+          "type": "rectangle",
+          "id": "XA7eH",
+          "x": 24,
+          "y": 29.5,
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "images/adaptive-icon-foreground-1.png",
+            "mode": "fill"
+          },
+          "width": 35,
+          "height": 35
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": 15,
+          "id": "NlHBs",
+          "x": 23,
+          "y": 113,
+          "fill": "#ffffffff",
+          "width": 344,
+          "height": 148,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#00000026",
+            "offset": {
+              "x": 0,
+              "y": 2
+            },
+            "blur": 2
+          }
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": 15,
+          "id": "V72quJ",
+          "x": 22,
+          "y": 274,
+          "fill": "#ffffffff",
+          "width": 344,
+          "height": 148,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#00000026",
+            "offset": {
+              "x": 0,
+              "y": 2
+            },
+            "blur": 2
+          }
+        },
+        {
+          "type": "text",
+          "id": "oDiOI",
+          "x": 70,
+          "y": 126,
+          "name": "Quick Actions Heading",
+          "fill": "#171717",
+          "textGrowth": "fixed-width",
+          "width": 58,
+          "content": "Pesanan",
+          "fontFamily": "Geist",
+          "fontSize": 13,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "dgeBP",
+          "x": 69,
+          "y": 287,
+          "name": "Quick Actions Heading",
+          "fill": "#171717",
+          "textGrowth": "fixed-width",
+          "width": 85,
+          "content": "Aksi Cepat",
+          "fontFamily": "Geist",
+          "fontSize": 13,
+          "fontWeight": "600"
+        },
+        {
+          "type": "group",
+          "id": "a0rUP",
+          "x": 37,
+          "y": 118,
+          "children": [
+            {
+              "type": "path",
+              "id": "Y5aChW",
+              "x": 2,
+              "y": 6,
+              "geometry": "M0 0l33 0 0 15.5 0 15.5-33 0 0-31z",
+              "fill": "#CCCCCC",
+              "width": 24,
+              "height": 23
+            },
+            {
+              "type": "path",
+              "id": "A0dl24",
+              "x": 1,
+              "y": 167,
+              "geometry": "M0 0l33 0 0 15.5 0 15.5-33 0 0-31z",
+              "fill": "#CCCCCC",
+              "width": 24,
+              "height": 23
+            },
+            {
+              "type": "text",
+              "id": "gjEcs",
+              "x": 5,
+              "y": 12,
+              "name": "Quick Actions Heading",
+              "fill": "#7a7a7aff",
+              "textGrowth": "fixed-width",
+              "width": 18,
+              "content": "icon",
+              "fontFamily": "Poppins",
+              "fontSize": 8,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "dqeuJ",
+              "x": 4,
+              "y": 173,
+              "name": "Quick Actions Heading",
+              "fill": "#7a7a7aff",
+              "textGrowth": "fixed-width",
+              "width": 18,
+              "content": "icon",
+              "fontFamily": "Poppins",
+              "fontSize": 8,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "id": "aBV48",
+          "x": 77,
+          "y": 170.53333333333333,
+          "children": [
+            {
+              "type": "group",
+              "id": "ojboS",
+              "x": 21,
+              "y": 11.333333333333343,
+              "children": [
+                {
+                  "type": "group",
+                  "id": "tndCS",
+                  "x": -58,
+                  "y": -15.866666666666674,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "rPzlh",
+                      "x": 0,
+                      "y": 0,
+                      "name": "New Order Action",
+                      "width": 65,
+                      "height": 68,
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 8,
+                      "stroke": "#a1a1a1ff",
+                      "strokeWidth": 0.5,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "JP9t4",
+                          "x": 0,
+                          "y": 50.5,
+                          "name": "New Order Label",
+                          "fill": "#000000b3",
+                          "textGrowth": "fixed-width-height",
+                          "width": 65,
+                          "height": 11,
+                          "content": "Baru",
+                          "textAlign": "center",
+                          "fontFamily": "Geist",
+                          "fontSize": 10,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Vzc5A",
+                          "x": 8,
+                          "y": 30,
+                          "name": "New Order Label",
+                          "fill": "#171717",
+                          "textGrowth": "fixed-width-height",
+                          "width": 50,
+                          "height": 16,
+                          "content": "5",
+                          "textAlign": "center",
+                          "fontFamily": "Poppins",
+                          "fontSize": 10,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "path",
+                      "id": "N3nk8",
+                      "x": 25,
+                      "y": 9.066666666666663,
+                      "geometry": "M0 0l33 0 0 15.5 0 15.5-33 0 0-31z",
+                      "fill": "#CCCCCC",
+                      "width": 16,
+                      "height": 18.133333333333333
+                    },
+                    {
+                      "type": "text",
+                      "id": "oScNe",
+                      "x": 27,
+                      "y": 13.797101449275345,
+                      "name": "Quick Actions Heading",
+                      "fill": "#7a7a7aff",
+                      "textGrowth": "fixed-width-height",
+                      "width": 12,
+                      "height": 9.066666666666666,
+                      "content": "icon",
+                      "fontFamily": "Poppins",
+                      "fontSize": 5,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "id": "RGAdz",
+          "x": 148,
+          "y": 170.53333333333333,
+          "children": [
+            {
+              "type": "group",
+              "id": "eKtrF",
+              "x": 1,
+              "y": 6.800000000000011,
+              "children": [
+                {
+                  "type": "group",
+                  "id": "PFhbd",
+                  "x": -28,
+                  "y": -11.333333333333343,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "zW7Hr",
+                      "x": 0,
+                      "y": 0,
+                      "name": "New Order Action",
+                      "width": 65,
+                      "height": 68,
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 8,
+                      "stroke": "#a1a1a1ff",
+                      "strokeWidth": 0.5,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "cBVrE",
+                          "x": 0,
+                          "y": 50.5,
+                          "name": "New Order Label",
+                          "fill": "#000000b3",
+                          "textGrowth": "fixed-width-height",
+                          "width": 65,
+                          "height": 11,
+                          "content": "Proses",
+                          "textAlign": "center",
+                          "fontFamily": "Geist",
+                          "fontSize": 10,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "h3SjJZ",
+                          "x": 8,
+                          "y": 30,
+                          "name": "New Order Label",
+                          "fill": "#171717",
+                          "textGrowth": "fixed-width-height",
+                          "width": 50,
+                          "height": 16,
+                          "content": "5",
+                          "textAlign": "center",
+                          "fontFamily": "Poppins",
+                          "fontSize": 10,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "path",
+                      "id": "HviPh",
+                      "x": 25,
+                      "y": 9.066666666666663,
+                      "geometry": "M0 0l33 0 0 15.5 0 15.5-33 0 0-31z",
+                      "fill": "#CCCCCC",
+                      "width": 16,
+                      "height": 18.133333333333333
+                    },
+                    {
+                      "type": "text",
+                      "id": "CFevU",
+                      "x": 27,
+                      "y": 13.797101449275345,
+                      "name": "Quick Actions Heading",
+                      "fill": "#7a7a7aff",
+                      "textGrowth": "fixed-width-height",
+                      "width": 12,
+                      "height": 9.066666666666666,
+                      "content": "icon",
+                      "fontFamily": "Poppins",
+                      "fontSize": 5,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "id": "rLIYZ",
+          "x": 210,
+          "y": 166,
+          "children": [
+            {
+              "type": "frame",
+              "id": "d81v7",
+              "x": -7,
+              "y": 0,
+              "name": "New Order Action",
+              "width": 65,
+              "height": 68,
+              "fill": "#FFFFFF",
+              "cornerRadius": 8,
+              "stroke": "#a1a1a1ff",
+              "strokeWidth": 0.5,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "iegwh",
+                  "x": 0,
+                  "y": 51,
+                  "name": "New Order Label",
+                  "fill": "#000000b3",
+                  "textGrowth": "fixed-width-height",
+                  "width": 65,
+                  "height": 12,
+                  "content": "Siap Pickup",
+                  "textAlign": "center",
+                  "fontFamily": "Geist",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "gWaRa",
+                  "x": 8,
+                  "y": 30,
+                  "name": "New Order Label",
+                  "fill": "#171717",
+                  "textGrowth": "fixed-width-height",
+                  "width": 50,
+                  "height": 16,
+                  "content": "5",
+                  "textAlign": "center",
+                  "fontFamily": "Poppins",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "group",
+              "id": "xE5NN",
+              "x": 21,
+              "y": 11.333333333333343,
+              "children": [
+                {
+                  "type": "path",
+                  "id": "gs4C5",
+                  "x": -3,
+                  "y": -2.26666666666668,
+                  "geometry": "M0 0l33 0 0 15.5 0 15.5-33 0 0-31z",
+                  "fill": "#CCCCCC",
+                  "width": 16,
+                  "height": 18.133333333333333
+                },
+                {
+                  "type": "text",
+                  "id": "IXK4d",
+                  "x": -1,
+                  "y": 2.4637681159420026,
+                  "name": "Quick Actions Heading",
+                  "fill": "#7a7a7aff",
+                  "textGrowth": "fixed-width-height",
+                  "width": 12,
+                  "height": 9.066666666666666,
+                  "content": "icon",
+                  "fontFamily": "Poppins",
+                  "fontSize": 5,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "id": "gRGdZ",
+          "x": 292,
+          "y": 166,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Q1kvk8",
+              "x": -7,
+              "y": 0,
+              "name": "New Order Action",
+              "width": 65,
+              "height": 68,
+              "fill": "#FFFFFF",
+              "cornerRadius": 8,
+              "stroke": "#a1a1a1ff",
+              "strokeWidth": 0.5,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "mcrmz",
+                  "x": 0,
+                  "y": 50.5,
+                  "name": "New Order Label",
+                  "fill": "#000000b3",
+                  "textGrowth": "fixed-width-height",
+                  "width": 65,
+                  "height": 13,
+                  "content": "Selesai",
+                  "textAlign": "center",
+                  "fontFamily": "Geist",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "G25jo",
+                  "x": 8,
+                  "y": 30,
+                  "name": "New Order Label",
+                  "fill": "#171717",
+                  "textGrowth": "fixed-width-height",
+                  "width": 50,
+                  "height": 16,
+                  "content": "5",
+                  "textAlign": "center",
+                  "fontFamily": "Poppins",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "group",
+              "id": "skmTM",
+              "x": 21,
+              "y": 11.333333333333343,
+              "children": [
+                {
+                  "type": "path",
+                  "id": "epILj",
+                  "x": -3,
+                  "y": -2.26666666666668,
+                  "geometry": "M0 0l33 0 0 15.5 0 15.5-33 0 0-31z",
+                  "fill": "#CCCCCC",
+                  "width": 16,
+                  "height": 18.133333333333333
+                },
+                {
+                  "type": "text",
+                  "id": "bNkyz",
+                  "x": -1,
+                  "y": 2.4637681159420026,
+                  "name": "Quick Actions Heading",
+                  "fill": "#7a7a7aff",
+                  "textGrowth": "fixed-width-height",
+                  "width": 12,
+                  "height": 9.066666666666666,
+                  "content": "icon",
+                  "fontFamily": "Poppins",
+                  "fontSize": 5,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "QyUpb",
+          "x": 36,
+          "y": 327,
+          "name": "New Order Action",
+          "width": 152,
+          "height": 72,
+          "fill": "#FFFFFF",
+          "cornerRadius": 8,
+          "stroke": "#EBEBEB",
+          "strokeWidth": 1,
+          "layout": "none",
+          "children": [
+            {
+              "type": "icon",
+              "id": "xsthC",
+              "x": 64,
+              "y": 12,
+              "name": "New Order Icon",
+              "width": 24,
+              "height": 24,
+              "icon": "plus",
+              "library": "lucide",
+              "fill": "#0072F5"
+            },
+            {
+              "type": "text",
+              "id": "y7Z2AV",
+              "x": 22,
+              "y": 46,
+              "name": "New Order Label",
+              "fill": "#171717",
+              "textGrowth": "fixed-width",
+              "width": 108,
+              "content": "Tambah Pesanan",
+              "textAlign": "center",
+              "fontFamily": "Geist",
+              "fontSize": 11,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "u1GzsA",
+          "x": 205,
+          "y": 327,
+          "name": "Customers Action",
+          "width": 145,
+          "height": 72,
+          "fill": "#FFFFFF",
+          "cornerRadius": 8,
+          "stroke": "#EBEBEB",
+          "strokeWidth": 1,
+          "layout": "none",
+          "children": [
+            {
+              "type": "icon",
+              "id": "f6yWM6",
+              "x": 61,
+              "y": 12,
+              "name": "Customers Icon",
+              "width": 24,
+              "height": 24,
+              "icon": "users",
+              "library": "lucide",
+              "fill": "#171717"
+            },
+            {
+              "type": "text",
+              "id": "bcAtr",
+              "x": 19,
+              "y": 46,
+              "name": "Customers Label",
+              "fill": "#171717",
+              "textGrowth": "fixed-width",
+              "width": 108,
+              "content": "Tambah Pelanggan",
+              "textAlign": "center",
+              "fontFamily": "Geist",
+              "fontSize": 11,
+              "fontWeight": "500"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "w3fma",
+      "x": 520,
+      "y": 984,
+      "name": "Bottom Navigation Bar",
+      "reusable": true,
+      "width": 390,
+      "height": 62,
+      "fill": "#FFFFFF",
+      "stroke": "#EBEBEB",
+      "strokeWidth": {
+        "top": 1
+      },
+      "gap": 4,
+      "padding": [
+        6,
+        10
+      ],
+      "justifyContent": "space_between",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "kua4o",
+          "name": "Home Navigation Button",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 3,
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon",
+              "id": "LUgvc",
+              "name": "Home Navigation Icon",
+              "width": 20,
+              "height": 20,
+              "icon": "house",
+              "library": "lucide",
+              "fill": "#171717"
+            },
+            {
+              "type": "text",
+              "id": "TYw61",
+              "name": "Home Navigation Label",
+              "fill": "#171717",
+              "content": "Beranda",
+              "fontFamily": "Geist",
+              "fontSize": 10,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "X2arB",
+          "name": "Orders Navigation Button",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 3,
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon",
+              "id": "OrtHL",
+              "name": "Orders Navigation Icon",
+              "width": 20,
+              "height": 20,
+              "icon": "clipboard-list",
+              "library": "lucide",
+              "fill": "#808080"
+            },
+            {
+              "type": "text",
+              "id": "bhyT4",
+              "name": "Orders Navigation Label",
+              "fill": "#808080",
+              "content": "Pesanan",
+              "fontFamily": "Geist",
+              "fontSize": 10,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "m0QrvM",
+          "name": "Customers Navigation Button",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 3,
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon",
+              "id": "OplEI",
+              "name": "Customers Navigation Icon",
+              "width": 20,
+              "height": 20,
+              "icon": "users",
+              "library": "lucide",
+              "fill": "#808080"
+            },
+            {
+              "type": "text",
+              "id": "UMMaz",
+              "name": "Customers Navigation Label",
+              "fill": "#808080",
+              "content": "Pelanggan",
+              "fontFamily": "Geist",
+              "fontSize": 10,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "pPUkR",
+          "name": "Services Navigation Button",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 3,
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon",
+              "id": "m3Z06z",
+              "name": "Services Navigation Icon",
+              "width": 20,
+              "height": 20,
+              "icon": "briefcase-business",
+              "library": "lucide",
+              "fill": "#808080"
+            },
+            {
+              "type": "text",
+              "id": "S7WuO",
+              "name": "Services Navigation Label",
+              "fill": "#808080",
+              "content": "Layanan",
+              "fontFamily": "Geist",
+              "fontSize": 10,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "HUVsF",
+      "x": 977,
+      "y": 60,
+      "name": "POS Orders • Mobile",
+      "clip": true,
+      "width": 390,
+      "height": 844,
+      "fill": "#FAFAFA",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "h34odH",
+          "x": 24,
+          "y": 28,
+          "name": "Orders Header",
+          "width": 342,
+          "height": 48,
+          "layout": "none"
+        },
+        {
+          "type": "text",
+          "id": "P0r4DV",
+          "x": 24,
+          "y": 30,
+          "name": "Orders Title",
+          "fill": "#171717",
+          "content": "Pesanan",
+          "fontFamily": "Geist",
+          "fontSize": 28,
+          "fontWeight": "600",
+          "letterSpacing": -1.1
+        },
+        {
+          "type": "text",
+          "id": "g13lK",
+          "x": 24,
+          "y": 72,
+          "name": "Orders Count",
+          "fill": "#666666",
+          "content": "24 pesanan aktif",
+          "fontFamily": "Geist",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "ebv00",
+          "x": 24,
+          "y": 126,
+          "name": "Order Status Tabs",
+          "width": 342,
+          "height": 42,
+          "fill": "#FFFFFF",
+          "cornerRadius": 8,
+          "stroke": "#EBEBEB",
+          "strokeWidth": 1,
+          "gap": 2,
+          "padding": [
+            0,
+            6
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "rv9wx",
+              "name": "Baru Tab",
+              "width": "fill_container",
+              "height": 32,
+              "fill": "#171717",
+              "cornerRadius": 6,
+              "layout": "vertical",
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "tdD5C",
+                  "name": "Baru Tab Label",
+                  "fill": "#FFFFFF",
+                  "content": "Baru",
+                  "fontFamily": "Geist",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "fUWke",
+              "name": "Proses Tab",
+              "width": "fill_container",
+              "height": 32,
+              "fill": "#FFFFFF",
+              "cornerRadius": 6,
+              "layout": "vertical",
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "DuKAb",
+                  "name": "Proses Tab Label",
+                  "fill": "#666666",
+                  "content": "Proses",
+                  "fontFamily": "Geist",
+                  "fontSize": 10,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "hMTWk",
+              "name": "Siap pickup Tab",
+              "width": "fill_container",
+              "height": 32,
+              "fill": "#FFFFFF",
+              "cornerRadius": 6,
+              "layout": "vertical",
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "hJvXY",
+                  "name": "Siap pickup Tab Label",
+                  "fill": "#666666",
+                  "content": "Siap pickup",
+                  "fontFamily": "Geist",
+                  "fontSize": 10,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "YNPek",
+              "name": "Selesai Tab",
+              "width": "fill_container",
+              "height": 32,
+              "fill": "#FFFFFF",
+              "cornerRadius": 6,
+              "layout": "vertical",
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "S1zjOo",
+                  "name": "Selesai Tab Label",
+                  "fill": "#666666",
+                  "content": "Selesai",
+                  "fontFamily": "Geist",
+                  "fontSize": 10,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "yK8DX",
+              "name": "Bayar Tab Restored",
+              "width": "fill_container",
+              "height": 32,
+              "fill": "#FFFFFF",
+              "cornerRadius": 6,
+              "layout": "vertical",
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "DqO1B",
+                  "name": "Bayar Tab Restored Label",
+                  "fill": "#666666",
+                  "content": "Bayar",
+                  "fontFamily": "Geist",
+                  "fontSize": 10,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "GPZnP",
+          "x": 24,
+          "y": 228,
+          "name": "Order List Heading",
+          "fill": "#171717",
+          "content": "Daftar pesanan",
+          "fontFamily": "Geist",
+          "fontSize": 17,
+          "fontWeight": "600"
+        },
+        {
+          "type": "frame",
+          "id": "i3OMSX",
+          "x": 24,
+          "y": 262,
+          "name": "Order List Card 1",
+          "width": 342,
+          "height": 72,
+          "fill": "#FFFFFF",
+          "cornerRadius": 8,
+          "stroke": "#EBEBEB",
+          "strokeWidth": 1,
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "bCZze",
+              "x": 16,
+              "y": 12,
+              "name": "Order 1 ID",
+              "fill": "#171717",
+              "content": "#SC-240918",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "KOpoK",
+              "x": 16,
+              "y": 34,
+              "name": "Order 1 Customer",
+              "fill": "#666666",
+              "content": "Raka Wijaya  •  2 items",
+              "fontFamily": "Geist",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "Qs9A5",
+              "x": 230,
+              "y": 14,
+              "name": "Order 1 Status",
+              "fill": "#e18b00",
+              "content": "PESANAN BARU",
+              "fontFamily": "Geist",
+              "fontSize": 10,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "SQrQ8",
+              "x": 230,
+              "y": 36,
+              "name": "Order 1 Price",
+              "fill": "#171717",
+              "content": "Rp 180.000",
+              "fontFamily": "Geist",
+              "fontSize": 12,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "rSozo",
+              "x": 16,
+              "y": 54,
+              "name": "Payment Status i3OMSX",
+              "fill": "#2B9A66",
+              "content": "Lunas",
+              "fontFamily": "Geist",
+              "fontSize": 10,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "v7zbCe",
+          "x": 24,
+          "y": 348,
+          "name": "Order List Card 2",
+          "width": 342,
+          "height": 72,
+          "fill": "#FFFFFF",
+          "cornerRadius": 8,
+          "stroke": "#EBEBEB",
+          "strokeWidth": 1,
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "AIGWh",
+              "x": 16,
+              "y": 12,
+              "name": "Order 2 ID",
+              "fill": "#171717",
+              "content": "#SC-240917",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "K9OzN",
+              "x": 16,
+              "y": 34,
+              "name": "Order 2 Customer",
+              "fill": "#666666",
+              "content": "Nadia Putri  •  1 item",
+              "fontFamily": "Geist",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "KEkZi",
+              "x": 230,
+              "y": 14,
+              "name": "Order 2 Status",
+              "fill": "#e18b00",
+              "content": "PESANAN BARU",
+              "fontFamily": "Geist",
+              "fontSize": 10,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "N2KjLk",
+              "x": 230,
+              "y": 36,
+              "name": "Order 2 Price",
+              "fill": "#171717",
+              "content": "Rp 95.000",
+              "fontFamily": "Geist",
+              "fontSize": 12,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "jxhMy",
+              "x": 16,
+              "y": 54,
+              "name": "Payment Status v7zbCe",
+              "fill": "#C45A4A",
+              "content": "Belum Lunas",
+              "fontFamily": "Geist",
+              "fontSize": 10,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "IYWkE",
+          "x": 24,
+          "y": 434,
+          "name": "Order List Card 3",
+          "width": 342,
+          "height": 72,
+          "fill": "#FFFFFF",
+          "cornerRadius": 8,
+          "stroke": "#EBEBEB",
+          "strokeWidth": 1,
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "ZCD4Q",
+              "x": 16,
+              "y": 12,
+              "name": "Order 3 ID",
+              "fill": "#171717",
+              "content": "#SC-240916",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "qbgUp",
+              "x": 16,
+              "y": 34,
+              "name": "Order 3 Customer",
+              "fill": "#666666",
+              "content": "Bima Santoso  •  3 items",
+              "fontFamily": "Geist",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "V035JC",
+              "x": 230,
+              "y": 14,
+              "name": "Order 3 Status",
+              "fill": "#E18B00",
+              "content": "PESANAN BARU",
+              "fontFamily": "Geist",
+              "fontSize": 10,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "Ob7Mu",
+              "x": 230,
+              "y": 36,
+              "name": "Order 3 Price",
+              "fill": "#171717",
+              "content": "Rp 245.000",
+              "fontFamily": "Geist",
+              "fontSize": 12,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "HnSxe",
+              "x": 16,
+              "y": 54,
+              "name": "Payment Status IYWkE",
+              "fill": "#2B9A66",
+              "content": "Lunas",
+              "fontFamily": "Geist",
+              "fontSize": 10,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "S9oHd1",
+          "x": 24,
+          "y": 520,
+          "name": "Order List Card 4",
+          "width": 342,
+          "height": 72,
+          "fill": "#FFFFFF",
+          "cornerRadius": 8,
+          "stroke": "#EBEBEB",
+          "strokeWidth": 1,
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "i5S7s",
+              "x": 16,
+              "y": 12,
+              "name": "Order 4 ID",
+              "fill": "#171717",
+              "content": "#SC-240915",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "ASMLD",
+              "x": 16,
+              "y": 34,
+              "name": "Order 4 Customer",
+              "fill": "#666666",
+              "content": "Sinta Lestari  •  2 items",
+              "fontFamily": "Geist",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "s541OX",
+              "x": 230,
+              "y": 14,
+              "name": "Order 4 Status",
+              "fill": "#e18b00",
+              "content": "PESANAN BARU",
+              "fontFamily": "Geist",
+              "fontSize": 10,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "TCTWZ",
+              "x": 230,
+              "y": 36,
+              "name": "Order 4 Price",
+              "fill": "#171717",
+              "content": "Rp 120.000",
+              "fontFamily": "Geist",
+              "fontSize": 12,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "jnxQS",
+              "x": 16,
+              "y": 54,
+              "name": "Payment Status S9oHd1",
+              "fill": "#C45A4A",
+              "content": "Belum Lunas",
+              "fontFamily": "Geist",
+              "fontSize": 10,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "id": "T6oNJ",
+          "type": "ref",
+          "ref": "w3fma",
+          "name": "Orders Page Bottom Navigation",
+          "x": 0,
+          "y": 782,
+          "width": 390,
+          "height": 62,
+          "descendants": {
+            "LUgvc": {
+              "fill": "#808080"
+            },
+            "TYw61": {
+              "fill": "#808080"
+            },
+            "OrtHL": {
+              "fill": "#171717"
+            },
+            "bhyT4": {
+              "fill": "#171717",
+              "fontWeight": "500"
+            }
+          }
+        },
+        {
+          "type": "frame",
+          "id": "JtWVw",
+          "x": 24,
+          "y": 176,
+          "name": "Payment Status Tabs",
+          "width": 342,
+          "height": 36,
+          "fill": "#FFFFFF",
+          "cornerRadius": 8,
+          "stroke": "#EBEBEB",
+          "strokeWidth": 1,
+          "gap": 4,
+          "padding": [
+            0,
+            6
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "b5JpjO",
+              "name": "Lunas Payment Tab",
+              "width": "fill_container",
+              "height": 28,
+              "fill": "#171717",
+              "cornerRadius": 6,
+              "layout": "vertical",
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "a2Q3hT",
+                  "name": "Lunas Payment Tab Label",
+                  "fill": "#FFFFFF",
+                  "content": "Lunas",
+                  "fontFamily": "Geist",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "LvVar",
+              "name": "Belum Lunas Payment Tab",
+              "width": "fill_container",
+              "height": 28,
+              "fill": "#FFFFFF",
+              "cornerRadius": 6,
+              "layout": "vertical",
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "jSZvq",
+                  "name": "Belum Lunas Payment Tab Label",
+                  "fill": "#666666",
+                  "content": "Belum Lunas",
+                  "fontFamily": "Geist",
+                  "fontSize": 10,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "nBHNG",
+          "x": 24,
+          "y": 606,
+          "name": "Order List Card 5 Restored",
+          "width": 342,
+          "height": 72,
+          "fill": "#FFFFFF",
+          "cornerRadius": 8,
+          "stroke": "#EBEBEB",
+          "strokeWidth": 1,
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "V1s0R",
+              "x": 16,
+              "y": 12,
+              "name": "Order 5 Restored ID",
+              "fill": "#171717",
+              "content": "#SC-240914",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "OUURe",
+              "x": 16,
+              "y": 34,
+              "name": "Order 5 Restored Customer",
+              "fill": "#666666",
+              "content": "Dewi Anggraini  •  1 item",
+              "fontFamily": "Geist",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "JcG4v",
+              "x": 230,
+              "y": 14,
+              "name": "Order 5 Restored Status",
+              "fill": "#808080",
+              "content": "SELESAI",
+              "fontFamily": "Geist",
+              "fontSize": 10,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "fCrgA",
+              "x": 230,
+              "y": 36,
+              "name": "Order 5 Restored Price",
+              "fill": "#171717",
+              "content": "Rp 75.000",
+              "fontFamily": "Geist",
+              "fontSize": 12,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "qMpHb",
+              "x": 16,
+              "y": 54,
+              "name": "Order 5 Restored Payment",
+              "fill": "#2B9A66",
+              "content": "Lunas",
+              "fontFamily": "Geist",
+              "fontSize": 10,
+              "fontWeight": "500"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "IsdIJ",
+      "x": 1447,
+      "y": 60,
+      "name": "POS New Order • Mobile",
+      "clip": true,
+      "width": 390,
+      "height": 1018,
+      "fill": "#FAFAFA",
+      "layout": "none",
+      "children": [
+        {
+          "type": "rectangle",
+          "cornerRadius": 10,
+          "id": "CGZTK",
+          "x": 24,
+          "y": 138,
+          "fill": "#ffffffff",
+          "width": 342,
+          "height": 60
+        },
+        {
+          "type": "icon",
+          "id": "FEFTQ",
+          "x": 24,
+          "y": 30,
+          "name": "New Order Back Icon",
+          "width": 20,
+          "height": 20,
+          "icon": "arrow-left",
+          "library": "lucide",
+          "fill": "#171717"
+        },
+        {
+          "type": "text",
+          "id": "r2hfJ",
+          "x": 56,
+          "y": 28,
+          "name": "New Order Title",
+          "fill": "#171717",
+          "content": "Tambah pesanan",
+          "fontFamily": "Geist",
+          "fontSize": 22,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "STvSy",
+          "x": 56,
+          "y": 58,
+          "name": "New Order Subtitle",
+          "fill": "#666666",
+          "content": "Isi detail layanan pelanggan",
+          "fontFamily": "Geist",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "VYpXH",
+          "x": 45,
+          "y": 172,
+          "name": "Customer Selector Label",
+          "fill": "#666666",
+          "content": "Member",
+          "fontFamily": "Geist",
+          "fontSize": 8,
+          "fontWeight": "500"
+        },
+        {
+          "type": "group",
+          "id": "oB9Oo",
+          "x": 45,
+          "y": 154,
+          "children": [
+            {
+              "type": "text",
+              "id": "B1uSut",
+              "x": 0,
+              "y": 0,
+              "name": "Customer Selected",
+              "fill": "#171717",
+              "content": "Raka Wijaya",
+              "fontFamily": "Geist",
+              "fontSize": 14,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "icon",
+          "id": "UO1F7",
+          "x": 326,
+          "y": 159,
+          "name": "Customer Selector Chevron",
+          "width": 18,
+          "height": 18,
+          "icon": "chevron-down",
+          "library": "lucide",
+          "fill": "#808080"
+        },
+        {
+          "type": "text",
+          "id": "z2qST8",
+          "x": 24,
+          "y": 731,
+          "name": "Order Notes Label",
+          "fill": "#666666",
+          "content": "CATATAN KHUSUS",
+          "fontFamily": "Geist",
+          "fontSize": 10,
+          "fontWeight": "500"
+        },
+        {
+          "type": "frame",
+          "id": "AuT7C",
+          "x": 24,
+          "y": 749,
+          "name": "Order Notes Field",
+          "width": 342,
+          "height": 48,
+          "fill": "#FFFFFF",
+          "cornerRadius": 8,
+          "stroke": "#EBEBEB",
+          "strokeWidth": 1,
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "AHGJD",
+              "x": 12,
+              "y": 15,
+              "name": "Order Notes Placeholder",
+              "fill": "#A0A0A0",
+              "content": "Contoh: jangan gunakan pewangi...",
+              "fontFamily": "Geist",
+              "fontSize": 11,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "j0fxpp",
+          "x": 24,
+          "y": 815,
+          "name": "Final Total Label",
+          "fill": "#666666",
+          "content": "TOTAL TAGIHAN",
+          "fontFamily": "Geist",
+          "fontSize": 10,
+          "fontWeight": "500"
+        },
+        {
+          "type": "text",
+          "id": "DWCZi",
+          "x": 24,
+          "y": 833,
+          "name": "Final Total Value",
+          "fill": "#171717",
+          "content": "Rp 120.000",
+          "fontFamily": "Geist",
+          "fontSize": 24,
+          "fontWeight": "600"
+        },
+        {
+          "type": "frame",
+          "id": "M1FsQ",
+          "x": 24,
+          "y": 877,
+          "name": "Save Draft Button",
+          "width": 132,
+          "height": 42,
+          "fill": "#FFFFFF",
+          "cornerRadius": 8,
+          "stroke": "#171717",
+          "strokeWidth": 1,
+          "layout": "none"
+        },
+        {
+          "type": "frame",
+          "id": "ehLRf",
+          "x": 174,
+          "y": 877,
+          "name": "Continue Payment Button",
+          "width": 192,
+          "height": 42,
+          "fill": "#171717",
+          "cornerRadius": 8,
+          "layout": "none"
+        },
+        {
+          "id": "PgOJ0",
+          "type": "ref",
+          "ref": "w3fma",
+          "name": "New Order Bottom Navigation",
+          "x": 0,
+          "y": 956,
+          "width": 390,
+          "height": 62,
+          "descendants": {
+            "LUgvc": {
+              "fill": "#808080ff"
+            },
+            "TYw61": {
+              "fill": "#808080ff"
+            }
+          }
+        },
+        {
+          "type": "text",
+          "id": "i97Moi",
+          "x": 174,
+          "y": 889,
+          "name": "Login Button Label",
+          "fill": "#FFFFFF",
+          "textGrowth": "fixed-width",
+          "width": 192,
+          "content": "Lanjut ke Pembayaran",
+          "textAlign": "center",
+          "fontFamily": "Geist",
+          "fontSize": 14,
+          "fontWeight": "500"
+        },
+        {
+          "type": "frame",
+          "id": "wkP9p",
+          "x": 260,
+          "y": 103,
+          "name": "Continue Payment Button",
+          "width": 97,
+          "height": 20,
+          "fill": "#171717",
+          "cornerRadius": 8,
+          "layout": "none"
+        },
+        {
+          "type": "text",
+          "id": "oNZNs",
+          "x": 265.8727272727274,
+          "y": 107.0909090909091,
+          "name": "Login Button Label",
+          "fill": "#FFFFFF",
+          "textGrowth": "fixed-width-height",
+          "width": 82.25454545454545,
+          "height": 11.818181818181818,
+          "content": "+ Pelanggan Baru",
+          "textAlign": "center",
+          "fontFamily": "Geist",
+          "fontSize": 9,
+          "fontWeight": "500"
+        },
+        {
+          "type": "group",
+          "id": "nxqxF",
+          "x": 261,
+          "y": 225,
+          "children": [
+            {
+              "type": "frame",
+              "id": "mRRMD",
+              "x": 0,
+              "y": 0,
+              "name": "Continue Payment Button",
+              "width": 97,
+              "height": 20,
+              "fill": "#171717",
+              "cornerRadius": 8,
+              "layout": "none"
+            },
+            {
+              "type": "text",
+              "id": "EO5HD",
+              "x": 5.8727272727273885,
+              "y": 4.090909090909122,
+              "name": "Login Button Label",
+              "fill": "#FFFFFF",
+              "textGrowth": "fixed-width-height",
+              "width": 82.25454545454545,
+              "height": 11.818181818181818,
+              "content": "+ Tambah Sepatu",
+              "textAlign": "center",
+              "fontFamily": "Geist",
+              "fontSize": 9,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "Y97v1v",
+          "x": 24,
+          "y": 889,
+          "name": "Login Button Label",
+          "fill": "#171717ff",
+          "textGrowth": "fixed-width",
+          "width": 132,
+          "content": "Simpan Draft",
+          "textAlign": "center",
+          "fontFamily": "Geist",
+          "fontSize": 14,
+          "fontWeight": "500"
+        },
+        {
+          "type": "icon",
+          "id": "KcP6V",
+          "x": 33,
+          "y": 101,
+          "name": "Customer Selector Icon",
+          "width": 24,
+          "height": 24,
+          "icon": "user-round",
+          "library": "lucide",
+          "fill": "#171717ff"
+        },
+        {
+          "type": "icon",
+          "id": "yAWiQ",
+          "x": 34,
+          "y": 223,
+          "name": "Customer Selector Icon",
+          "width": 24,
+          "height": 24,
+          "icon": "user-round",
+          "library": "lucide",
+          "fill": "#171717ff"
+        },
+        {
+          "type": "text",
+          "id": "dLG5Y",
+          "x": 62,
+          "y": 105,
+          "name": "Customer Selector Label",
+          "fill": "#666666",
+          "content": "PELANGGAN",
+          "fontFamily": "Geist",
+          "fontSize": 12,
+          "fontWeight": "500"
+        },
+        {
+          "type": "text",
+          "id": "E3qovw",
+          "x": 63,
+          "y": 227,
+          "name": "Customer Selector Label",
+          "fill": "#666666",
+          "content": "DAFTAR SEPATU",
+          "fontFamily": "Geist",
+          "fontSize": 12,
+          "fontWeight": "500"
+        },
+        {
+          "type": "frame",
+          "id": "Mq8rG",
+          "x": 24,
+          "y": 263,
+          "name": "Shoe Detail Card 1",
+          "width": 342,
+          "height": 442,
+          "fill": "#FFFFFF",
+          "cornerRadius": 8,
+          "stroke": "#EBEBEB",
+          "strokeWidth": 1,
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "jz8Qg",
+              "x": 16,
+              "y": 14,
+              "name": "Shoe Card Title",
+              "fill": "#171717",
+              "content": "Sepatu 1",
+              "fontFamily": "Geist",
+              "fontSize": 15,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "yixLe",
+              "x": 286,
+              "y": 16,
+              "name": "Shoe Card Remove",
+              "fill": "#C45A4A",
+              "content": "Hapus",
+              "fontFamily": "Geist",
+              "fontSize": 10,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "dGlUc",
+              "x": 15,
+              "y": 111,
+              "name": "WARNA Field Label",
+              "fill": "#808080",
+              "content": "WARNA",
+              "fontFamily": "Geist",
+              "fontSize": 9,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "Y8kgcr",
+              "x": 15,
+              "y": 63,
+              "name": "WARNA Field Label",
+              "fill": "#808080",
+              "content": "NAMA",
+              "fontFamily": "Geist",
+              "fontSize": 9,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "k9d34",
+              "x": 15,
+              "y": 127,
+              "name": "WARNA Field Value",
+              "fill": "#171717",
+              "content": "Putih",
+              "fontFamily": "Geist",
+              "fontSize": 13,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "d7KoHw",
+              "x": 15,
+              "y": 79,
+              "name": "WARNA Field Value",
+              "fill": "#171717",
+              "content": "Putih",
+              "fontFamily": "Geist",
+              "fontSize": 13,
+              "fontWeight": "500"
+            },
+            {
+              "type": "rectangle",
+              "id": "p5rtGi",
+              "x": 15,
+              "y": 147,
+              "name": "WARNA Field Underline",
+              "fill": "#EBEBEB",
+              "width": 146,
+              "height": 1
+            },
+            {
+              "type": "rectangle",
+              "id": "IUa9b",
+              "x": 15,
+              "y": 99,
+              "name": "WARNA Field Underline",
+              "fill": "#EBEBEB",
+              "width": 146,
+              "height": 1
+            },
+            {
+              "type": "text",
+              "id": "VR5sf",
+              "x": 177,
+              "y": 111,
+              "name": "UKURAN Field Label",
+              "fill": "#808080",
+              "content": "UKURAN",
+              "fontFamily": "Geist",
+              "fontSize": 9,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "JMdfg",
+              "x": 177,
+              "y": 63,
+              "name": "UKURAN Field Label",
+              "fill": "#808080",
+              "content": "TIPE",
+              "fontFamily": "Geist",
+              "fontSize": 9,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "E412Wm",
+              "x": 177,
+              "y": 127,
+              "name": "UKURAN Field Value",
+              "fill": "#171717",
+              "content": "42",
+              "fontFamily": "Geist",
+              "fontSize": 13,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "Dt5MT",
+              "x": 177,
+              "y": 79,
+              "name": "UKURAN Field Value",
+              "fill": "#171717",
+              "content": "42",
+              "fontFamily": "Geist",
+              "fontSize": 13,
+              "fontWeight": "500"
+            },
+            {
+              "type": "rectangle",
+              "id": "ozxLl",
+              "x": 177,
+              "y": 147,
+              "name": "UKURAN Field Underline",
+              "fill": "#EBEBEB",
+              "width": 146,
+              "height": 1
+            },
+            {
+              "type": "rectangle",
+              "id": "hv0QS",
+              "x": 177,
+              "y": 99,
+              "name": "UKURAN Field Underline",
+              "fill": "#EBEBEB",
+              "width": 146,
+              "height": 1
+            },
+            {
+              "type": "text",
+              "id": "B4xk2P",
+              "x": 16,
+              "y": 181,
+              "name": "Services Label",
+              "fill": "#666666",
+              "content": "LAYANAN DIPILIH",
+              "fontFamily": "Geist",
+              "fontSize": 9,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "I4Edu",
+              "x": 16,
+              "y": 295,
+              "name": "Services Label",
+              "fill": "#666666",
+              "content": "FOTO KONDISI AWAL SEPATU",
+              "fontFamily": "Geist",
+              "fontSize": 9,
+              "fontWeight": "500"
+            },
+            {
+              "type": "frame",
+              "id": "m1fGg",
+              "x": 16,
+              "y": 199,
+              "name": "Unyellowing Service",
+              "width": 308,
+              "height": 38,
+              "fill": "#F7F7F7",
+              "cornerRadius": 6,
+              "stroke": "#EBEBEB",
+              "strokeWidth": 1,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "SSqUD",
+                  "x": 13,
+                  "y": 7,
+                  "name": "Unyellowing Service Label",
+                  "fill": "#171717",
+                  "content": "Unyellowing",
+                  "fontFamily": "Geist",
+                  "fontSize": 11,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "xk3y8",
+                  "x": 13,
+                  "y": 22,
+                  "name": "Unyellowing Service Price",
+                  "fill": "#666666",
+                  "content": "Rp 45.000",
+                  "fontFamily": "Geist",
+                  "fontSize": 9,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "icon",
+                  "id": "LUUBO",
+                  "x": 281,
+                  "y": 12,
+                  "name": "Customer Selector Chevron",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "chevron-down",
+                  "library": "lucide",
+                  "fill": "#808080"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "BRhDZ",
+              "x": 15,
+              "y": 407.5,
+              "name": "Shoe Subtotal Label",
+              "fill": "#666666",
+              "content": "Subtotal",
+              "fontFamily": "Geist",
+              "fontSize": 11,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "O2Fvv",
+              "x": 237,
+              "y": 404,
+              "name": "Shoe Subtotal Value",
+              "fill": "#171717",
+              "content": "Rp 120.000",
+              "fontFamily": "Geist",
+              "fontSize": 16,
+              "fontWeight": "600"
+            },
+            {
+              "type": "group",
+              "id": "HGv7V",
+              "x": 272,
+              "y": 292
+            },
+            {
+              "type": "group",
+              "id": "z3HtU",
+              "x": 184,
+              "y": 292
+            },
+            {
+              "type": "group",
+              "id": "c1FYs4",
+              "x": 100,
+              "y": 292
+            },
+            {
+              "type": "group",
+              "id": "U4Gsw",
+              "x": 16,
+              "y": 314,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "yHBE1",
+                  "x": 84,
+                  "y": 0,
+                  "name": "Shoe Photo Upload",
+                  "width": 70,
+                  "height": 70,
+                  "fill": "#FAFAFA",
+                  "cornerRadius": 6,
+                  "stroke": "#DCDCDC",
+                  "strokeWidth": 1,
+                  "layout": "none"
+                },
+                {
+                  "type": "group",
+                  "id": "xxNx4",
+                  "x": 0,
+                  "y": 0,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "bfcmn",
+                      "x": 256,
+                      "y": 0,
+                      "name": "Shoe Photo Upload",
+                      "width": 70,
+                      "height": 70,
+                      "fill": "#FAFAFA",
+                      "cornerRadius": 6,
+                      "stroke": "#DCDCDC",
+                      "strokeWidth": 1,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "kl3X8",
+                          "x": 26,
+                          "y": 14,
+                          "name": "Shoe Photo Camera Icon",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "camera",
+                          "library": "lucide",
+                          "fill": "#171717ff"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "b2vKCV",
+                      "x": 271,
+                      "y": 38,
+                      "name": "Shoe Photo Upload Label",
+                      "fill": "#171717",
+                      "textGrowth": "fixed-width",
+                      "width": 39,
+                      "content": "+ Tambah foto",
+                      "textAlign": "center",
+                      "fontFamily": "Geist",
+                      "fontSize": 8,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "UbfCF",
+                      "x": 168,
+                      "y": 0,
+                      "name": "Shoe Photo Upload",
+                      "width": 70,
+                      "height": 70,
+                      "fill": "#FAFAFA",
+                      "cornerRadius": 6,
+                      "stroke": "#DCDCDC",
+                      "strokeWidth": 1,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "sWv3v",
+                          "x": 26,
+                          "y": 14,
+                          "name": "Shoe Photo Camera Icon",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "camera",
+                          "library": "lucide",
+                          "fill": "#171717ff"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "nLebO",
+                      "x": 191,
+                      "y": 35,
+                      "name": "Shoe Photo Upload Label",
+                      "fill": "#171717",
+                      "textGrowth": "fixed-width",
+                      "width": 24,
+                      "content": "Foto\ndetail",
+                      "textAlign": "center",
+                      "fontFamily": "Geist",
+                      "fontSize": 8,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "WpZWG",
+                      "x": 110,
+                      "y": 14,
+                      "name": "Shoe Photo Camera Icon",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "camera",
+                      "library": "lucide",
+                      "fill": "#171717ff"
+                    },
+                    {
+                      "type": "text",
+                      "id": "lWoZy",
+                      "x": 107,
+                      "y": 35,
+                      "name": "Shoe Photo Upload Label",
+                      "fill": "#171717",
+                      "textGrowth": "fixed-width",
+                      "width": 24,
+                      "content": "Foto\ndetail",
+                      "textAlign": "center",
+                      "fontFamily": "Geist",
+                      "fontSize": 8,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "group",
+                      "id": "zD0MN",
+                      "x": 0,
+                      "y": 0,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Y90Li",
+                          "x": 0,
+                          "y": 0,
+                          "name": "Shoe Photo Upload",
+                          "width": 70,
+                          "height": 70,
+                          "fill": "#FAFAFA",
+                          "cornerRadius": 6,
+                          "stroke": "#DCDCDC",
+                          "strokeWidth": 1,
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "a0OvIS",
+                              "x": 26,
+                              "y": 14,
+                              "name": "Shoe Photo Camera Icon",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "camera",
+                              "library": "lucide",
+                              "fill": "#171717ff"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "HB1jJ",
+                          "x": 23,
+                          "y": 35,
+                          "name": "Shoe Photo Upload Label",
+                          "fill": "#171717",
+                          "textGrowth": "fixed-width",
+                          "width": 24,
+                          "content": "Foto\ndetail",
+                          "textAlign": "center",
+                          "fontFamily": "Geist",
+                          "fontSize": 8,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "group",
+              "id": "pv9Rl",
+              "x": 227,
+              "y": 250,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Vd9cf",
+                  "x": 0,
+                  "y": 0,
+                  "name": "Continue Payment Button",
+                  "width": 97,
+                  "height": 20,
+                  "fill": "#171717",
+                  "cornerRadius": 8,
+                  "layout": "none"
+                },
+                {
+                  "type": "text",
+                  "id": "f2fhUe",
+                  "x": 5.8727272727273885,
+                  "y": 4.090909090909122,
+                  "name": "Login Button Label",
+                  "fill": "#FFFFFF",
+                  "textGrowth": "fixed-width-height",
+                  "width": 82.25454545454545,
+                  "height": 11.818181818181818,
+                  "content": "+ Tambah Layanan",
+                  "textAlign": "center",
+                  "fontFamily": "Geist",
+                  "fontSize": 9,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "fileToken": "93dabf7a-df84-4979-bfe1-6c4d9ab4fd5a"
+}
