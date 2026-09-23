@@ -19,11 +19,25 @@ export default function OrderSuccessScreen() {
   const route = useRoute<Route>();
   const styles = useThemedStyles(createStyles);
   const { orderId, orderNumber, customerName, grandTotal } = route.params;
-  const queue = usePhotoStore((state) => state.queue);
+  const queue = usePhotoStore((state) => {
+    const hasTaggedEntries = state.queue.some(
+      (entry) => entry.orderId !== undefined
+    );
+    return hasTaggedEntries
+      ? state.queue.filter(
+          (entry) => entry.orderId === orderId || entry.orderId === undefined
+        )
+      : state.queue;
+  });
+  const hasTaggedQueue = usePhotoStore((state) =>
+    state.queue.some((entry) => entry.orderId !== undefined)
+  );
 
   useEffect(() => {
-    void uploadQueuedPhotos();
-  }, []);
+    void uploadQueuedPhotos(
+      hasTaggedQueue ? { onlyOrderId: orderId } : undefined
+    );
+  }, [hasTaggedQueue, orderId]);
 
   const uploadedCount = queue.filter(
     (entry) => entry.status === "uploaded"
@@ -78,7 +92,11 @@ export default function OrderSuccessScreen() {
               <AppButton
                 title="Unggah Ulang"
                 variant="secondary"
-                onPress={() => void uploadQueuedPhotos()}
+                onPress={() =>
+                  void uploadQueuedPhotos(
+                    hasTaggedQueue ? { onlyOrderId: orderId } : undefined
+                  )
+                }
               />
             ) : null}
           </View>

@@ -4,6 +4,7 @@ import { Alert, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AppButton from "../../components/AppButton";
 import EmptyState from "../../components/EmptyState";
+import WizardProgress from "../../components/WizardProgress";
 import type { AppStackParamList } from "../../navigation/types";
 import { useOrderWizardStore } from "../../order/orderWizardStore";
 import { deletePhotoFiles } from "../../order/photoFiles";
@@ -19,6 +20,7 @@ export default function OrderCustomerScreen() {
   const customer = useOrderWizardStore((state) => state.customer);
   const items = useOrderWizardStore((state) => state.items);
   const reset = useOrderWizardStore((state) => state.reset);
+  const clearDrafts = usePhotoStore((state) => state.clearDrafts);
   const hasDraft = customer !== null || items.length > 0;
 
   const discardDraft = () => {
@@ -37,7 +39,7 @@ export default function OrderCustomerScreen() {
                 .flat()
                 .map((photo) => photo.uri)
             );
-            usePhotoStore.getState().clear();
+            clearDrafts();
             reset();
           },
         },
@@ -48,7 +50,7 @@ export default function OrderCustomerScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
       <View style={styles.content}>
-        <Text style={styles.step}>Langkah 1 dari 3</Text>
+        <WizardProgress step={1} />
         <Text style={styles.title}>Pelanggan</Text>
 
         {hasDraft ? (

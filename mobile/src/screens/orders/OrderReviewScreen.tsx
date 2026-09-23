@@ -10,6 +10,7 @@ import { fetchServices } from "../../api/services";
 import AppButton from "../../components/AppButton";
 import EmptyState from "../../components/EmptyState";
 import FullScreenLoader from "../../components/FullScreenLoader";
+import WizardProgress from "../../components/WizardProgress";
 import type { AppStackParamList } from "../../navigation/types";
 import {
   discountMeetsMinimum,
@@ -94,7 +95,8 @@ export default function OrderReviewScreen() {
             itemId: item.id,
             orderItemId: createdItems[index]?.id ?? 0,
           }))
-          .filter((entry) => entry.orderItemId > 0)
+          .filter((entry) => entry.orderItemId > 0),
+        order.id
       );
 
       reset();
@@ -118,7 +120,11 @@ export default function OrderReviewScreen() {
     createMutation.mutate();
   };
 
-  if (!customer || items.length === 0) {
+  if (
+    !customer ||
+    items.length === 0 ||
+    items.some((item) => item.serviceIds.length === 0)
+  ) {
     return (
       <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
         <EmptyState
@@ -132,14 +138,36 @@ export default function OrderReviewScreen() {
     );
   }
 
-  if (servicesQuery.isLoading) {
+  if (servicesQuery.isLoading || discountsQuery.isLoading) {
     return <FullScreenLoader label="Menghitung total…" />;
+  }
+
+  if (servicesQuery.isError || discountsQuery.isError) {
+    return (
+      <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
+        <EmptyState
+          title="Gagal memuat data order."
+          message="Periksa koneksi lalu coba lagi."
+        />
+        <View style={styles.emptyAction}>
+          <AppButton
+            title="Coba Lagi"
+            variant="secondary"
+            onPress={() => {
+              void servicesQuery.refetch();
+              void discountsQuery.refetch();
+            }}
+          />
+          <AppButton title="Kembali" onPress={() => navigation.goBack()} />
+        </View>
+      </SafeAreaView>
+    );
   }
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.step}>Langkah 3 dari 3</Text>
+        <WizardProgress step={5} />
         <Text style={styles.title}>Review</Text>
 
         <View style={styles.customerCard}>

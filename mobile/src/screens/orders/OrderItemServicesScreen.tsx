@@ -14,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { fetchServices } from "../../api/services";
 import AppButton from "../../components/AppButton";
 import EmptyState from "../../components/EmptyState";
+import WizardProgress from "../../components/WizardProgress";
 import type { AppStackParamList } from "../../navigation/types";
 import { useOrderWizardStore } from "../../order/orderWizardStore";
 import type { Theme } from "../../theme/tokens";
@@ -80,6 +81,7 @@ export default function OrderItemServicesScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
       <ScrollView contentContainerStyle={styles.content}>
+        <WizardProgress step={3} />
         <Text style={styles.title}>
           {item.brand}
           {item.model ? ` ${item.model}` : ""}

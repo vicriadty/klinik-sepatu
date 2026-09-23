@@ -1,9 +1,11 @@
 import { buildNavigationTheme, darkTheme, lightTheme } from "../useTheme";
 
 describe("theme", () => {
-  it("keeps the light canvas white with an ink primary CTA", () => {
+  it("keeps the light canvas neutral with an ink primary CTA", () => {
     expect(lightTheme.isDark).toBe(false);
-    expect(lightTheme.colors.canvas).toBe("#ffffff");
+    expect(lightTheme.colors.canvas).toBe("#fafafa");
+    expect(lightTheme.colors.surface).toBe("#ffffff");
+    expect(lightTheme.colors.brand).toBe("#0072f5");
     expect(lightTheme.colors.primary).toBe("#171717");
     expect(lightTheme.colors.onPrimary).toBe("#ffffff");
   });
@@ -17,7 +19,7 @@ describe("theme", () => {
   });
 
   it("maps navigation colors from the palette", () => {
-    expect(buildNavigationTheme(lightTheme).colors.background).toBe("#ffffff");
+    expect(buildNavigationTheme(lightTheme).colors.background).toBe("#fafafa");
     expect(buildNavigationTheme(darkTheme).colors.background).toBe("#0a0a0a");
     expect(buildNavigationTheme(darkTheme).colors.text).toBe("#ededed");
   });

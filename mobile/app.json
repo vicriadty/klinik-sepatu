@@ -27,6 +27,14 @@
     "plugins": [
       "expo-secure-store",
       [
+        "expo-image-picker",
+        {
+          "photosPermission": "Klinik Sepatu memerlukan akses ke foto untuk menyimpan bukti kondisi sepatu.",
+          "cameraPermission": "Klinik Sepatu memerlukan akses kamera untuk memotret kondisi sepatu.",
+          "microphonePermission": false
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/splash-icon.png",

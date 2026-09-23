@@ -99,6 +99,27 @@ describe("uploadQueuedPhotos", () => {
     });
   });
 
+  it("keeps legacy untagged entries uploadable with a scoped order", async () => {
+    usePhotoStore.setState({
+      drafts: {},
+      queue: [
+        makeEntry({ id: "photo-legacy" }),
+        makeEntry({ id: "photo-current", orderId: 9 }),
+        makeEntry({ id: "photo-other", orderId: 10 }),
+      ],
+    });
+
+    await uploadQueuedPhotos({ onlyOrderId: 9 });
+
+    expect(uploadMock).toHaveBeenCalledTimes(2);
+    expect(uploadMock.mock.calls.map(([itemId]) => itemId)).toEqual([101, 101]);
+    expect(
+      usePhotoStore
+        .getState()
+        .queue.find((entry) => entry.id === "photo-other")?.status
+    ).toBe("pending");
+  });
+
   it("does not run two upload batches at once", async () => {
     let resolveUpload: () => void = () => {};
     uploadMock.mockImplementation(

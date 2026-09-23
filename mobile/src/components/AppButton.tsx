@@ -1,8 +1,17 @@
-import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
+import { type ReactNode } from "react";
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import type { Theme } from "../theme/tokens";
 import { useTheme, useThemedStyles } from "../theme/useTheme";
 
-type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "link";
+export type ButtonSize = "compact" | "standard" | "large";
 
 interface AppButtonProps {
   title: string;
@@ -10,6 +19,13 @@ interface AppButtonProps {
   loading?: boolean;
   disabled?: boolean;
   variant?: ButtonVariant;
+  size?: ButtonSize;
+  fullWidth?: boolean;
+  leftIcon?: ReactNode;
+  rightIcon?: ReactNode;
+  accessibilityLabel?: string;
+  style?: StyleProp<ViewStyle>;
+  labelStyle?: StyleProp<TextStyle>;
 }
 
 export default function AppButton({
@@ -18,6 +34,13 @@ export default function AppButton({
   loading = false,
   disabled = false,
   variant = "primary",
+  size = "standard",
+  fullWidth = false,
+  leftIcon,
+  rightIcon,
+  accessibilityLabel,
+  style,
+  labelStyle,
 }: AppButtonProps) {
   const theme = useTheme();
   const styles = useThemedStyles(createStyles);
@@ -27,39 +50,53 @@ export default function AppButton({
   const spinnerColor =
     variant === "primary" || variant === "danger"
       ? theme.colors.onPrimary
-      : theme.colors.ink;
+      : variant === "link"
+        ? theme.colors.link
+        : theme.colors.ink;
   const pressedStyle =
     variant === "primary"
       ? styles.primaryPressed
       : variant === "danger"
         ? styles.dangerPressed
+      : variant === "link"
+        ? styles.linkPressed
         : styles.neutralPressed;
-  const labelStyle =
+  const variantLabelStyle =
     variant === "primary" || variant === "danger"
       ? styles.primaryLabel
-      : styles.neutralLabel;
+      : variant === "link"
+        ? styles.linkLabel
+        : styles.neutralLabel;
 
   return (
     <Pressable
+      accessibilityLabel={accessibilityLabel ?? title}
       accessibilityRole="button"
       accessibilityState={{ disabled: isDisabled, busy: loading }}
       disabled={isDisabled}
       onPress={onPress}
       style={({ pressed }) => [
         styles.base,
+        styles[size],
+        fullWidth && styles.fullWidth,
         styles[variant],
         pressed && !isDisabled && pressedStyle,
         showDisabled && styles.disabled,
+        style,
       ]}
     >
       {loading ? (
         <ActivityIndicator color={spinnerColor} />
       ) : (
-        <Text
-          style={[styles.label, labelStyle, showDisabled && styles.disabledLabel]}
-        >
-          {title}
-        </Text>
+        <View style={styles.content}>
+          {leftIcon ? <View style={styles.icon}>{leftIcon}</View> : null}
+          <Text
+            style={[styles.label, variantLabelStyle, showDisabled && styles.disabledLabel, labelStyle]}
+          >
+            {title}
+          </Text>
+          {rightIcon ? <View style={styles.icon}>{rightIcon}</View> : null}
+        </View>
       )}
     </Pressable>
   );
@@ -73,11 +110,24 @@ const createStyles = ({
 }: Theme) =>
   StyleSheet.create({
     base: {
-      height: 44,
       borderRadius: radius.sm,
       alignItems: "center",
       justifyContent: "center",
       paddingHorizontal: spacing.xl,
+    },
+    compact: {
+      minHeight: 36,
+      paddingHorizontal: spacing.lg,
+    },
+    standard: {
+      minHeight: 48,
+    },
+    large: {
+      minHeight: 50,
+      paddingHorizontal: spacing.xxl,
+    },
+    fullWidth: {
+      width: "100%",
     },
     primary: {
       backgroundColor: colors.primary,
@@ -90,6 +140,11 @@ const createStyles = ({
     ghost: {
       backgroundColor: "transparent",
     },
+    link: {
+      minWidth: 0,
+      backgroundColor: "transparent",
+      paddingHorizontal: spacing.xs,
+    },
     danger: {
       backgroundColor: colors.danger,
     },
@@ -101,6 +156,9 @@ const createStyles = ({
     },
     neutralPressed: {
       backgroundColor: colors.bone,
+    },
+    linkPressed: {
+      backgroundColor: colors.infoSurface,
     },
     disabled: {
       backgroundColor: colors.disabledSurface,
@@ -115,7 +173,20 @@ const createStyles = ({
     neutralLabel: {
       color: colors.ink,
     },
+    linkLabel: {
+      color: colors.link,
+    },
     disabledLabel: {
       color: colors.disabledText,
+    },
+    content: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: spacing.sm,
+    },
+    icon: {
+      alignItems: "center",
+      justifyContent: "center",
     },
   });

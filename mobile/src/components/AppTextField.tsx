@@ -1,4 +1,4 @@
-import { forwardRef, useState } from "react";
+import { forwardRef, useState, type ReactNode } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,43 +6,74 @@ import {
   View,
   type TextInputProps,
 } from "react-native";
+import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import type { Theme } from "../theme/tokens";
 import { useTheme, useThemedStyles } from "../theme/useTheme";
 
 interface AppTextFieldProps extends TextInputProps {
-  label: string;
+  label?: string;
   error?: string;
+  hint?: string;
+  leading?: ReactNode;
+  trailing?: ReactNode;
+  containerStyle?: StyleProp<ViewStyle>;
+  inputContainerStyle?: StyleProp<ViewStyle>;
+  labelStyle?: StyleProp<TextStyle>;
 }
 
 const AppTextField = forwardRef<TextInput, AppTextFieldProps>(
-  ({ label, error, style, onFocus, onBlur, ...inputProps }, ref) => {
+  (
+    {
+      label,
+      error,
+      hint,
+      leading,
+      trailing,
+      style,
+      containerStyle,
+      inputContainerStyle,
+      labelStyle,
+      onFocus,
+      onBlur,
+      ...inputProps
+    },
+    ref
+  ) => {
     const theme = useTheme();
     const styles = useThemedStyles(createStyles);
     const [focused, setFocused] = useState(false);
 
     return (
-      <View style={styles.container}>
-        <Text style={styles.label}>{label}</Text>
-        <TextInput
-          ref={ref}
+      <View style={[styles.container, containerStyle]}>
+        {label ? <Text style={[styles.label, labelStyle]}>{label}</Text> : null}
+        <View
           style={[
-            styles.input,
+            styles.inputContainer,
             focused && styles.inputFocused,
             error ? styles.inputError : null,
-            style,
+            inputProps.editable === false && styles.inputDisabled,
+            inputContainerStyle,
           ]}
-          placeholderTextColor={theme.colors.stone}
-          onFocus={(event) => {
-            setFocused(true);
-            onFocus?.(event);
-          }}
-          onBlur={(event) => {
-            setFocused(false);
-            onBlur?.(event);
-          }}
-          {...inputProps}
-        />
+        >
+          {leading ? <View style={styles.leading}>{leading}</View> : null}
+          <TextInput
+            ref={ref}
+            style={[styles.input, style]}
+            placeholderTextColor={theme.colors.stone}
+            onFocus={(event) => {
+              setFocused(true);
+              onFocus?.(event);
+            }}
+            onBlur={(event) => {
+              setFocused(false);
+              onBlur?.(event);
+            }}
+            {...inputProps}
+          />
+          {trailing ? <View style={styles.trailing}>{trailing}</View> : null}
+        </View>
         {error ? <Text style={styles.error}>{error}</Text> : null}
+        {!error && hint ? <Text style={styles.hint}>{hint}</Text> : null}
       </View>
     );
   }
@@ -52,6 +83,7 @@ AppTextField.displayName = "AppTextField";
 
 const createStyles = ({
   colors,
+  layout,
   radius,
   spacing,
   typography,
@@ -61,28 +93,49 @@ const createStyles = ({
       gap: spacing.xs,
     },
     label: {
-      ...typography.caption,
-      color: colors.mute,
+      ...typography.label,
+      color: colors.ink,
     },
-    input: {
-      height: 44,
+    inputContainer: {
+      minHeight: 48,
+      flexDirection: "row",
+      alignItems: "center",
       borderWidth: 1,
       borderColor: colors.hairline,
-      borderRadius: radius.sm,
-      paddingHorizontal: 20,
+      borderRadius: radius.input,
+      paddingHorizontal: spacing.md,
+      backgroundColor: colors.surface,
+    },
+    input: {
+      flex: 1,
+      minHeight: layout.controlHeight - spacing.xs / 2,
+      paddingHorizontal: 0,
+      paddingVertical: spacing.sm,
       ...typography.body,
       color: colors.ink,
-      backgroundColor: colors.card,
     },
     inputFocused: {
-      borderColor: colors.ink,
+      borderColor: colors.focus,
     },
     inputError: {
       borderColor: colors.danger,
     },
+    inputDisabled: {
+      backgroundColor: colors.disabledSurface,
+    },
+    leading: {
+      marginRight: spacing.sm,
+    },
+    trailing: {
+      marginLeft: spacing.sm,
+    },
     error: {
       ...typography.caption,
       color: colors.danger,
+    },
+    hint: {
+      ...typography.caption,
+      color: colors.mute,
     },
   });
 

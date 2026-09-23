@@ -6,6 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { fetchServices } from "../../api/services";
 import AppButton from "../../components/AppButton";
 import EmptyState from "../../components/EmptyState";
+import WizardProgress from "../../components/WizardProgress";
 import type { AppStackParamList } from "../../navigation/types";
 import { itemSubtotal } from "../../order/pricing";
 import { useOrderWizardStore } from "../../order/orderWizardStore";
@@ -43,7 +44,7 @@ export default function OrderItemsScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.step}>Langkah 2 dari 3</Text>
+        <WizardProgress step={2} />
         <Text style={styles.title}>Sepatu & Layanan</Text>
         {customer ? (
           <Text style={styles.customer}>{customer.name}</Text>
