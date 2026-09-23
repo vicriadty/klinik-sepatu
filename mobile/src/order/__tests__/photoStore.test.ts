@@ -46,6 +46,35 @@ describe("usePhotoStore", () => {
     expect(usePhotoStore.getState().drafts).toEqual({});
   });
 
+  it("keeps uploads from earlier orders when enqueueing a new order", () => {
+    usePhotoStore.setState({
+      drafts: {},
+      queue: [
+        {
+          id: "photo-old",
+          orderItemId: 99,
+          orderId: 8,
+          uri: "file:///old.jpg",
+          type: "BEFORE",
+          status: "failed",
+          error: "Gagal mengunggah foto.",
+        },
+      ],
+    });
+    usePhotoStore
+      .getState()
+      .addDraft("item-1", { uri: "file:///a.jpg", angle: "front", type: "BEFORE" });
+
+    usePhotoStore
+      .getState()
+      .enqueueFromOrder([{ itemId: "item-1", orderItemId: 101 }], 9);
+
+    expect(usePhotoStore.getState().queue).toEqual([
+      expect.objectContaining({ id: "photo-old", orderId: 8 }),
+      expect.objectContaining({ orderItemId: 101, orderId: 9 }),
+    ]);
+  });
+
   it("tracks upload status per entry", () => {
     usePhotoStore
       .getState()
@@ -82,5 +111,36 @@ describe("usePhotoStore", () => {
 
     expect(usePhotoStore.getState().drafts).toEqual({});
     expect(usePhotoStore.getState().queue).toEqual([]);
+  });
+
+  it("clears only drafts when starting a new order", () => {
+    usePhotoStore.setState({
+      drafts: {
+        "item-1": [
+          {
+            id: "photo-draft",
+            uri: "file:///draft.jpg",
+            angle: "front",
+            type: "BEFORE",
+          },
+        ],
+      },
+      queue: [
+        {
+          id: "photo-upload",
+          orderItemId: 101,
+          orderId: 9,
+          uri: "file:///upload.jpg",
+          type: "BEFORE",
+          status: "failed",
+          error: "Gagal mengunggah foto.",
+        },
+      ],
+    });
+
+    usePhotoStore.getState().clearDrafts();
+
+    expect(usePhotoStore.getState().drafts).toEqual({});
+    expect(usePhotoStore.getState().queue).toHaveLength(1);
   });
 });

@@ -64,7 +64,17 @@ function seedDraft() {
         },
       ],
     },
-    queue: [],
+    queue: [
+      {
+        id: "photo-upload",
+        orderItemId: 101,
+        orderId: 9,
+        uri: "file:///document/order-photos/upload.jpg",
+        type: "BEFORE",
+        status: "failed",
+        error: "Gagal mengunggah foto.",
+      },
+    ],
   });
 }
 
@@ -120,6 +130,7 @@ describe("OrderCustomerScreen", () => {
     expect(useOrderWizardStore.getState().customer).toBeNull();
     expect(useOrderWizardStore.getState().items).toHaveLength(0);
     expect(usePhotoStore.getState().drafts).toEqual({});
+    expect(usePhotoStore.getState().queue).toHaveLength(1);
     expect(screen.queryByText("Draft order tersimpan dan dipulihkan otomatis.")).toBeNull();
 
     alertSpy.mockRestore();

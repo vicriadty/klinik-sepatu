@@ -14,10 +14,16 @@ jest.mock("react-native-safe-area-context", () =>
 
 const mockNavigate = jest.fn();
 const mockSetParams = jest.fn();
+const mockSetOptions = jest.fn();
+let mockSelectMode = false;
 
 jest.mock("@react-navigation/native", () => ({
-  useNavigation: () => ({ navigate: mockNavigate, setParams: mockSetParams }),
-  useRoute: () => ({ params: {} }),
+  useNavigation: () => ({
+    navigate: mockNavigate,
+    setParams: mockSetParams,
+    setOptions: mockSetOptions,
+  }),
+  useRoute: () => ({ params: mockSelectMode ? { select: true } : {} }),
 }));
 
 jest.mock("../../../api/customers", () => ({
@@ -70,6 +76,7 @@ function renderScreen() {
 describe("CustomersScreen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockSelectMode = false;
   });
 
   it("lists customers returned by the API", async () => {
@@ -120,5 +127,17 @@ describe("CustomersScreen", () => {
     );
 
     expect(mockNavigate).toHaveBeenCalledWith("CustomerForm");
+  });
+
+  it("keeps order selection mode when creating a customer", async () => {
+    mockSelectMode = true;
+    searchMock.mockResolvedValue(pageOf([]));
+
+    await renderScreen();
+    await fireEvent.press(
+      screen.getByRole("button", { name: "Tambah Pelanggan" })
+    );
+
+    expect(mockNavigate).toHaveBeenCalledWith("CustomerForm", { select: true });
   });
 });

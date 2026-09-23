@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { fetchDashboardSummary } from "../../api/dashboard";
 import { useAuthStore } from "../../auth/useAuthStore";
 import AppButton from "../../components/AppButton";
+import BottomNavigation from "../../components/BottomNavigation";
 import EmptyState from "../../components/EmptyState";
 import FullScreenLoader from "../../components/FullScreenLoader";
 import SummaryCard from "../../components/SummaryCard";
@@ -41,6 +42,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
       <ScrollView
+        style={styles.scrollView}
         contentContainerStyle={styles.content}
         refreshControl={
           <RefreshControl
@@ -104,6 +106,7 @@ export default function HomeScreen() {
           />
         </View>
       </ScrollView>
+      <BottomNavigation active="home" />
     </SafeAreaView>
   );
 }
@@ -113,6 +116,9 @@ const createStyles = ({ colors, spacing, typography }: Theme) =>
     safeArea: {
       flex: 1,
       backgroundColor: colors.canvas,
+    },
+    scrollView: {
+      flex: 1,
     },
     content: {
       padding: spacing.xl,

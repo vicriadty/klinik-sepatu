@@ -50,7 +50,13 @@ export const useOrderWizardStore = create<OrderWizardState>()(
       setCustomer: (customer) => set({ customer }),
 
       addItem: (input) => {
-        const id = `item-${nextItemNumber++}`;
+        const usedIds = new Set(get().items.map((item) => item.id));
+        let id = `item-${nextItemNumber}`;
+        while (usedIds.has(id)) {
+          nextItemNumber += 1;
+          id = `item-${nextItemNumber}`;
+        }
+        nextItemNumber += 1;
         set((state) => ({
           items: [...state.items, { id, ...input, serviceIds: [] }],
         }));

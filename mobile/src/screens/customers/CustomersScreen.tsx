@@ -14,6 +14,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { searchCustomers, type ApiCustomer } from "../../api/customers";
 import AppButton from "../../components/AppButton";
+import BottomNavigation from "../../components/BottomNavigation";
 import EmptyState from "../../components/EmptyState";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import type { AppStackParamList } from "../../navigation/types";
@@ -75,7 +76,13 @@ export default function CustomersScreen() {
   const isEmpty =
     !isInitialLoading && !customersQuery.isError && customers.length === 0;
 
-  const openCreateForm = () => navigation.navigate("CustomerForm");
+  const openCreateForm = () => {
+    if (selectMode) {
+      navigation.navigate("CustomerForm", { select: true });
+      return;
+    }
+    navigation.navigate("CustomerForm");
+  };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
@@ -120,6 +127,7 @@ export default function CustomersScreen() {
         />
       ) : (
         <FlatList
+          style={styles.list}
           data={customers}
           keyExtractor={(item) => String(item.id)}
           contentContainerStyle={styles.listContent}
@@ -159,6 +167,7 @@ export default function CustomersScreen() {
           }
         />
       )}
+      {!selectMode ? <BottomNavigation active="customers" /> : null}
     </SafeAreaView>
   );
 }
@@ -205,6 +214,9 @@ const createStyles = ({
     listContent: {
       paddingHorizontal: spacing.lg,
       paddingBottom: spacing.xl,
+    },
+    list: {
+      flex: 1,
     },
     row: {
       borderRadius: radius.md,

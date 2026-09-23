@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import AppButton from "../../components/AppButton";
 import EmptyState from "../../components/EmptyState";
+import WizardProgress from "../../components/WizardProgress";
 import type { AppStackParamList } from "../../navigation/types";
 import { useOrderWizardStore } from "../../order/orderWizardStore";
 import { deletePhotoFile, persistPhotoFile } from "../../order/photoFiles";
@@ -102,6 +103,8 @@ export default function OrderItemPhotosScreen() {
         uri: durableUri,
         angle,
         type: typeForAngle(angle),
+        fileName: asset.fileName,
+        mimeType: asset.mimeType,
       });
     } catch {
       setPickerError("Gagal membuka kamera atau galeri.");
@@ -125,6 +128,7 @@ export default function OrderItemPhotosScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
       <ScrollView contentContainerStyle={styles.content}>
+        <WizardProgress step={4} />
         <Text style={styles.title}>
           {item.brand}
           {item.model ? ` ${item.model}` : ""}

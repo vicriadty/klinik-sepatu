@@ -11,7 +11,7 @@ let uploading = false;
  * A single failure never blocks the rest.
  */
 export async function uploadQueuedPhotos(
-  options: { onlyItemIds?: number[] } = {}
+  options: { onlyItemIds?: number[]; onlyOrderId?: number } = {}
 ): Promise<void> {
   if (uploading) {
     return;
@@ -24,16 +24,26 @@ export async function uploadQueuedPhotos(
       (entry) =>
         (entry.status === "pending" || entry.status === "failed") &&
         (options.onlyItemIds === undefined ||
-          options.onlyItemIds.includes(entry.orderItemId))
+          options.onlyItemIds.includes(entry.orderItemId)) &&
+        (options.onlyOrderId === undefined ||
+          entry.orderId === options.onlyOrderId ||
+          entry.orderId === undefined)
     );
 
     for (const entry of pending) {
       store.setStatus(entry.id, "uploading");
       try {
-        await uploadItemPhoto(entry.orderItemId, {
+        const input = {
           uri: entry.uri,
           type: entry.type,
-        });
+          ...(entry.fileName !== undefined
+            ? { fileName: entry.fileName }
+            : {}),
+          ...(entry.mimeType !== undefined
+            ? { mimeType: entry.mimeType }
+            : {}),
+        };
+        await uploadItemPhoto(entry.orderItemId, input);
         store.setStatus(entry.id, "uploaded");
         deletePhotoFile(entry.uri);
       } catch (error) {

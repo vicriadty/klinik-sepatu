@@ -7,8 +7,11 @@ import { useMemo } from "react";
 import { useColorScheme } from "react-native";
 import {
   darkColors,
+  fontFamilies,
   lightColors,
+  layout,
   radius,
+  shadows,
   spacing,
   typography,
   type Theme,
@@ -17,16 +20,22 @@ import {
 export const lightTheme: Theme = {
   isDark: false,
   colors: lightColors,
+  fontFamilies,
+  layout,
   spacing,
   radius,
+  shadows,
   typography,
 };
 
 export const darkTheme: Theme = {
   isDark: true,
   colors: darkColors,
+  fontFamilies,
+  layout,
   spacing,
   radius,
+  shadows,
   typography,
 };
 

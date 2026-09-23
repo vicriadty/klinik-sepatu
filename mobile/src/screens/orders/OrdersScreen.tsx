@@ -20,6 +20,7 @@ import {
   type OrderStatus,
   type PaymentStatus,
 } from "../../api/orders";
+import BottomNavigation from "../../components/BottomNavigation";
 import EmptyState from "../../components/EmptyState";
 import FilterChip from "../../components/FilterChip";
 import StatusPill from "../../components/StatusPill";
@@ -146,6 +147,7 @@ export default function OrdersScreen() {
         />
       ) : (
         <FlatList
+          style={styles.list}
           data={orders}
           keyExtractor={(item) => String(item.id)}
           contentContainerStyle={styles.listContent}
@@ -202,6 +204,7 @@ export default function OrdersScreen() {
           }
         />
       )}
+      <BottomNavigation active="orders" />
     </SafeAreaView>
   );
 }
@@ -238,6 +241,9 @@ const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
     listContent: {
       paddingHorizontal: spacing.lg,
       paddingBottom: spacing.xl,
+    },
+    list: {
+      flex: 1,
     },
     row: {
       borderRadius: radius.md,
