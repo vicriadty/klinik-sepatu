@@ -144,7 +144,11 @@ export const fontFamilies = {
 export const layout = {
   referenceScreen: { width: 390, height: 844 },
   screen: { gutter: 20, maxContentWidth: 350 },
-  auth: { gutter: 32, maxContentWidth: 326 },
+  auth: {
+    gutter: 32,
+    maxContentWidth: 326,
+    wordmark: { width: 224, height: 80 },
+  },
   statusBarHeight: 62,
   controlHeight: 48,
   primaryButtonHeight: 50,

@@ -1388,7 +1388,7 @@ BLOCKED
 | Components | BottomTabBar | `bottom-navigation-bar.jpg` | TODO | Beranda, Pesanan, Pelanggan, Profil |
 | Components | NewOrderStepper | new order step 1–5 | TODO | 5-step progress |
 | Screen | SplashScreen | `splash-screen-mobile.jpg` | DONE | restoring state via RootNavigator; native splash remains configured in app.json |
-| Screen | LoginScreen | `pos-login-mobile.jpg` | TODO | auth logic preserved |
+| Screen | LoginScreen | `pos-login-mobile.jpg` | DONE | auth logic, loading, validation, API errors, and session navigation preserved |
 | Screen | HomeScreen | `pos-home-mobile.jpg` | TODO | summary, quick actions, recent orders |
 | Screen | OrdersScreen | `pos-orders-mobile.jpg` | TODO | search, filters, list |
 | Screen | OrderDetailScreen | `pos-order-detail-ord-20260921-0008.jpg` | TODO | detail, status timeline, action |
