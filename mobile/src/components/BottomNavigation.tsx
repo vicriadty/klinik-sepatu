@@ -5,21 +5,29 @@ import type { AppStackParamList } from "../navigation/types";
 import type { Theme } from "../theme/tokens";
 import { useThemedStyles } from "../theme/useTheme";
 
-type TabKey = "home" | "orders" | "customers" | "new-order";
-export type BottomNavigationTab = Exclude<TabKey, "new-order">;
+type TabKey = "home" | "orders" | "customers" | "profile";
+type NavigationRoute = "Home" | "Orders" | "Customers";
+export type BottomNavigationTab = TabKey;
 
-type IconName = "home" | "clipboard" | "users" | "plus";
+type IconName = "home" | "clipboard" | "users" | "profile";
+
+interface TabDefinition {
+  key: TabKey;
+  label: string;
+  icon: IconName;
+  route?: NavigationRoute;
+}
 
 interface BottomNavigationProps {
   active: BottomNavigationTab;
 }
 
-const tabs = [
-  { key: "home", label: "Beranda", icon: "home" },
-  { key: "orders", label: "Pesanan", icon: "clipboard" },
-  { key: "customers", label: "Pelanggan", icon: "users" },
-  { key: "new-order", label: "Tambah", icon: "plus" },
-] as const;
+const tabs: readonly TabDefinition[] = [
+  { key: "home", label: "Beranda", icon: "home", route: "Home" },
+  { key: "orders", label: "Pesanan", icon: "clipboard", route: "Orders" },
+  { key: "customers", label: "Pelanggan", icon: "users", route: "Customers" },
+  { key: "profile", label: "Profil", icon: "profile" },
+];
 
 type Navigation = NativeStackNavigationProp<AppStackParamList>;
 
@@ -55,9 +63,9 @@ function NavIcon({ name, color }: { name: IconName; color: string }) {
   }
 
   return (
-    <View style={[iconStyles.base, iconStyles.plusCircle, { borderColor: color }]}>
-      <View style={[iconStyles.plusHorizontal, { backgroundColor: color }]} />
-      <View style={[iconStyles.plusVertical, { backgroundColor: color }]} />
+    <View style={iconStyles.base}>
+      <View style={[iconStyles.profileHead, { borderColor: color }]} />
+      <View style={[iconStyles.profileBody, { borderColor: color }]} />
     </View>
   );
 }
@@ -66,89 +74,94 @@ export default function BottomNavigation({ active }: BottomNavigationProps) {
   const navigation = useNavigation<Navigation>();
   const styles = useThemedStyles(createStyles);
 
-  const navigate = (tab: TabKey) => {
-    if (tab === "home") {
+  const navigate = (route: NavigationRoute) => {
+    if (route === "Home") {
       navigation.navigate("Home");
       return;
     }
-    if (tab === "orders") {
+    if (route === "Orders") {
       navigation.navigate("Orders");
       return;
     }
-    if (tab === "customers") {
-      navigation.navigate("Customers");
-      return;
-    }
-    navigation.navigate("OrderCustomer");
+    navigation.navigate("Customers");
   };
 
   return (
-    <View style={styles.container} accessibilityRole="tablist">
-      {tabs.map((tab) => {
-        const selected = active === tab.key;
-        const isNewOrder = tab.key === "new-order";
-        const color = isNewOrder
-          ? styles.newOrderIcon.color
-          : selected
-            ? styles.active.color
-            : styles.inactive.color;
+    <View style={styles.safeArea}>
+      <View style={styles.container} accessibilityRole="tablist">
+        {tabs.map((tab) => {
+          const selected = active === tab.key;
+          const color = selected ? styles.active.color : styles.inactive.color;
+          const disabled = !tab.route;
 
-        return (
-          <Pressable
-            key={tab.key}
-            accessibilityRole="tab"
-            accessibilityLabel={tab.label}
-            accessibilityState={{ selected }}
-            onPress={() => navigate(tab.key)}
-            style={({ pressed }) => [
-              styles.tab,
-              isNewOrder && styles.newOrderTab,
-              selected && styles.tabSelected,
-              pressed && styles.tabPressed,
-            ]}
-          >
-            <NavIcon name={tab.icon} color={color} />
-            <Text
-              style={[
-                styles.label,
-                isNewOrder ? styles.newOrderIcon : selected ? styles.active : styles.inactive,
+          return (
+            <Pressable
+              key={tab.key}
+              accessibilityRole="tab"
+              accessibilityLabel={tab.label}
+              accessibilityState={{ selected, disabled }}
+              disabled={disabled}
+              onPress={() => {
+                if (tab.route) {
+                  navigate(tab.route);
+                }
+              }}
+              style={({ pressed }) => [
+                styles.tab,
+                selected && styles.tabSelected,
+                pressed && !disabled && styles.tabPressed,
               ]}
             >
-              {tab.label}
-            </Text>
-          </Pressable>
-        );
-      })}
+              <NavIcon name={tab.icon} color={color} />
+              <Text
+                style={[
+                  styles.label,
+                  selected ? styles.active : styles.inactive,
+                ]}
+              >
+                {tab.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
     </View>
   );
 }
 
-const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
+const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
   StyleSheet.create({
+    safeArea: {
+      alignItems: "center",
+      paddingHorizontal: layout.bottomNavigation.gutter,
+      paddingTop: spacing.sm,
+      paddingBottom: spacing.sm,
+      backgroundColor: colors.canvas,
+    },
     container: {
-      minHeight: 62,
+      width: "100%",
+      maxWidth: layout.bottomNavigation.width,
+      minHeight: layout.bottomNavigation.height,
       flexDirection: "row",
       alignItems: "center",
       gap: spacing.xs,
-      paddingHorizontal: 10,
-      paddingVertical: 6,
-      borderTopWidth: 1,
-      borderTopColor: colors.divider,
-      backgroundColor: colors.card,
+      padding: spacing.xs,
+      borderWidth: 1,
+      borderColor: colors.divider,
+      borderRadius: radius.navigation,
+      backgroundColor: colors.surface,
     },
     tab: {
       flex: 1,
-      minHeight: 48,
+      minHeight: layout.bottomNavigation.height - spacing.md,
       alignItems: "center",
       justifyContent: "center",
-      gap: 3,
-      borderRadius: radius.sm,
+      gap: spacing.xxs,
+      borderRadius: radius.navigation,
+      paddingHorizontal: spacing.xs,
     },
     tabSelected: {
-      backgroundColor: colors.bone,
-    },
-    newOrderTab: {
-      backgroundColor: colors.primary,
+      backgroundColor: colors.mutedSurface,
     },
     tabPressed: {
       opacity: 0.65,
@@ -161,9 +174,6 @@ const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
     },
     inactive: {
       color: colors.stone,
-    },
-    newOrderIcon: {
-      color: colors.onPrimary,
     },
   });
 
@@ -253,22 +263,22 @@ const iconStyles = StyleSheet.create({
     borderWidth: 1.5,
     borderRadius: 5,
   },
-  plusCircle: {
+  profileHead: {
+    position: "absolute",
+    top: 2,
+    left: 6,
+    width: 8,
+    height: 8,
     borderWidth: 1.5,
-    borderRadius: 10,
+    borderRadius: 8,
   },
-  plusHorizontal: {
+  profileBody: {
     position: "absolute",
-    top: 9,
-    left: 5,
-    width: 7,
-    height: 1.5,
-  },
-  plusVertical: {
-    position: "absolute",
-    top: 5,
-    left: 8,
-    width: 1.5,
+    top: 12,
+    left: 3,
+    width: 14,
     height: 7,
+    borderWidth: 1.5,
+    borderRadius: 8,
   },
 });

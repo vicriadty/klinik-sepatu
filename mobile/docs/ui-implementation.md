@@ -1385,7 +1385,7 @@ BLOCKED
 | Components | AppTextInput | multiple | TODO | label, icon, focus, error, helper |
 | Components | AppCard | multiple | TODO | base card pattern |
 | Components | Badge components | orders/detail/payment | TODO | order status + payment status |
-| Components | BottomTabBar | `bottom-navigation-bar.jpg` | TODO | Beranda, Pesanan, Pelanggan, Profil |
+| Components | BottomTabBar | `bottom-navigation-bar.jpg` | DONE | Beranda, Pesanan, Pelanggan, Profil; Profil is visually present and disabled until its route exists |
 | Components | NewOrderStepper | new order step 1–5 | TODO | 5-step progress |
 | Screen | SplashScreen | `splash-screen-mobile.jpg` | DONE | restoring state via RootNavigator; native splash remains configured in app.json |
 | Screen | LoginScreen | `pos-login-mobile.jpg` | DONE | auth logic, loading, validation, API errors, and session navigation preserved |
