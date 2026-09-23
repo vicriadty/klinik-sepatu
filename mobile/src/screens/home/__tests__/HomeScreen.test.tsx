@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react-native";
 import { fetchDashboardSummary } from "../../../api/dashboard";
+import { fetchOrders } from "../../../api/orders";
 import HomeScreen from "../HomeScreen";
 
 jest.mock("react-native-safe-area-context", () =>
@@ -15,9 +16,15 @@ jest.mock("../../../api/dashboard", () => ({
   fetchDashboardSummary: jest.fn(),
 }));
 
+jest.mock("../../../api/orders", () => ({
+  ...jest.requireActual("../../../api/orders"),
+  fetchOrders: jest.fn(),
+}));
+
 const summaryMock = fetchDashboardSummary as jest.MockedFunction<
   typeof fetchDashboardSummary
 >;
+const ordersMock = fetchOrders as jest.MockedFunction<typeof fetchOrders>;
 
 function renderScreen() {
   const queryClient = new QueryClient({
@@ -33,6 +40,10 @@ function renderScreen() {
 describe("HomeScreen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    ordersMock.mockResolvedValue({
+      data: [],
+      meta: { page: 1, per_page: 2, total: 0, last_page: 1 },
+    });
   });
 
   it("shows operational counts without revenue for cashiers", async () => {
@@ -45,10 +56,10 @@ describe("HomeScreen", () => {
 
     await renderScreen();
 
-    expect(await screen.findByText("Order hari ini")).toBeTruthy();
+    expect(await screen.findByText("Pesanan hari ini")).toBeTruthy();
     expect(screen.getByText("3")).toBeTruthy();
     expect(screen.getByText("Siap diambil")).toBeTruthy();
-    expect(screen.getByText("Rp54.000")).toBeTruthy();
+    expect(screen.getByText("Rp 54.000")).toBeTruthy();
     expect(screen.queryByText("Pendapatan hari ini")).toBeNull();
   });
 
@@ -64,7 +75,7 @@ describe("HomeScreen", () => {
     await renderScreen();
 
     expect(await screen.findByText("Pendapatan hari ini")).toBeTruthy();
-    expect(screen.getByText("Rp150.000")).toBeTruthy();
+    expect(screen.getByText("Rp 150.000")).toBeTruthy();
   });
 
   it("shows an error state when the summary fails", async () => {
