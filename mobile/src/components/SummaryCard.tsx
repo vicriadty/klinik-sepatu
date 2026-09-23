@@ -1,24 +1,40 @@
+import { type ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import type { Theme } from "../theme/tokens";
 import { useThemedStyles } from "../theme/useTheme";
+
+export type SummaryCardTone = "default" | "success" | "warning";
 
 interface SummaryCardProps {
   label: string;
   value: string;
   highlight?: boolean;
+  icon?: ReactNode;
+  tone?: SummaryCardTone;
 }
 
 export default function SummaryCard({
   label,
   value,
   highlight = false,
+  icon,
+  tone = "default",
 }: SummaryCardProps) {
   const styles = useThemedStyles(createStyles);
 
   return (
     <View style={[styles.card, highlight && styles.highlight]}>
-      <Text style={styles.label}>{label}</Text>
       <Text style={styles.value}>{value}</Text>
+      <Text
+        style={[
+          styles.label,
+          tone === "success" && styles.successLabel,
+          tone === "warning" && styles.warningLabel,
+        ]}
+      >
+        {label}
+      </Text>
+      {icon ? <View style={styles.icon}>{icon}</View> : null}
     </View>
   );
 }
@@ -37,8 +53,10 @@ const createStyles = ({
       borderWidth: 1,
       borderColor: colors.hairline,
       backgroundColor: colors.card,
-      padding: spacing.lg,
-      gap: spacing.sm,
+      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.lg,
+      gap: spacing.xs,
+      minHeight: 78,
     },
     highlight: {
       borderColor: colors.warning,
@@ -48,7 +66,18 @@ const createStyles = ({
       color: colors.mute,
     },
     value: {
-      ...typography.title,
+      ...typography.headingLg,
       color: colors.ink,
+    },
+    successLabel: {
+      color: colors.success,
+    },
+    warningLabel: {
+      color: colors.warning,
+    },
+    icon: {
+      position: "absolute",
+      top: spacing.md,
+      right: spacing.lg,
     },
   });
