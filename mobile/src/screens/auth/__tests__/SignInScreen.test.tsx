@@ -53,11 +53,11 @@ function renderScreen() {
 
 async function fillAndSubmit(username: string, password: string) {
   await fireEvent.changeText(
-    screen.getByPlaceholderText("cth: kasir1"),
+    screen.getByLabelText("Username"),
     username
   );
   await fireEvent.changeText(
-    screen.getByPlaceholderText("Masukkan password"),
+    screen.getByLabelText("Password"),
     password
   );
   await fireEvent.press(screen.getByRole("button", { name: "Masuk" }));
