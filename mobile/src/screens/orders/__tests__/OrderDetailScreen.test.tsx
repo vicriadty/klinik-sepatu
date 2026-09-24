@@ -174,18 +174,19 @@ describe("OrderDetailScreen", () => {
 
     expect(await screen.findByText("ORD-20260914-0001")).toBeTruthy();
     expect(screen.getByText("Emma")).toBeTruthy();
-    expect(screen.getByText("#1 Nike Air Max")).toBeTruthy();
-    expect(screen.getByText("Fast Clean")).toBeTruthy();
-    expect(screen.getByText("Grand total")).toBeTruthy();
-    expect(screen.getByText("Riwayat status")).toBeTruthy();
-    expect(screen.getAllByText("Diterima")).toHaveLength(2);
+    expect(screen.getByText("Nike Air Max")).toBeTruthy();
+    expect(screen.getByText("Fast Clean + Deep Clean")).toBeTruthy();
+    expect(screen.getByText("Total")).toBeTruthy();
+    expect(screen.getByText("RIWAYAT STATUS")).toBeTruthy();
+    expect(screen.getByText("DITERIMA")).toBeTruthy();
+    expect(screen.getByText("Diterima")).toBeTruthy();
   });
 
   it("runs a legal status transition", async () => {
     await renderScreen();
 
     await fireEvent.press(
-      await screen.findByRole("button", { name: "Mulai Proses" })
+      await screen.findByRole("button", { name: "Mulai diproses" })
     );
 
     expect(transitionMock).toHaveBeenCalledWith(9, "ON_PROCESS");
