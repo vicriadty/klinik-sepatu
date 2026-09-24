@@ -84,9 +84,9 @@ describe("OrderPaymentScreen", () => {
   it("shows the server-derived balance and defaults the amount", async () => {
     await renderScreen();
 
-    expect((await screen.findAllByText("Rp54.000")).length).toBeGreaterThanOrEqual(2);
-    expect(screen.getByText("Status: Belum dibayar")).toBeTruthy();
-    expect(screen.getByPlaceholderText("0").props.value).toBe("54000");
+    expect(screen.getByText("Rp 54.000")).toBeTruthy();
+    expect(screen.getByText("BELUM DIBAYAR")).toBeTruthy();
+    expect(screen.getByPlaceholderText("0").props.value).toBe("Rp 54.000");
   });
 
   it("records a payment with the selected method", async () => {
@@ -126,7 +126,7 @@ describe("OrderPaymentScreen", () => {
 
     expect(
       screen.getByText(
-        "Tampilkan QRIS statis toko, minta pelanggan scan, pastikan pembayaran masuk, lalu catat di sini."
+        "Minta pelanggan scan QRIS statis, lalu cek aplikasi acquirer."
       )
     ).toBeTruthy();
   });

@@ -1392,7 +1392,7 @@ BLOCKED
 | Screen | HomeScreen | `pos-home-mobile.jpg` | DONE | greeting/avatar, summary cards, quick actions, recent orders, loading/error/empty states |
 | Screen | OrdersScreen | `pos-orders-mobile.jpg` | DONE | header, search, filters, order list, pagination, loading/error/empty states |
 | Screen | OrderDetailScreen | `pos-order-detail-ord-20260921-0008.jpg` | DONE | detail header, customer/items, before photos, totals, status timeline, actions, loading/error states |
-| Screen | PaymentScreen | `pos-payment-order-0008.jpg` | TODO | methods, amount, record payment |
+| Screen | PaymentScreen | `pos-payment-order-0008.jpg` | DONE | payment header, due summary, methods, QRIS guidance, amount, record payment, paid/cancelled/history states |
 | Screen | CustomersScreen | `pos-customers-search.jpg` | TODO | search/select customer |
 | Screen | CustomerCreateScreen | `pos-customer-create.jpg` | TODO | duplicate phone validation |
 | Screen | NewOrderCustomerStepScreen | `pos-new-order-01-customer.jpg` | TODO | select customer |
