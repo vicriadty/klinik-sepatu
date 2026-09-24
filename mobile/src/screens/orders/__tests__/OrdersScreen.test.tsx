@@ -79,16 +79,17 @@ describe("OrdersScreen", () => {
     await renderScreen();
 
     expect(await screen.findByText("ORD-20260914-0001")).toBeTruthy();
-    expect(screen.getByText("Emma")).toBeTruthy();
-    expect(screen.getByText("2 item · Rp108.000")).toBeTruthy();
-    expect(screen.getAllByText("Diterima")).toHaveLength(2);
-    expect(screen.getAllByText("Belum dibayar")).toHaveLength(2);
+    expect(screen.getByText("Emma · 2 sepatu")).toBeTruthy();
+    expect(screen.getByText("Rp 108.000")).toBeTruthy();
+    expect(screen.getByText("DITERIMA")).toBeTruthy();
+    expect(screen.getByText("BELUM DIBAYAR")).toBeTruthy();
   });
 
   it("filters by status and payment status", async () => {
     await renderScreen();
     await screen.findByText("ORD-20260914-0001");
 
+    await fireEvent.press(screen.getByLabelText("Status"));
     await fireEvent.press(screen.getByLabelText("Diproses"));
     await waitFor(() =>
       expect(fetchOrdersMock).toHaveBeenCalledWith(
@@ -96,6 +97,7 @@ describe("OrdersScreen", () => {
       )
     );
 
+    await fireEvent.press(screen.getByLabelText("Pembayaran"));
     await fireEvent.press(screen.getByLabelText("Lunas"));
     await waitFor(() =>
       expect(fetchOrdersMock).toHaveBeenCalledWith(

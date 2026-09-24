@@ -1390,7 +1390,7 @@ BLOCKED
 | Screen | SplashScreen | `splash-screen-mobile.jpg` | DONE | restoring state via RootNavigator; native splash remains configured in app.json |
 | Screen | LoginScreen | `pos-login-mobile.jpg` | DONE | auth logic, loading, validation, API errors, and session navigation preserved |
 | Screen | HomeScreen | `pos-home-mobile.jpg` | DONE | greeting/avatar, summary cards, quick actions, recent orders, loading/error/empty states |
-| Screen | OrdersScreen | `pos-orders-mobile.jpg` | TODO | search, filters, list |
+| Screen | OrdersScreen | `pos-orders-mobile.jpg` | DONE | header, search, filters, order list, pagination, loading/error/empty states |
 | Screen | OrderDetailScreen | `pos-order-detail-ord-20260921-0008.jpg` | TODO | detail, status timeline, action |
 | Screen | PaymentScreen | `pos-payment-order-0008.jpg` | TODO | methods, amount, record payment |
 | Screen | CustomersScreen | `pos-customers-search.jpg` | TODO | search/select customer |
