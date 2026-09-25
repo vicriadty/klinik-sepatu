@@ -1398,7 +1398,7 @@ BLOCKED
 | Screen | NewOrderCustomerStepScreen | `pos-new-order-01-customer.jpg` | DONE | stepper, inline customer search/select, add customer action, phone normalization note, draft persistence, guarded next step |
 | Screen | NewOrderShoesStepScreen | `pos-new-order-02-shoes.jpg` | DONE | shoe summary cards, add/edit/delete/photo actions, customer summary, draft persistence, guarded service continuation |
 | Screen | NewOrderServicesStepScreen | `pos-new-order-03-services.jpg` | DONE | per-shoe tabs, server-priced multi-select services, subtotal, guarded photo continuation, draft persistence |
-| Screen | NewOrderPhotosStepScreen | `pos-new-order-04-photos.jpg` | TODO | before photos |
+| Screen | NewOrderPhotosStepScreen | `pos-new-order-04-photos.jpg` | DONE | before-photo guidance, angle checklist, camera/gallery tiles, durable draft photos, guarded upload timing |
 | Screen | NewOrderReviewStepScreen | `pos-new-order-05-review.jpg` | TODO | review total and create order |
 | Screen | OrderCreatedSuccessScreen | `pos-order-created-success.jpg` | TODO | success actions |
 
