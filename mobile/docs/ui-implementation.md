@@ -1396,7 +1396,7 @@ BLOCKED
 | Screen | CustomersScreen | `pos-customers-search.jpg` | DONE | search, normalized phone preview, result cards, select mode, duplicate guidance, loading/error/empty states |
 | Screen | CustomerCreateScreen | `pos-customer-create.jpg` | DONE | labeled fields, normalized phone card, duplicate warning/action, server validation note, save/cancel states |
 | Screen | NewOrderCustomerStepScreen | `pos-new-order-01-customer.jpg` | DONE | stepper, inline customer search/select, add customer action, phone normalization note, draft persistence, guarded next step |
-| Screen | NewOrderShoesStepScreen | `pos-new-order-02-shoes.jpg` | TODO | shoes list |
+| Screen | NewOrderShoesStepScreen | `pos-new-order-02-shoes.jpg` | DONE | shoe summary cards, add/edit/delete/photo actions, customer summary, draft persistence, guarded service continuation |
 | Screen | NewOrderServicesStepScreen | `pos-new-order-03-services.jpg` | TODO | services per shoe |
 | Screen | NewOrderPhotosStepScreen | `pos-new-order-04-photos.jpg` | TODO | before photos |
 | Screen | NewOrderReviewStepScreen | `pos-new-order-05-review.jpg` | TODO | review total and create order |

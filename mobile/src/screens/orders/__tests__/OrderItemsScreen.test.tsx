@@ -1,6 +1,4 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen } from "@testing-library/react-native";
-import { fetchServices } from "../../../api/services";
 import { useOrderWizardStore } from "../../../order/orderWizardStore";
 import OrderItemsScreen from "../OrderItemsScreen";
 
@@ -9,29 +7,11 @@ jest.mock("react-native-safe-area-context", () =>
 );
 
 const mockNavigate = jest.fn();
+const mockGoBack = jest.fn();
 
 jest.mock("@react-navigation/native", () => ({
-  useNavigation: () => ({ navigate: mockNavigate }),
+  useNavigation: () => ({ navigate: mockNavigate, goBack: mockGoBack }),
 }));
-
-jest.mock("../../../api/services", () => ({
-  fetchServices: jest.fn(),
-}));
-
-const servicesMock = fetchServices as jest.MockedFunction<typeof fetchServices>;
-
-const services = [
-  {
-    id: 1,
-    name: "Fast Clean",
-    category_id: 1,
-    category: { id: 1, name: "Cleaning" },
-    description: null,
-    price: 25000,
-    estimated_duration_days: 1,
-    active: true,
-  },
-];
 
 const customer = {
   id: 3,
@@ -59,14 +39,7 @@ function seedItem(serviceIds: number[]) {
 }
 
 function renderScreen() {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false, gcTime: Infinity } },
-  });
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <OrderItemsScreen />
-    </QueryClientProvider>
-  );
+  return render(<OrderItemsScreen />);
 }
 
 describe("OrderItemsScreen", () => {
@@ -78,38 +51,44 @@ describe("OrderItemsScreen", () => {
       discountId: null,
       idempotencyKey: null,
     });
-    servicesMock.mockResolvedValue(services);
   });
 
-  it("lists items with their service subtotal", async () => {
-    useOrderWizardStore.getState().setCustomer(customer);
-    seedItem([1]);
-
-    await renderScreen();
-
-    expect(await screen.findByText("#1 Nike Air Max")).toBeTruthy();
-    expect(screen.getByText("1 layanan")).toBeTruthy();
-    expect(screen.getByText("Rp25.000")).toBeTruthy();
-  });
-
-  it("blocks review until every item has a service", async () => {
+  it("lists shoe details and preserves the selected customer", async () => {
     useOrderWizardStore.getState().setCustomer(customer);
     seedItem([]);
 
     await renderScreen();
 
-    expect(
-      await screen.findByText("Belum ada layanan — tap untuk memilih")
-    ).toBeTruthy();
-    expect(
-      screen.getByText("Setiap sepatu harus memiliki minimal satu layanan.")
-    ).toBeTruthy();
+    expect(screen.getByText("Sepatu 1")).toBeTruthy();
+    expect(screen.getByText("Emma")).toBeTruthy();
+    expect(screen.getByText("Nike")).toBeTruthy();
+    expect(screen.getByText("Air Max")).toBeTruthy();
+    expect(screen.getByText("Putih")).toBeTruthy();
+    expect(screen.getByText("Sneakers")).toBeTruthy();
+    expect(screen.getByText("• 1 item")).toBeTruthy();
+  });
+
+  it("disables continuation when no shoes have been added", async () => {
+    await renderScreen();
+
+    const button = screen.getByRole("button", {
+      name: "Lanjut: pilih layanan",
+    });
+
+    expect(button.props.accessibilityState.disabled).toBe(true);
+  });
+
+  it("continues to the first incomplete shoe service picker", async () => {
+    useOrderWizardStore.getState().setCustomer(customer);
+    const itemId = seedItem([]);
+
+    await renderScreen();
 
     await fireEvent.press(
-      screen.getByRole("button", { name: "Lanjut ke Review" })
+      screen.getByRole("button", { name: "Lanjut: pilih layanan" })
     );
 
-    expect(mockNavigate).not.toHaveBeenCalledWith("OrderReview");
+    expect(mockNavigate).toHaveBeenCalledWith("OrderItemServices", { itemId });
   });
 
   it("navigates to review when every item is ready", async () => {
@@ -118,7 +97,7 @@ describe("OrderItemsScreen", () => {
 
     await renderScreen();
     await fireEvent.press(
-      screen.getByRole("button", { name: "Lanjut ke Review" })
+      screen.getByRole("button", { name: "Lanjut: pilih layanan" })
     );
 
     expect(mockNavigate).toHaveBeenCalledWith("OrderReview");
@@ -131,7 +110,12 @@ describe("OrderItemsScreen", () => {
     await renderScreen();
 
     await fireEvent.press(
-      screen.getByRole("button", { name: "Tambah Sepatu" })
+      screen.getByRole("button", { name: "Ubah pelanggan Emma" })
+    );
+    expect(mockNavigate).toHaveBeenCalledWith("OrderCustomer");
+
+    await fireEvent.press(
+      screen.getByRole("button", { name: "Tambah sepatu" })
     );
     expect(mockNavigate).toHaveBeenCalledWith("OrderItemForm");
 
