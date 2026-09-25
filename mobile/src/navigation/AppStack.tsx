@@ -59,7 +59,7 @@ export default function AppStack() {
       <Stack.Screen
         name="OrderItems"
         component={OrderItemsScreen}
-        options={{ title: "Sepatu & Layanan" }}
+        options={{ title: "Pesanan baru" }}
       />
       <Stack.Screen
         name="OrderItemForm"
