@@ -1400,7 +1400,7 @@ BLOCKED
 | Screen | NewOrderServicesStepScreen | `pos-new-order-03-services.jpg` | DONE | per-shoe tabs, server-priced multi-select services, subtotal, guarded photo continuation, draft persistence |
 | Screen | NewOrderPhotosStepScreen | `pos-new-order-04-photos.jpg` | DONE | before-photo guidance, angle checklist, camera/gallery tiles, durable draft photos, guarded upload timing |
 | Screen | NewOrderReviewStepScreen | `pos-new-order-05-review.jpg` | DONE | customer and shoe summaries, discount selector, server-confirmed total note, create order and draft actions |
-| Screen | OrderCreatedSuccessScreen | `pos-order-created-success.jpg` | TODO | success actions |
+| Screen | OrderCreatedSuccessScreen | `pos-order-created-success.jpg` | DONE | success confirmation, order summary, payment/order actions, offline-safe note, photo upload status and retry |
 
 ---
 

@@ -96,4 +96,22 @@ describe("OrderSuccessScreen", () => {
 
     expect(mockNavigate).toHaveBeenCalledWith("OrderPayment", { orderId: 9 });
   });
+
+  it("links to the order detail and starts a new order", async () => {
+    await render(<OrderSuccessScreen />);
+
+    await fireEvent.press(
+      screen.getByRole("button", { name: "Lihat pesanan" })
+    );
+    await fireEvent.press(
+      screen.getByRole("button", { name: "Pesanan baru" })
+    );
+    await fireEvent.press(
+      screen.getByRole("button", { name: "Kembali ke Beranda" })
+    );
+
+    expect(mockNavigate).toHaveBeenCalledWith("OrderDetail", { orderId: 9 });
+    expect(mockNavigate).toHaveBeenCalledWith("Home");
+    expect(mockReplace).toHaveBeenCalledWith("OrderCustomer");
+  });
 });

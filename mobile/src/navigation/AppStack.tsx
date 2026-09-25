@@ -85,7 +85,7 @@ export default function AppStack() {
         name="OrderSuccess"
         component={OrderSuccessScreen}
         options={{
-          title: "Order Dibuat",
+          title: "Pesanan dibuat",
           headerBackVisible: false,
           gestureEnabled: false,
         }}
