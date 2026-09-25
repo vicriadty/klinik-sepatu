@@ -21,7 +21,7 @@ import {
 import { useOrderWizardStore } from "../../order/orderWizardStore";
 import { usePhotoStore } from "../../order/photoStore";
 import type { Theme } from "../../theme/tokens";
-import { useThemedStyles } from "../../theme/useTheme";
+import { useTheme, useThemedStyles } from "../../theme/useTheme";
 import { apiErrorMessage } from "../../utils/errors";
 import { formatIDR } from "../../utils/format";
 
@@ -29,6 +29,7 @@ type Navigation = NativeStackNavigationProp<AppStackParamList, "OrderReview">;
 
 export default function OrderReviewScreen() {
   const navigation = useNavigation<Navigation>();
+  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const customer = useOrderWizardStore((state) => state.customer);
   const items = useOrderWizardStore((state) => state.items);
@@ -38,9 +39,9 @@ export default function OrderReviewScreen() {
     (state) => state.ensureIdempotencyKey
   );
   const reset = useOrderWizardStore((state) => state.reset);
-  const photoDrafts = usePhotoStore((state) => state.drafts);
   const enqueueFromOrder = usePhotoStore((state) => state.enqueueFromOrder);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showDiscounts, setShowDiscounts] = useState(false);
 
   const servicesQuery = useQuery({
     queryKey: ["services", "active"],
@@ -166,20 +167,23 @@ export default function OrderReviewScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         <WizardProgress step={5} />
-        <Text style={styles.title}>Review</Text>
+        <Text style={styles.title}>Review pesanan</Text>
 
         <View style={styles.customerCard}>
-          <Text style={styles.customerName}>{customer.name}</Text>
-          <Text style={styles.customerPhone}>{customer.phone_display}</Text>
+          <CustomerIcon color={theme.colors.mute} />
+          <View style={styles.customerInfo}>
+            <Text style={styles.customerName}>{customer.name}</Text>
+            <Text style={styles.customerPhone}>{customer.phone_display}</Text>
+          </View>
         </View>
 
         {items.map((item, index) => (
           <View key={item.id} style={styles.itemCard}>
             <View style={styles.itemHeader}>
               <Text style={styles.itemTitle}>
-                #{index + 1} {item.brand}
+                {item.brand}
                 {item.model !== "" ? ` ${item.model}` : ""}
               </Text>
               <Text style={styles.itemSubtotal}>
@@ -198,58 +202,72 @@ export default function OrderReviewScreen() {
                 </View>
               );
             })}
-            <Text style={styles.itemMeta}>
-              {(photoDrafts[item.id] ?? []).length} foto
-            </Text>
           </View>
         ))}
 
-        <Text style={styles.sectionTitle}>Diskon</Text>
-        {discountsQuery.isLoading ? (
-          <Text style={styles.sectionHint}>Memuat diskon…</Text>
-        ) : discounts.length === 0 ? (
-          <Text style={styles.sectionHint}>
-            Tidak ada diskon aktif.
-          </Text>
-        ) : (
-          discounts.map((discount: ApiDiscount) => {
-            const selected = discount.id === discountId;
-            const meetsMinimum = discountMeetsMinimum(discount, subtotal);
-            const valueLabel =
-              discount.type === "PERCENT"
-                ? `${discount.value}%`
-                : formatIDR(discount.value);
+        <Text style={styles.sectionTitle}>Diskon terdaftar</Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Pilih diskon"
+          accessibilityState={{ expanded: showDiscounts }}
+          onPress={() => setShowDiscounts((visible) => !visible)}
+          style={styles.discountSelector}
+        >
+          <View style={styles.discountInfo}>
+            <Text style={styles.discountSelectorLabel}>DISKON TERDAFTAR</Text>
+            <Text style={styles.discountSelectorValue}>
+              {selectedDiscount?.name ?? "Tidak ada diskon"}
+            </Text>
+          </View>
+          <ChevronIcon color={theme.colors.mute} />
+        </Pressable>
 
-            return (
-              <Pressable
-                key={discount.id}
-                accessibilityRole="radio"
-                accessibilityState={{ selected, disabled: !meetsMinimum }}
-                accessibilityLabel={`Diskon ${discount.name}`}
-                disabled={!meetsMinimum}
-                onPress={() => setDiscountId(selected ? null : discount.id)}
-                style={[
-                  styles.discountRow,
-                  selected && styles.discountSelected,
-                  !meetsMinimum && styles.discountDisabled,
-                ]}
-              >
-                <View style={styles.discountInfo}>
-                  <Text style={styles.discountName}>{discount.name}</Text>
-                  <Text style={styles.discountMeta}>
-                    {valueLabel}
-                    {discount.min_order_subtotal !== null
-                      ? ` · min ${formatIDR(discount.min_order_subtotal)}`
-                      : ""}
+        {showDiscounts ? (
+          discounts.length === 0 ? (
+            <Text style={styles.sectionHint}>Tidak ada diskon aktif.</Text>
+          ) : (
+            discounts.map((discount: ApiDiscount) => {
+              const selected = discount.id === discountId;
+              const meetsMinimum = discountMeetsMinimum(discount, subtotal);
+              const valueLabel =
+                discount.type === "PERCENT"
+                  ? `${discount.value}%`
+                  : formatIDR(discount.value);
+
+              return (
+                <Pressable
+                  key={discount.id}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected, disabled: !meetsMinimum }}
+                  accessibilityLabel={`Diskon ${discount.name}`}
+                  disabled={!meetsMinimum}
+                  onPress={() => {
+                    setDiscountId(selected ? null : discount.id);
+                    setShowDiscounts(false);
+                  }}
+                  style={[
+                    styles.discountRow,
+                    selected && styles.discountSelected,
+                    !meetsMinimum && styles.discountDisabled,
+                  ]}
+                >
+                  <View style={styles.discountInfo}>
+                    <Text style={styles.discountName}>{discount.name}</Text>
+                    <Text style={styles.discountMeta}>
+                      {valueLabel}
+                      {discount.min_order_subtotal !== null
+                        ? ` · min ${formatIDR(discount.min_order_subtotal)}`
+                        : ""}
+                    </Text>
+                  </View>
+                  <Text style={styles.discountState}>
+                    {selected ? "Dipilih" : ""}
                   </Text>
-                </View>
-                <Text style={styles.discountState}>
-                  {selected ? "Dipilih" : ""}
-                </Text>
-              </Pressable>
-            );
-          })
-        )}
+                </Pressable>
+              );
+            })
+          )
+        ) : null}
 
         <View style={styles.totals}>
           <View style={styles.totalRow}>
@@ -263,70 +281,122 @@ export default function OrderReviewScreen() {
             </Text>
           </View>
           <View style={[styles.totalRow, styles.grandRow]}>
-            <Text style={styles.grandLabel}>Grand total</Text>
+            <Text style={styles.grandLabel}>Total</Text>
             <Text style={styles.grandValue}>{formatIDR(grandTotal)}</Text>
           </View>
+        </View>
+
+        <View style={styles.serverNote}>
+          <ShieldIcon color={theme.colors.mute} />
+          <Text style={styles.serverNoteText}>
+            Total final dikonfirmasi server saat dibuat.
+          </Text>
         </View>
 
         {submitError ? (
           <Text style={styles.submitError}>{submitError}</Text>
         ) : null}
+      </ScrollView>
 
+      <View style={styles.footer}>
         <AppButton
-          title="Buat Order"
+          title="Buat pesanan"
           onPress={submit}
           loading={createMutation.isPending}
+          fullWidth
         />
-      </ScrollView>
+        <AppButton
+          title="Simpan draft"
+          variant="ghost"
+          size="compact"
+          onPress={() => navigation.goBack()}
+          fullWidth
+        />
+      </View>
     </SafeAreaView>
   );
 }
 
-const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
+function CustomerIcon({ color }: { color: string }) {
+  return (
+    <View pointerEvents="none" style={iconStyles.customerIcon}>
+      <View style={[iconStyles.customerHead, { borderColor: color }]} />
+      <View style={[iconStyles.customerBody, { borderColor: color }]} />
+    </View>
+  );
+}
+
+function ShieldIcon({ color }: { color: string }) {
+  return (
+    <View pointerEvents="none" style={[iconStyles.shieldIcon, { borderColor: color }]}>
+      <Text style={[iconStyles.shieldCheck, { color }]}>✓</Text>
+    </View>
+  );
+}
+
+function ChevronIcon({ color }: { color: string }) {
+  return (
+    <View pointerEvents="none" style={iconStyles.chevronIcon}>
+      <View style={[iconStyles.chevronLine, { backgroundColor: color }]} />
+      <View
+        style={[iconStyles.chevronLine, iconStyles.chevronLineLower, { backgroundColor: color }]}
+      />
+    </View>
+  );
+}
+
+const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
   StyleSheet.create({
     safeArea: {
       flex: 1,
       backgroundColor: colors.canvas,
     },
+    scroll: {
+      flex: 1,
+    },
     content: {
-      padding: spacing.xl,
-      gap: spacing.xs,
+      paddingHorizontal: spacing.page,
+      paddingTop: spacing.lg,
+      paddingBottom: spacing.xl,
     },
     emptyAction: {
       padding: spacing.xl,
     },
-    step: {
-      ...typography.caption,
-      color: colors.mute,
-    },
     title: {
-      ...typography.headingSm,
+      ...typography.screenTitle,
       color: colors.ink,
+      marginBottom: spacing.lg,
     },
     customerCard: {
-      marginTop: spacing.lg,
-      borderRadius: radius.md,
+      minHeight: layout.controlHeight,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.md,
+      borderRadius: radius.card,
       borderWidth: 1,
       borderColor: colors.hairline,
       backgroundColor: colors.card,
-      padding: spacing.lg,
-      gap: spacing.xs,
+      paddingHorizontal: spacing.md,
+    },
+    customerInfo: {
+      flex: 1,
+      gap: spacing.xxs,
     },
     customerName: {
-      ...typography.subtitle,
+      ...typography.bodyUi,
       color: colors.ink,
     },
     customerPhone: {
-      ...typography.body,
+      ...typography.overline,
       color: colors.mute,
     },
     itemCard: {
       marginTop: spacing.md,
-      borderRadius: radius.md,
+      borderRadius: radius.card,
       borderWidth: 1,
       borderColor: colors.hairline,
       backgroundColor: colors.card,
-      padding: spacing.lg,
+      padding: spacing.md,
       gap: spacing.xs,
     },
     itemHeader: {
@@ -336,12 +406,12 @@ const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
       gap: spacing.sm,
     },
     itemTitle: {
-      ...typography.subtitle,
+      ...typography.bodyUi,
       color: colors.ink,
       flexShrink: 1,
     },
     itemSubtotal: {
-      ...typography.subtitle,
+      ...typography.caption,
       color: colors.ink,
     },
     serviceRow: {
@@ -351,39 +421,55 @@ const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
       gap: spacing.sm,
     },
     serviceName: {
-      ...typography.body,
+      ...typography.overline,
       color: colors.body,
       flexShrink: 1,
     },
     servicePrice: {
-      ...typography.body,
+      ...typography.overline,
       color: colors.body,
-    },
-    itemMeta: {
-      ...typography.caption,
-      color: colors.mute,
-      marginTop: spacing.xs,
     },
     sectionTitle: {
       marginTop: spacing.xl,
       marginBottom: spacing.sm,
-      ...typography.subtitle,
+      ...typography.overline,
       color: colors.ink,
+      textTransform: "uppercase",
     },
     sectionHint: {
-      ...typography.body,
+      ...typography.bodyUi,
       color: colors.mute,
+    },
+    discountSelector: {
+      minHeight: 46,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: spacing.md,
+      borderRadius: radius.sm,
+      borderWidth: 1,
+      borderColor: colors.hairline,
+      backgroundColor: colors.card,
+      paddingHorizontal: spacing.md,
+    },
+    discountSelectorLabel: {
+      ...typography.overline,
+      color: colors.mute,
+    },
+    discountSelectorValue: {
+      ...typography.bodyUi,
+      color: colors.ink,
     },
     discountRow: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
       gap: spacing.md,
-      borderRadius: radius.md,
+      borderRadius: radius.sm,
       borderWidth: 1,
       borderColor: colors.hairline,
       backgroundColor: colors.card,
-      padding: spacing.lg,
+      padding: spacing.md,
       marginBottom: spacing.sm,
     },
     discountSelected: {
@@ -398,11 +484,11 @@ const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
       gap: spacing.xxs,
     },
     discountName: {
-      ...typography.subtitle,
+      ...typography.bodyUi,
       color: colors.ink,
     },
     discountMeta: {
-      ...typography.caption,
+      ...typography.overline,
       color: colors.mute,
     },
     discountState: {
@@ -410,12 +496,12 @@ const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
       color: colors.ink,
     },
     totals: {
-      marginTop: spacing.xl,
-      borderRadius: radius.md,
+      marginTop: spacing.md,
+      borderRadius: radius.card,
       borderWidth: 1,
       borderColor: colors.hairline,
       backgroundColor: colors.card,
-      padding: spacing.lg,
+      padding: spacing.md,
       gap: spacing.sm,
     },
     totalRow: {
@@ -424,11 +510,11 @@ const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
       justifyContent: "space-between",
     },
     totalLabel: {
-      ...typography.body,
+      ...typography.bodyUi,
       color: colors.mute,
     },
     totalValue: {
-      ...typography.body,
+      ...typography.bodyUi,
       color: colors.ink,
     },
     grandRow: {
@@ -437,16 +523,94 @@ const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
       paddingTop: spacing.sm,
     },
     grandLabel: {
-      ...typography.subtitle,
+      ...typography.bodyUi,
       color: colors.ink,
     },
     grandValue: {
       ...typography.title,
       color: colors.ink,
     },
+    serverNote: {
+      minHeight: 40,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.md,
+      borderRadius: radius.card,
+      backgroundColor: colors.canvas,
+      paddingHorizontal: spacing.md,
+      marginTop: spacing.md,
+    },
+    serverNoteText: {
+      ...typography.overline,
+      color: colors.mute,
+      flex: 1,
+    },
     submitError: {
       ...typography.caption,
       color: colors.danger,
       marginTop: spacing.md,
     },
+    footer: {
+      gap: spacing.sm,
+      borderTopWidth: 1,
+      borderTopColor: colors.hairline,
+      backgroundColor: colors.canvas,
+      paddingHorizontal: spacing.page,
+      paddingTop: spacing.md,
+      paddingBottom: spacing.sm,
+    },
   });
+
+const iconStyles = StyleSheet.create({
+  customerIcon: {
+    width: 18,
+    height: 18,
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+  customerHead: {
+    width: 6,
+    height: 6,
+    borderWidth: 1,
+    borderRadius: 6,
+    marginBottom: 2,
+  },
+  customerBody: {
+    width: 12,
+    height: 6,
+    borderWidth: 1,
+    borderBottomWidth: 0,
+    borderTopLeftRadius: 7,
+    borderTopRightRadius: 7,
+  },
+  shieldIcon: {
+    width: 16,
+    height: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderRadius: 5,
+  },
+  shieldCheck: {
+    fontSize: 10,
+    lineHeight: 12,
+    fontWeight: "600",
+  },
+  chevronIcon: {
+    width: 16,
+    height: 16,
+    position: "relative",
+  },
+  chevronLine: {
+    position: "absolute",
+    top: 4,
+    left: 4,
+    width: 7,
+    height: 1.5,
+    transform: [{ rotate: "45deg" }],
+  },
+  chevronLineLower: {
+    top: 9,
+    transform: [{ rotate: "-45deg" }],
+  },
+});
