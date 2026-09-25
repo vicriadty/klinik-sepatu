@@ -13,6 +13,7 @@ jest.mock("react-native-safe-area-context", () =>
 );
 
 const mockNavigate = jest.fn();
+const mockGoBack = jest.fn();
 const mockSetParams = jest.fn();
 const mockSetOptions = jest.fn();
 let mockSelectMode = false;
@@ -20,6 +21,7 @@ let mockSelectMode = false;
 jest.mock("@react-navigation/native", () => ({
   useNavigation: () => ({
     navigate: mockNavigate,
+    goBack: mockGoBack,
     setParams: mockSetParams,
     setOptions: mockSetOptions,
   }),
@@ -127,6 +129,46 @@ describe("CustomersScreen", () => {
     );
 
     expect(mockNavigate).toHaveBeenCalledWith("CustomerForm");
+  });
+
+  it("returns the selected customer to the order wizard", async () => {
+    mockSelectMode = true;
+    searchMock.mockResolvedValue(pageOf([makeCustomer()]));
+
+    await renderScreen();
+    await fireEvent.press(
+      await screen.findByRole("button", { name: "Pilih Budi" })
+    );
+
+    expect(mockGoBack).toHaveBeenCalled();
+  });
+
+  it("shows the result count and normalized phone preview", async () => {
+    searchMock.mockResolvedValue(
+      pageOf([makeCustomer(), makeCustomer({ id: 2, name: "Nadia" })])
+    );
+
+    await renderScreen();
+    expect(await screen.findByText("2 pelanggan")).toBeTruthy();
+
+    await fireEvent.changeText(
+      screen.getByLabelText("Cari pelanggan"),
+      "0812-3456-7890"
+    );
+
+    expect(await screen.findByText("Format tersimpan")).toBeTruthy();
+    expect(screen.getByText("+62 812 3456 7890")).toBeTruthy();
+  });
+
+  it("clears the search input", async () => {
+    searchMock.mockResolvedValue(pageOf([]));
+
+    await renderScreen();
+    const input = screen.getByLabelText("Cari pelanggan");
+    await fireEvent.changeText(input, "Budi");
+    await fireEvent.press(screen.getByLabelText("Hapus pencarian"));
+
+    expect(input.props.value).toBe("");
   });
 
   it("keeps order selection mode when creating a customer", async () => {

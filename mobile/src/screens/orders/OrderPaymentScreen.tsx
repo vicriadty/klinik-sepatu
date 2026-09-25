@@ -23,18 +23,109 @@ import AppButton from "../../components/AppButton";
 import AppTextField from "../../components/AppTextField";
 import EmptyState from "../../components/EmptyState";
 import FullScreenLoader from "../../components/FullScreenLoader";
+import StatusPill from "../../components/StatusPill";
 import type { AppStackParamList } from "../../navigation/types";
+import { PAYMENT_STATUS_TONES } from "../../order/status";
 import type { Theme } from "../../theme/tokens";
-import { useThemedStyles } from "../../theme/useTheme";
+import { useTheme, useThemedStyles } from "../../theme/useTheme";
 import { apiErrorMessage } from "../../utils/errors";
 import { formatIDR } from "../../utils/format";
 
 type Navigation = NativeStackNavigationProp<AppStackParamList, "OrderPayment">;
 type Route = RouteProp<AppStackParamList, "OrderPayment">;
 
+type PaymentIconName = "arrow-left" | "cash" | "qris" | "transfer" | "check";
+
+const PAYMENT_METHOD_DESCRIPTIONS: Record<PaymentMethod, string> = {
+  CASH: "Catat nominal diterima",
+  QRIS: "Verifikasi manual oleh kasir",
+  TRANSFER: "Verifikasi mutasi rekening",
+};
+
+function formatPaymentCurrency(value: number): string {
+  return formatIDR(value).replace("Rp", "Rp ");
+}
+
+function PaymentIcon({
+  name,
+  color,
+  size = 20,
+}: {
+  name: PaymentIconName;
+  color: string;
+  size?: number;
+}) {
+  if (name === "arrow-left") {
+    return (
+      <View pointerEvents="none" style={[iconStyles.base, { width: size, height: size }]}>
+        <View style={[iconStyles.line, { top: size / 2, left: 2, width: size - 4, backgroundColor: color }]} />
+        <View style={[iconStyles.line, { top: size / 2 - 1, left: 2, width: size * 0.45, backgroundColor: color, transform: [{ rotate: "-45deg" }] }]} />
+        <View style={[iconStyles.line, { top: size / 2 + size * 0.28, left: 2, width: size * 0.45, backgroundColor: color, transform: [{ rotate: "45deg" }] }]} />
+      </View>
+    );
+  }
+
+  if (name === "cash") {
+    return (
+      <View pointerEvents="none" style={[iconStyles.base, { width: size, height: size }]}>
+        <View style={[iconStyles.moneyFrame, { borderColor: color, width: size - 2, height: size * 0.58, left: 1, top: size * 0.21 }]} />
+        <View style={[iconStyles.moneyDot, { borderColor: color, width: size * 0.2, height: size * 0.2, left: size * 0.4, top: size * 0.4 }]} />
+        <View style={[iconStyles.line, { top: size * 0.34, left: size * 0.18, width: size * 0.16, backgroundColor: color, transform: [{ rotate: "45deg" }] }]} />
+        <View style={[iconStyles.line, { top: size * 0.58, left: size * 0.66, width: size * 0.16, backgroundColor: color, transform: [{ rotate: "45deg" }] }]} />
+      </View>
+    );
+  }
+
+  if (name === "qris") {
+    return (
+      <View pointerEvents="none" style={[iconStyles.base, { width: size, height: size }]}>
+        {[
+          [0.08, 0.08],
+          [0.58, 0.08],
+          [0.08, 0.58],
+          [0.58, 0.58],
+        ].map(([left, top], index) => (
+          <View
+            key={index}
+            style={[
+              iconStyles.qrisCell,
+              {
+                borderColor: color,
+                width: size * 0.3,
+                height: size * 0.3,
+                left: size * left,
+                top: size * top,
+              },
+            ]}
+          />
+        ))}
+      </View>
+    );
+  }
+
+  if (name === "transfer") {
+    return (
+      <View pointerEvents="none" style={[iconStyles.base, { width: size, height: size }]}>
+        <View style={[iconStyles.transferFrame, { borderColor: color, width: size * 0.7, height: size * 0.72, left: size * 0.15, top: size * 0.18 }]} />
+        <View style={[iconStyles.line, { top: size * 0.58, left: size * 0.28, width: size * 0.18, backgroundColor: color }]} />
+        <View style={[iconStyles.line, { top: size * 0.58, left: size * 0.55, width: size * 0.18, backgroundColor: color }]} />
+        <View style={[iconStyles.line, { top: size * 0.33, left: size * 0.34, width: size * 0.32, backgroundColor: color }]} />
+      </View>
+    );
+  }
+
+  return (
+    <View pointerEvents="none" style={[iconStyles.base, { width: size, height: size }]}>
+      <View style={[iconStyles.line, { top: size * 0.58, left: size * 0.18, width: size * 0.28, backgroundColor: color, transform: [{ rotate: "45deg" }] }]} />
+      <View style={[iconStyles.line, { top: size * 0.46, left: size * 0.4, width: size * 0.5, backgroundColor: color, transform: [{ rotate: "-45deg" }] }]} />
+    </View>
+  );
+}
+
 export default function OrderPaymentScreen() {
   const navigation = useNavigation<Navigation>();
   const route = useRoute<Route>();
+  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const queryClient = useQueryClient();
   const orderId = route.params.orderId;
@@ -46,6 +137,7 @@ export default function OrderPaymentScreen() {
 
   const [method, setMethod] = useState<PaymentMethod>("CASH");
   const [amountText, setAmountText] = useState<string | null>(null);
+  const [amountFocused, setAmountFocused] = useState(false);
   const [note, setNote] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -64,6 +156,16 @@ export default function OrderPaymentScreen() {
           ? "Jumlah melebihi sisa tagihan."
           : null;
   const amountIsValid = amountError === null && amountValue.trim() !== "";
+  const displayAmountValue =
+    amountValue.trim() === ""
+      ? ""
+      : amountFocused
+        ? amountValue
+        : formatPaymentCurrency(amount);
+
+  const handleAmountChange = (value: string) => {
+    setAmountText(value.replace(/\D/g, ""));
+  };
 
   const paymentMutation = useMutation({
     mutationFn: () => {
@@ -137,35 +239,41 @@ export default function OrderPaymentScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.orderNumber}>{order.order_number}</Text>
-        <Text style={styles.customer}>
-          {order.customer?.name ?? "Pelanggan"}
-        </Text>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Kembali"
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <PaymentIcon name="arrow-left" color={theme.colors.ink} />
+          </Pressable>
+          <View style={styles.headerCopy}>
+            <Text style={styles.title}>Pembayaran</Text>
+            <Text style={styles.subtitle}>{order.order_number}</Text>
+          </View>
+        </View>
 
-        <View style={styles.card}>
-          <View style={styles.row}>
-            <Text style={styles.rowLabel}>Grand total</Text>
-            <Text style={styles.rowValue}>{formatIDR(order.grand_total)}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.rowLabel}>Sudah dibayar</Text>
-            <Text style={styles.rowValue}>{formatIDR(order.paid_total)}</Text>
-          </View>
-          <View style={[styles.row, styles.rowDivider]}>
-            <Text style={styles.rowStrongLabel}>Sisa</Text>
-            <Text
-              style={[
-                styles.rowStrongValue,
-                order.remaining_balance > 0 && styles.remaining,
-              ]}
-            >
-              {formatIDR(order.remaining_balance)}
+        <View style={styles.summaryCard}>
+          <Text style={styles.summaryLabel}>TOTAL TAGIHAN</Text>
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryValue}>
+              {formatPaymentCurrency(order.grand_total)}
             </Text>
+            <StatusPill
+              label={PAYMENT_STATUS_LABELS[order.payment_status].toUpperCase()}
+              tone={
+                order.payment_status === "UNPAID"
+                  ? "warning"
+                  : PAYMENT_STATUS_TONES[order.payment_status]
+              }
+            />
           </View>
-          <Text style={styles.status}>
-            Status: {PAYMENT_STATUS_LABELS[order.payment_status]}
-          </Text>
         </View>
 
         {successMessage ? (
@@ -193,10 +301,16 @@ export default function OrderPaymentScreen() {
           </View>
         ) : (
           <>
-            <Text style={styles.sectionTitle}>Metode pembayaran</Text>
+            <Text style={styles.sectionTitle}>METODE PEMBAYARAN</Text>
             <View style={styles.methods}>
               {PAYMENT_METHODS.map((option) => {
                 const selected = option === method;
+                const iconName =
+                  option === "CASH"
+                    ? "cash"
+                    : option === "QRIS"
+                      ? "qris"
+                      : "transfer";
 
                 return (
                   <Pressable
@@ -205,39 +319,69 @@ export default function OrderPaymentScreen() {
                     accessibilityState={{ selected }}
                     accessibilityLabel={`Metode ${PAYMENT_METHOD_LABELS[option]}`}
                     onPress={() => setMethod(option)}
-                    style={[
-                      styles.method,
-                      selected && styles.methodSelected,
-                    ]}
+                    style={[styles.method, selected && styles.methodSelected]}
                   >
-                    <Text style={styles.methodLabel}>
-                      {PAYMENT_METHOD_LABELS[option]}
-                    </Text>
+                    <View style={styles.methodIcon}>
+                      <PaymentIcon
+                        name={iconName}
+                        color={selected ? theme.colors.ink : theme.colors.mute}
+                      />
+                    </View>
+                    <View style={styles.methodCopy}>
+                      <Text style={styles.methodLabel}>
+                        {PAYMENT_METHOD_LABELS[option]}
+                      </Text>
+                      <Text style={styles.methodDescription}>
+                        {PAYMENT_METHOD_DESCRIPTIONS[option]}
+                      </Text>
+                    </View>
+                    {selected ? (
+                      <View style={styles.methodCheck}>
+                        <PaymentIcon
+                          name="check"
+                          color={theme.colors.onPrimary}
+                          size={14}
+                        />
+                      </View>
+                    ) : null}
                   </Pressable>
                 );
               })}
             </View>
 
             {method === "QRIS" ? (
-              <View style={styles.notice}>
-                <Text style={styles.noticeText}>
-                  Tampilkan QRIS statis toko, minta pelanggan scan, pastikan
-                  pembayaran masuk, lalu catat di sini.
-                </Text>
+              <View style={styles.qrisPanel}>
+                <PaymentIcon
+                  name="qris"
+                  color={theme.colors.primary}
+                  size={46}
+                />
+                <View style={styles.qrisCopy}>
+                  <Text style={styles.qrisTitle}>QRIS TOKO</Text>
+                  <Text style={styles.qrisNote}>
+                    Minta pelanggan scan QRIS statis, lalu cek aplikasi acquirer.
+                  </Text>
+                </View>
               </View>
             ) : null}
 
             <AppTextField
-              label="Jumlah"
+              label="JUMLAH DIBAYAR"
               placeholder="0"
               keyboardType="number-pad"
-              value={amountValue}
-              onChangeText={setAmountText}
+              value={displayAmountValue}
+              onChangeText={handleAmountChange}
               error={amountError ?? undefined}
+              containerStyle={styles.amountField}
+              inputContainerStyle={styles.amountInput}
+              onFocus={() => setAmountFocused(true)}
+              onBlur={() => setAmountFocused(false)}
             />
             <AppButton
               title="Uang pas"
               variant="ghost"
+              size="compact"
+              style={styles.exactButton}
               onPress={() => setAmountText(String(remaining))}
             />
 
@@ -246,6 +390,7 @@ export default function OrderPaymentScreen() {
               placeholder="cth: Diterima kasir pagi"
               value={note}
               onChangeText={setNote}
+              containerStyle={styles.noteField}
             />
 
             {formError ? (
@@ -253,10 +398,16 @@ export default function OrderPaymentScreen() {
             ) : null}
 
             <AppButton
-              title="Catat Pembayaran"
+              title="Catat pembayaran"
+              accessibilityLabel="Catat Pembayaran"
               onPress={submit}
               loading={paymentMutation.isPending}
+              fullWidth
+              size="large"
             />
+            <Text style={styles.authorityNote}>
+              Status PAID hanya ditetapkan server setelah pembayaran tercatat.
+            </Text>
           </>
         )}
 
@@ -277,7 +428,7 @@ export default function OrderPaymentScreen() {
                 </View>
                 <Text style={styles.paymentAmount}>
                   {payment.type === "refund" ? "-" : ""}
-                  {formatIDR(payment.amount)}
+                  {formatPaymentCurrency(payment.amount)}
                 </Text>
               </View>
             ))}
@@ -288,76 +439,72 @@ export default function OrderPaymentScreen() {
   );
 }
 
-const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
+const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
   StyleSheet.create({
     safeArea: {
       flex: 1,
       backgroundColor: colors.canvas,
     },
     content: {
-      padding: spacing.xl,
+      paddingHorizontal: layout.screen.gutter,
+      paddingTop: layout.statusBarHeight,
+      paddingBottom: spacing.xxxl,
       gap: spacing.xs,
     },
     emptyAction: {
       padding: spacing.xl,
       gap: spacing.md,
     },
-    orderNumber: {
-      ...typography.mono,
-      color: colors.mute,
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.lg,
+      marginBottom: spacing.xl,
     },
-    customer: {
+    backButton: {
+      width: layout.minTouchTarget,
+      height: layout.minTouchTarget,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    headerCopy: {
+      flex: 1,
+      gap: spacing.xxs,
+    },
+    title: {
       ...typography.headingSm,
       color: colors.ink,
     },
-    card: {
-      marginTop: spacing.lg,
-      borderRadius: radius.md,
-      borderWidth: 1,
-      borderColor: colors.hairline,
-      backgroundColor: colors.card,
-      padding: spacing.lg,
-      gap: spacing.sm,
+    subtitle: {
+      ...typography.body,
+      color: colors.mute,
     },
-    row: {
+    summaryCard: {
+      minHeight: 92,
+      justifyContent: "space-between",
+      borderRadius: radius.lg,
+      backgroundColor: colors.primary,
+      padding: spacing.lg,
+    },
+    summaryLabel: {
+      ...typography.overline,
+      color: colors.onPrimary,
+    },
+    summaryRow: {
       flexDirection: "row",
-      alignItems: "center",
+      alignItems: "flex-end",
       justifyContent: "space-between",
       gap: spacing.sm,
     },
-    rowDivider: {
-      borderTopWidth: 1,
-      borderTopColor: colors.divider,
-      paddingTop: spacing.sm,
-    },
-    rowLabel: {
-      ...typography.body,
-      color: colors.mute,
-    },
-    rowValue: {
-      ...typography.body,
-      color: colors.ink,
-    },
-    rowStrongLabel: {
-      ...typography.subtitle,
-      color: colors.ink,
-    },
-    rowStrongValue: {
-      ...typography.title,
-      color: colors.ink,
-    },
-    remaining: {
-      color: colors.warning,
-    },
-    status: {
-      ...typography.caption,
-      color: colors.mute,
+    summaryValue: {
+      ...typography.headingSm,
+      color: colors.onPrimary,
     },
     successNotice: {
       marginTop: spacing.lg,
-      borderRadius: radius.lg,
+      borderRadius: radius.md,
       backgroundColor: colors.bone,
-      borderLeftWidth: 3,
+      borderLeftWidth: 1,
       borderLeftColor: colors.success,
       padding: spacing.lg,
     },
@@ -367,9 +514,9 @@ const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
     },
     notice: {
       marginTop: spacing.lg,
-      borderRadius: radius.lg,
+      borderRadius: radius.md,
       backgroundColor: colors.bone,
-      borderLeftWidth: 3,
+      borderLeftWidth: 1,
       borderLeftColor: colors.ink,
       padding: spacing.lg,
     },
@@ -378,7 +525,7 @@ const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
       color: colors.ink,
     },
     paidCard: {
-      marginTop: spacing.lg,
+      marginTop: spacing.xl,
       borderRadius: radius.md,
       borderWidth: 1,
       borderColor: colors.success,
@@ -398,34 +545,108 @@ const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
     sectionTitle: {
       marginTop: spacing.xl,
       marginBottom: spacing.sm,
-      ...typography.subtitle,
+      ...typography.section,
       color: colors.ink,
     },
     methods: {
-      flexDirection: "row",
       gap: spacing.sm,
       marginBottom: spacing.md,
     },
     method: {
-      flex: 1,
+      minHeight: 52,
+      flexDirection: "row",
       alignItems: "center",
+      gap: spacing.md,
       borderRadius: radius.md,
       borderWidth: 1,
       borderColor: colors.hairline,
       backgroundColor: colors.card,
-      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.lg,
     },
     methodSelected: {
       borderColor: colors.ink,
-      backgroundColor: colors.bone,
+    },
+    methodIcon: {
+      width: 24,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    methodCopy: {
+      flex: 1,
+      gap: spacing.xxs,
     },
     methodLabel: {
-      ...typography.button,
+      ...typography.subtitle,
       color: colors.ink,
+    },
+    methodDescription: {
+      ...typography.bodyUi,
+      color: colors.mute,
+    },
+    methodCheck: {
+      width: 24,
+      height: 24,
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: radius.full,
+      backgroundColor: colors.primary,
+    },
+    qrisPanel: {
+      minHeight: 94,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.lg,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: colors.hairline,
+      backgroundColor: colors.card,
+      padding: spacing.lg,
+    },
+    qrisCopy: {
+      flex: 1,
+      gap: spacing.xs,
+    },
+    qrisTitle: {
+      ...typography.title,
+      color: colors.ink,
+    },
+    qrisNote: {
+      ...typography.bodyUi,
+      color: colors.mute,
+    },
+    amountField: {
+      marginTop: spacing.xl,
+    },
+    amountInput: {
+      minHeight: 46,
+      borderRadius: radius.md,
+      backgroundColor: colors.card,
+    },
+    exactButton: {
+      alignSelf: "flex-start",
+      marginTop: -spacing.xs,
+    },
+    noteField: {
+      marginTop: spacing.sm,
     },
     formError: {
       ...typography.caption,
       color: colors.danger,
+    },
+    authorityNote: {
+      ...typography.bodyUi,
+      color: colors.mute,
+      marginTop: spacing.md,
+      textAlign: "center",
+    },
+    card: {
+      marginTop: spacing.xl,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: colors.hairline,
+      backgroundColor: colors.card,
+      padding: spacing.lg,
+      gap: spacing.sm,
     },
     paymentRow: {
       flexDirection: "row",
@@ -451,3 +672,35 @@ const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
       color: colors.ink,
     },
   });
+
+const iconStyles = StyleSheet.create({
+  base: {
+    position: "relative",
+  },
+  line: {
+    position: "absolute",
+    height: 2,
+    borderRadius: 2,
+  },
+  moneyFrame: {
+    position: "absolute",
+    borderWidth: 2,
+    borderRadius: 3,
+  },
+  moneyDot: {
+    position: "absolute",
+    borderWidth: 1.5,
+    borderRadius: 99,
+  },
+  qrisCell: {
+    position: "absolute",
+    borderWidth: 2,
+    borderRadius: 2,
+  },
+  transferFrame: {
+    position: "absolute",
+    borderWidth: 2,
+    borderTopLeftRadius: 3,
+    borderTopRightRadius: 3,
+  },
+});
