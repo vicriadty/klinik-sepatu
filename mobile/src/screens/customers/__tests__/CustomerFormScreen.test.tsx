@@ -13,9 +13,10 @@ jest.mock("react-native-safe-area-context", () =>
 );
 
 const mockNavigate = jest.fn();
+const mockGoBack = jest.fn();
 
 jest.mock("@react-navigation/native", () => ({
-  useNavigation: () => ({ navigate: mockNavigate }),
+  useNavigation: () => ({ navigate: mockNavigate, goBack: mockGoBack }),
   useRoute: () => ({ params: {} }),
 }));
 
@@ -57,6 +58,16 @@ describe("CustomerFormScreen", () => {
     jest.clearAllMocks();
   });
 
+  it("renders the customer creation actions and server note", async () => {
+    await renderScreen();
+
+    expect(screen.getByText("Pelanggan baru")).toBeTruthy();
+    expect(screen.getByText("Data pelanggan")).toBeTruthy();
+    expect(screen.getByText("Server memvalidasi format dan keunikan nomor.")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Simpan" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Batal" })).toBeTruthy();
+  });
+
   it("shows Indonesian validation errors on empty submit", async () => {
     await renderScreen();
 
@@ -88,7 +99,7 @@ describe("CustomerFormScreen", () => {
       "0812-3456-7890"
     );
 
-    expect(await screen.findByText("Nomor tersimpan: +6281234567890")).toBeTruthy();
+    expect(await screen.findByText("+62 812 3456 7890")).toBeTruthy();
   });
 
   it("creates the customer and returns to the list", async () => {
@@ -118,6 +129,15 @@ describe("CustomerFormScreen", () => {
     });
   });
 
+  it("cancels without submitting", async () => {
+    await renderScreen();
+
+    await fireEvent.press(screen.getByRole("button", { name: "Batal" }));
+
+    expect(mockGoBack).toHaveBeenCalled();
+    expect(createMock).not.toHaveBeenCalled();
+  });
+
   it("offers the existing customer on a 409 duplicate", async () => {
     createMock.mockRejectedValue(
       new ApiError("Customer with this phone number already exists.", 409, {}, {
@@ -135,7 +155,7 @@ describe("CustomerFormScreen", () => {
     await renderScreen();
     await fillAndSubmit("Budi", "0812-3456-7890");
 
-    expect(await screen.findByText("Nomor sudah terdaftar")).toBeTruthy();
+    expect(await screen.findByText("Nomor sudah terdaftar.")).toBeTruthy();
     expect(screen.getByText("Budi Lama · +6281234567890")).toBeTruthy();
 
     await fireEvent.press(

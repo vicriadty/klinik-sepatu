@@ -1393,9 +1393,9 @@ BLOCKED
 | Screen | OrdersScreen | `pos-orders-mobile.jpg` | DONE | header, search, filters, order list, pagination, loading/error/empty states |
 | Screen | OrderDetailScreen | `pos-order-detail-ord-20260921-0008.jpg` | DONE | detail header, customer/items, before photos, totals, status timeline, actions, loading/error states |
 | Screen | PaymentScreen | `pos-payment-order-0008.jpg` | DONE | payment header, due summary, methods, QRIS guidance, amount, record payment, paid/cancelled/history states |
-| Screen | CustomersScreen | `pos-customers-search.jpg` | TODO | search/select customer |
-| Screen | CustomerCreateScreen | `pos-customer-create.jpg` | TODO | duplicate phone validation |
-| Screen | NewOrderCustomerStepScreen | `pos-new-order-01-customer.jpg` | TODO | select customer |
+| Screen | CustomersScreen | `pos-customers-search.jpg` | DONE | search, normalized phone preview, result cards, select mode, duplicate guidance, loading/error/empty states |
+| Screen | CustomerCreateScreen | `pos-customer-create.jpg` | DONE | labeled fields, normalized phone card, duplicate warning/action, server validation note, save/cancel states |
+| Screen | NewOrderCustomerStepScreen | `pos-new-order-01-customer.jpg` | DONE | stepper, inline customer search/select, add customer action, phone normalization note, draft persistence, guarded next step |
 | Screen | NewOrderShoesStepScreen | `pos-new-order-02-shoes.jpg` | TODO | shoes list |
 | Screen | NewOrderServicesStepScreen | `pos-new-order-03-services.jpg` | TODO | services per shoe |
 | Screen | NewOrderPhotosStepScreen | `pos-new-order-04-photos.jpg` | TODO | before photos |

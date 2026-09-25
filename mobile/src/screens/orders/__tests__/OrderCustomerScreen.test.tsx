@@ -1,5 +1,7 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { Alert } from "react-native";
+import { searchCustomers, type ApiCustomer } from "../../../api/customers";
 import { useOrderWizardStore } from "../../../order/orderWizardStore";
 import { deletePhotoFiles } from "../../../order/photoFiles";
 import { usePhotoStore } from "../../../order/photoStore";
@@ -10,10 +12,21 @@ jest.mock("react-native-safe-area-context", () =>
 );
 
 const mockNavigate = jest.fn();
+const mockGoBack = jest.fn();
 
 jest.mock("@react-navigation/native", () => ({
-  useNavigation: () => ({ navigate: mockNavigate }),
+  useNavigation: () => ({ navigate: mockNavigate, goBack: mockGoBack }),
 }));
+
+jest.mock("../../../api/customers", () => {
+  const actual = jest.requireActual("../../../api/customers");
+  return {
+    ...actual,
+    searchCustomers: jest.fn(),
+  };
+});
+
+const searchMock = searchCustomers as jest.MockedFunction<typeof searchCustomers>;
 
 jest.mock("../../../order/photoFiles", () => ({
   deletePhotoFiles: jest.fn(),
@@ -35,6 +48,18 @@ const customer = {
   created_at: null,
   updated_at: null,
 };
+
+function pageOf(customers: ApiCustomer[], lastPage = 1) {
+  return {
+    data: customers,
+    meta: {
+      page: 1,
+      per_page: 20,
+      total: customers.length,
+      last_page: lastPage,
+    },
+  };
+}
 
 function seedDraft() {
   useOrderWizardStore.setState({
@@ -78,9 +103,21 @@ function seedDraft() {
   });
 }
 
+function renderScreen() {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false, gcTime: Infinity } },
+  });
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <OrderCustomerScreen />
+    </QueryClientProvider>
+  );
+}
+
 describe("OrderCustomerScreen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    searchMock.mockResolvedValue(pageOf([]));
     useOrderWizardStore.setState({
       customer: null,
       items: [],
@@ -93,7 +130,7 @@ describe("OrderCustomerScreen", () => {
   it("restores the persisted draft with a notice", async () => {
     seedDraft();
 
-    await render(<OrderCustomerScreen />);
+    await renderScreen();
 
     expect(
       await screen.findByText("Draft order tersimpan dan dipulihkan otomatis.")
@@ -108,7 +145,7 @@ describe("OrderCustomerScreen", () => {
       .spyOn(Alert, "alert")
       .mockImplementation(() => undefined);
 
-    await render(<OrderCustomerScreen />);
+    await renderScreen();
     await fireEvent.press(screen.getByRole("button", { name: "Mulai Baru" }));
 
     const buttons = (
@@ -137,9 +174,38 @@ describe("OrderCustomerScreen", () => {
   });
 
   it("offers no draft actions without a draft", async () => {
-    await render(<OrderCustomerScreen />);
+    await renderScreen();
 
     expect(screen.queryByRole("button", { name: "Mulai Baru" })).toBeNull();
     expect(await screen.findByText("Belum ada pelanggan dipilih.")).toBeTruthy();
+  });
+
+  it("selects a customer into the order draft", async () => {
+    searchMock.mockResolvedValue(pageOf([customer]));
+
+    await renderScreen();
+    await fireEvent.press(
+      await screen.findByRole("button", { name: "Pilih Emma" })
+    );
+
+    expect(useOrderWizardStore.getState().customer?.id).toBe(3);
+  });
+
+  it("opens customer creation in select mode", async () => {
+    await renderScreen();
+    await fireEvent.press(
+      screen.getByRole("button", { name: "Tambah pelanggan baru" })
+    );
+
+    expect(mockNavigate).toHaveBeenCalledWith("CustomerForm", { select: true });
+  });
+
+  it("keeps the next step disabled until a customer is selected", async () => {
+    await renderScreen();
+
+    expect(
+      screen.getByRole("button", { name: "Lanjut: pilih sepatu" }).props
+        .accessibilityState.disabled
+    ).toBe(true);
   });
 });
