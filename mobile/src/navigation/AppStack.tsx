@@ -1,6 +1,5 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StyleSheet, View } from "react-native";
-import LogoutButton from "../components/LogoutButton";
 import OfflineBanner from "../components/OfflineBanner";
 import CustomerFormScreen from "../screens/customers/CustomerFormScreen";
 import CustomersScreen from "../screens/customers/CustomersScreen";
@@ -27,19 +26,14 @@ export default function AppStack() {
     <View style={styles.container}>
       <Stack.Navigator
         screenOptions={{
-          headerStyle: { backgroundColor: theme.colors.canvas },
-          headerTintColor: theme.colors.ink,
-          headerTitleStyle: { fontSize: 16, fontWeight: "500" },
+          headerShown: false,
           contentStyle: { backgroundColor: theme.colors.canvas },
         }}
       >
       <Stack.Screen
         name="Home"
         component={HomeScreen}
-        options={{
-          title: "Beranda",
-          headerRight: () => <LogoutButton />,
-        }}
+        options={{ title: "Beranda" }}
       />
       <Stack.Screen
         name="Customers"
@@ -85,8 +79,6 @@ export default function AppStack() {
         name="OrderSuccess"
         component={OrderSuccessScreen}
         options={{
-          title: "Pesanan dibuat",
-          headerBackVisible: false,
           gestureEnabled: false,
         }}
       />

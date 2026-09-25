@@ -7,6 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AppButton from "../../components/AppButton";
 import EmptyState from "../../components/EmptyState";
 import PhotoTile from "../../components/PhotoTile";
+import ScreenHeader from "../../components/ScreenHeader";
 import WizardProgress from "../../components/WizardProgress";
 import type { AppStackParamList } from "../../navigation/types";
 import { useOrderWizardStore } from "../../order/orderWizardStore";
@@ -151,6 +152,11 @@ export default function OrderItemPhotosScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
+      <ScreenHeader
+        title="Pesanan baru"
+        subtitle="Foto kondisi"
+        onBack={() => navigation.goBack()}
+      />
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         <WizardProgress step={4} />
         <Text style={styles.title}>Foto kondisi</Text>

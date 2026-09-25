@@ -23,6 +23,7 @@ import AppButton from "../../components/AppButton";
 import BottomNavigation from "../../components/BottomNavigation";
 import EmptyState from "../../components/EmptyState";
 import FullScreenLoader from "../../components/FullScreenLoader";
+import LogoutButton from "../../components/LogoutButton";
 import SummaryCard from "../../components/SummaryCard";
 import StatusPill from "../../components/StatusPill";
 import type { AppStackParamList } from "../../navigation/types";
@@ -317,12 +318,15 @@ export default function HomeScreen() {
             <Text style={styles.greetingName}>{userName}</Text>
             {roleLabel ? <Text style={styles.role}>{roleLabel}</Text> : null}
           </View>
-          <View
-            accessible
-            accessibilityLabel={`Profil ${userName}`}
-            style={styles.avatar}
-          >
-            <Text style={styles.avatarText}>{getInitials(user?.name)}</Text>
+          <View style={styles.greetingActions}>
+            <View
+              accessible
+              accessibilityLabel={`Profil ${userName}`}
+              style={styles.avatar}
+            >
+              <Text style={styles.avatarText}>{getInitials(user?.name)}</Text>
+            </View>
+            <LogoutButton />
           </View>
         </View>
 
@@ -502,6 +506,10 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
       marginBottom: spacing.xl,
     },
     greetingCopy: {
+      gap: spacing.xxs,
+    },
+    greetingActions: {
+      alignItems: "flex-end",
       gap: spacing.xxs,
     },
     greetingEyebrow: {

@@ -58,6 +58,7 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
       alignItems: "center",
       gap: spacing.xs,
       paddingHorizontal: layout.screen.gutter,
+      paddingTop: layout.statusBarHeight + spacing.md,
     },
     backButton: {
       width: layout.minTouchTarget,

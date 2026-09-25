@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { fetchDiscounts, type ApiDiscount } from "../../api/discounts";
@@ -10,6 +10,7 @@ import { fetchServices } from "../../api/services";
 import AppButton from "../../components/AppButton";
 import EmptyState from "../../components/EmptyState";
 import FullScreenLoader from "../../components/FullScreenLoader";
+import ScreenHeader from "../../components/ScreenHeader";
 import WizardProgress from "../../components/WizardProgress";
 import type { AppStackParamList } from "../../navigation/types";
 import {
@@ -33,6 +34,7 @@ export default function OrderReviewScreen() {
   const styles = useThemedStyles(createStyles);
   const customer = useOrderWizardStore((state) => state.customer);
   const items = useOrderWizardStore((state) => state.items);
+  const setItemServices = useOrderWizardStore((state) => state.setItemServices);
   const discountId = useOrderWizardStore((state) => state.discountId);
   const setDiscountId = useOrderWizardStore((state) => state.setDiscountId);
   const ensureIdempotencyKey = useOrderWizardStore(
@@ -40,6 +42,7 @@ export default function OrderReviewScreen() {
   );
   const reset = useOrderWizardStore((state) => state.reset);
   const enqueueFromOrder = usePhotoStore((state) => state.enqueueFromOrder);
+  const queryClient = useQueryClient();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showDiscounts, setShowDiscounts] = useState(false);
 
@@ -54,10 +57,30 @@ export default function OrderReviewScreen() {
 
   const services = servicesQuery.data ?? [];
   const discounts = discountsQuery.data ?? [];
-
-  const subtotal = orderSubtotal(items, services);
   const selectedDiscount =
     discounts.find((discount) => discount.id === discountId) ?? null;
+
+  useEffect(() => {
+    if (!servicesQuery.data) return;
+
+    const activeServiceIds = new Set(services.map((service) => service.id));
+    items.forEach((item) => {
+      const validServiceIds = item.serviceIds.filter((id) =>
+        activeServiceIds.has(id)
+      );
+      if (validServiceIds.length !== item.serviceIds.length) {
+        setItemServices(item.id, validServiceIds);
+      }
+    });
+  }, [items, services, servicesQuery.data, setItemServices]);
+
+  useEffect(() => {
+    if (discountsQuery.data && discountId !== null && selectedDiscount === null) {
+      setDiscountId(null);
+    }
+  }, [discountId, discountsQuery.data, selectedDiscount, setDiscountId]);
+
+  const subtotal = orderSubtotal(items, services);
   const discountValue = discountValueFor(selectedDiscount, subtotal);
   const grandTotal = subtotal - discountValue;
 
@@ -87,8 +110,27 @@ export default function OrderReviewScreen() {
       );
     },
     onSuccess: (order) => {
-      const customerName = order.customer?.name ?? customer?.name ?? "";
       const createdItems = order.items ?? [];
+      const itemOrderMatches =
+        createdItems.length === items.length &&
+        items.every((item, index) => {
+          const createdItem = createdItems[index];
+          return (
+            createdItem?.brand === item.brand &&
+            (createdItem.model ?? "") === item.model &&
+            (createdItem.color ?? "") === item.color &&
+            createdItem.shoe_type === item.shoeType
+          );
+        });
+
+      if (!itemOrderMatches) {
+        setSubmitError(
+          "Order tersimpan, tetapi item dari server tidak cocok. Coba kirim ulang untuk menyelesaikan foto."
+        );
+        return;
+      }
+
+      const customerName = order.customer?.name ?? customer?.name ?? "";
 
       enqueueFromOrder(
         items
@@ -101,11 +143,17 @@ export default function OrderReviewScreen() {
       );
 
       reset();
-      navigation.replace("OrderSuccess", {
-        orderId: order.id,
-        orderNumber: order.order_number,
-        customerName,
-        grandTotal: order.grand_total,
+      void Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["orders"] }),
+        queryClient.invalidateQueries({ queryKey: ["home-recent-orders"] }),
+        queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] }),
+      ]).finally(() => {
+        navigation.replace("OrderSuccess", {
+          orderId: order.id,
+          orderNumber: order.order_number,
+          customerName,
+          grandTotal: order.grand_total,
+        });
       });
     },
     onError: (error: unknown) => {
@@ -167,6 +215,11 @@ export default function OrderReviewScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
+      <ScreenHeader
+        title="Pesanan baru"
+        subtitle="Review"
+        onBack={() => navigation.goBack()}
+      />
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         <WizardProgress step={5} />
         <Text style={styles.title}>Review pesanan</Text>

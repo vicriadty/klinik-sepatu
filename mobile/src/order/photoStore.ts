@@ -61,6 +61,7 @@ interface PhotoState {
   queue: UploadEntry[];
   addDraft: (itemId: string, photo: Omit<DraftPhoto, "id">) => void;
   removeDraft: (itemId: string, photoId: string) => void;
+  removeDraftsForItem: (itemId: string) => void;
   enqueueFromOrder: (
     items: { itemId: string; orderItemId: number }[],
     orderId?: number
@@ -109,6 +110,13 @@ export const usePhotoStore = create<PhotoState>()(
             ),
           },
         })),
+
+      removeDraftsForItem: (itemId) =>
+        set((state) => {
+          const drafts = { ...state.drafts };
+          delete drafts[itemId];
+          return { drafts };
+        }),
 
       /**
        * Dipanggil setelah order dibuat: draft lokal dipindahkan ke antrean

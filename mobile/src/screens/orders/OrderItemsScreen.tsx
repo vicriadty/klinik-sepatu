@@ -5,9 +5,11 @@ import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AppButton from "../../components/AppButton";
 import EmptyState from "../../components/EmptyState";
+import ScreenHeader from "../../components/ScreenHeader";
 import WizardProgress from "../../components/WizardProgress";
 import type { AppStackParamList } from "../../navigation/types";
 import { useOrderWizardStore } from "../../order/orderWizardStore";
+import { deletePhotoFiles } from "../../order/photoFiles";
 import { usePhotoStore } from "../../order/photoStore";
 import type { Theme } from "../../theme/tokens";
 import { useTheme, useThemedStyles } from "../../theme/useTheme";
@@ -22,6 +24,7 @@ export default function OrderItemsScreen() {
   const items = useOrderWizardStore((state) => state.items);
   const removeItem = useOrderWizardStore((state) => state.removeItem);
   const photoDrafts = usePhotoStore((state) => state.drafts);
+  const removeDraftsForItem = usePhotoStore((state) => state.removeDraftsForItem);
 
   const continueOrder = () => {
     const itemWithoutServices = items.find(
@@ -41,12 +44,26 @@ export default function OrderItemsScreen() {
   const confirmRemove = (id: string, label: string) => {
     Alert.alert("Hapus sepatu?", `"${label}" akan dihapus dari order.`, [
       { text: "Batal", style: "cancel" },
-      { text: "Hapus", style: "destructive", onPress: () => removeItem(id) },
+      {
+        text: "Hapus",
+        style: "destructive",
+        onPress: () => {
+          const drafts = usePhotoStore.getState().drafts[id] ?? [];
+          deletePhotoFiles(drafts.map((photo) => photo.uri));
+          removeDraftsForItem(id);
+          removeItem(id);
+        },
+      },
     ]);
   };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
+      <ScreenHeader
+        title="Pesanan baru"
+        subtitle="Sepatu"
+        onBack={() => navigation.goBack()}
+      />
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         <WizardProgress step={2} />
         <Text style={styles.title}>Sepatu</Text>

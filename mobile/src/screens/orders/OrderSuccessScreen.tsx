@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AppButton from "../../components/AppButton";
+import ScreenHeader from "../../components/ScreenHeader";
 import type { AppStackParamList } from "../../navigation/types";
 import { uploadQueuedPhotos } from "../../order/photoUpload";
 import { UPLOAD_STATUS_LABELS, usePhotoStore } from "../../order/photoStore";
@@ -20,19 +21,15 @@ export default function OrderSuccessScreen() {
   const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const { orderId, orderNumber, customerName, grandTotal } = route.params;
-  const queue = usePhotoStore((state) => {
-    const hasTaggedEntries = state.queue.some(
-      (entry) => entry.orderId !== undefined
-    );
-    return hasTaggedEntries
-      ? state.queue.filter(
-          (entry) => entry.orderId === orderId || entry.orderId === undefined
-        )
-      : state.queue;
-  });
-  const hasTaggedQueue = usePhotoStore((state) =>
-    state.queue.some((entry) => entry.orderId !== undefined)
+  const queuedPhotos = usePhotoStore((state) => state.queue);
+  const hasTaggedQueue = queuedPhotos.some(
+    (entry) => entry.orderId !== undefined
   );
+  const queue = hasTaggedQueue
+    ? queuedPhotos.filter(
+        (entry) => entry.orderId === orderId || entry.orderId === undefined
+      )
+    : queuedPhotos;
 
   useEffect(() => {
     void uploadQueuedPhotos(
@@ -47,6 +44,11 @@ export default function OrderSuccessScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
+      <ScreenHeader
+        title="Pesanan dibuat"
+        subtitle="Order berhasil disimpan"
+        onBack={() => navigation.navigate("Home")}
+      />
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.successMark}>
           <SuccessIcon color={theme.colors.success} />

@@ -441,6 +441,8 @@ export default function OrderCustomerScreen() {
             <EmptyState
               title="Gagal memuat pelanggan."
               message="Periksa koneksi lalu coba lagi."
+              actionTitle="Coba lagi"
+              onAction={() => void customersQuery.refetch()}
             />
           ) : isEmpty ? (
             <EmptyState

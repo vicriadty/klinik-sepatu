@@ -1,7 +1,6 @@
 import { useNavigation, useRoute, type RouteProp } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import * as Crypto from "expo-crypto";
 import { useState } from "react";
 import {
   Alert,
@@ -35,6 +34,10 @@ import FilterChip from "../../components/FilterChip";
 import FullScreenLoader from "../../components/FullScreenLoader";
 import StatusPill from "../../components/StatusPill";
 import type { AppStackParamList } from "../../navigation/types";
+import {
+  clearPaymentIdempotencyKey,
+  getPaymentIdempotencyKey,
+} from "../../order/paymentIdempotency";
 import { uploadQueuedPhotos } from "../../order/photoUpload";
 import { UPLOAD_STATUS_LABELS, usePhotoStore } from "../../order/photoStore";
 import {
@@ -187,8 +190,12 @@ export default function OrderDetailScreen() {
   const photoQueue = usePhotoStore((state) => state.queue);
 
   const invalidate = async () => {
-    await queryClient.invalidateQueries({ queryKey: ["order", orderId] });
-    await queryClient.invalidateQueries({ queryKey: ["orders"] });
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["order", orderId] }),
+      queryClient.invalidateQueries({ queryKey: ["orders"] }),
+      queryClient.invalidateQueries({ queryKey: ["home-recent-orders"] }),
+      queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] }),
+    ]);
   };
 
   const statusMutation = useMutation({
@@ -218,13 +225,22 @@ export default function OrderDetailScreen() {
   });
 
   const refundMutation = useMutation({
-    mutationFn: (payload: { method: PaymentMethod; amount: number }) =>
-      recordPayment(
+    mutationFn: async (payload: { method: PaymentMethod; amount: number }) => {
+      const requestPayload = {
+        type: "refund" as const,
+        method: payload.method,
+        amount: payload.amount,
+      };
+      const idempotencyKey = await getPaymentIdempotencyKey(
         orderId,
-        { type: "refund", method: payload.method, amount: payload.amount },
-        Crypto.randomUUID()
-      ),
+        "refund",
+        JSON.stringify(requestPayload)
+      );
+
+      return recordPayment(orderId, requestPayload, idempotencyKey);
+    },
     onSuccess: async (payment) => {
+      await clearPaymentIdempotencyKey(orderId, "refund");
       setError(null);
       setFeedback(`Refund ${formatIDR(payment.amount)} tercatat.`);
       setRefundAmount(null);
@@ -412,7 +428,19 @@ export default function OrderDetailScreen() {
               </Text>
             ) : null}
           </View>
-          <Text style={styles.customerAction}>Lihat pelanggan</Text>
+          {order.customer ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Lihat pelanggan"
+              onPress={() =>
+                navigation.navigate("Customers", {
+                  search: order.customer?.phone ?? "",
+                })
+              }
+            >
+              <Text style={styles.customerAction}>Lihat pelanggan</Text>
+            </Pressable>
+          ) : null}
         </View>
 
         <Text style={styles.sectionTitle}>
