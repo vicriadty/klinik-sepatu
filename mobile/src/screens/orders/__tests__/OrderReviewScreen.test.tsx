@@ -133,6 +133,7 @@ describe("OrderReviewScreen", () => {
     seedWizard();
     await renderScreen();
 
+    await fireEvent.press(await screen.findByLabelText("Pilih diskon"));
     await fireEvent.press(await screen.findByLabelText("Diskon Promo"));
 
     expect(screen.getByText("-Rp6.000")).toBeTruthy();
@@ -143,6 +144,7 @@ describe("OrderReviewScreen", () => {
     seedWizard();
     await renderScreen();
 
+    await fireEvent.press(await screen.findByLabelText("Pilih diskon"));
     const blocked = await screen.findByLabelText("Diskon Minimal 100rb");
     expect(blocked.props.accessibilityState).toMatchObject({ disabled: true });
   });
@@ -185,7 +187,7 @@ describe("OrderReviewScreen", () => {
 
     await renderScreen();
     await fireEvent.press(
-      await screen.findByRole("button", { name: "Buat Order" })
+      await screen.findByRole("button", { name: "Buat pesanan" })
     );
 
     expect(createOrderMock).toHaveBeenCalledWith(
@@ -215,13 +217,25 @@ describe("OrderReviewScreen", () => {
     ]);
   });
 
+  it("returns to the draft when saving", async () => {
+    seedWizard();
+    await renderScreen();
+
+    await fireEvent.press(
+      await screen.findByRole("button", { name: "Simpan draft" })
+    );
+
+    expect(mockGoBack).toHaveBeenCalledTimes(1);
+    expect(useOrderWizardStore.getState().customer).toEqual(customer);
+  });
+
   it("shows an Indonesian error when creation fails", async () => {
     seedWizard();
     createOrderMock.mockRejectedValue(new Error("network"));
 
     await renderScreen();
     await fireEvent.press(
-      await screen.findByRole("button", { name: "Buat Order" })
+      await screen.findByRole("button", { name: "Buat pesanan" })
     );
 
     expect(
@@ -242,7 +256,7 @@ describe("OrderReviewScreen", () => {
     );
 
     await renderScreen();
-    const button = await screen.findByRole("button", { name: "Buat Order" });
+    const button = await screen.findByRole("button", { name: "Buat pesanan" });
 
     await fireEvent.press(button);
     await fireEvent.press(button);
