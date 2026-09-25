@@ -1,7 +1,7 @@
 import { useNavigation, useRoute, type RouteProp } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -14,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { fetchServices } from "../../api/services";
 import AppButton from "../../components/AppButton";
 import EmptyState from "../../components/EmptyState";
+import ScreenHeader from "../../components/ScreenHeader";
 import WizardProgress from "../../components/WizardProgress";
 import type { AppStackParamList } from "../../navigation/types";
 import { useOrderWizardStore } from "../../order/orderWizardStore";
@@ -57,6 +58,29 @@ export default function OrderItemServicesScreen() {
   const subtotal = services
     .filter((service) => selectedSet.has(service.id))
     .reduce((sum, service) => sum + service.price, 0);
+
+  useEffect(() => {
+    if (!servicesQuery.data) return;
+
+    const activeServiceIds = new Set(services.map((service) => service.id));
+    setSelectedByItem((current) => {
+      let changed = false;
+      const next: ServiceSelections = {};
+
+      items.forEach((item) => {
+        const currentSelection = current[item.id] ?? [];
+        const validSelection = currentSelection.filter((id) =>
+          activeServiceIds.has(id)
+        );
+        next[item.id] = validSelection;
+        if (validSelection.length !== currentSelection.length) {
+          changed = true;
+        }
+      });
+
+      return changed ? next : current;
+    });
+  }, [items, services, servicesQuery.data]);
 
   const toggle = (serviceId: number) => {
     setSelectedByItem((current) => {
@@ -108,6 +132,11 @@ export default function OrderItemServicesScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
+      <ScreenHeader
+        title="Pesanan baru"
+        subtitle="Layanan"
+        onBack={() => navigation.goBack()}
+      />
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         <WizardProgress step={3} />
         <Text style={styles.title}>Layanan</Text>
@@ -147,6 +176,8 @@ export default function OrderItemServicesScreen() {
           <EmptyState
             title="Gagal memuat layanan."
             message="Periksa koneksi lalu coba lagi."
+            actionTitle="Coba lagi"
+            onAction={() => void servicesQuery.refetch()}
           />
         ) : services.length === 0 ? (
           <EmptyState

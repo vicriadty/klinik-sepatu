@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 import AppButton from "../../components/AppButton";
 import AppTextField from "../../components/AppTextField";
+import ScreenHeader from "../../components/ScreenHeader";
 import type { AppStackParamList } from "../../navigation/types";
 import {
   useOrderWizardStore,
@@ -95,6 +96,10 @@ export default function OrderItemFormScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
+      <ScreenHeader
+        title={itemId ? "Ubah sepatu" : "Tambah sepatu"}
+        onBack={() => navigation.goBack()}
+      />
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : undefined}

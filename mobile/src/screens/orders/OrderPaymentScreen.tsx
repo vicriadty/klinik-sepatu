@@ -1,8 +1,7 @@
 import { useNavigation, useRoute, type RouteProp } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import * as Crypto from "expo-crypto";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   Pressable,
   ScrollView,
@@ -25,6 +24,10 @@ import EmptyState from "../../components/EmptyState";
 import FullScreenLoader from "../../components/FullScreenLoader";
 import StatusPill from "../../components/StatusPill";
 import type { AppStackParamList } from "../../navigation/types";
+import {
+  clearPaymentIdempotencyKey,
+  getPaymentIdempotencyKey,
+} from "../../order/paymentIdempotency";
 import { PAYMENT_STATUS_TONES } from "../../order/status";
 import type { Theme } from "../../theme/tokens";
 import { useTheme, useThemedStyles } from "../../theme/useTheme";
@@ -141,8 +144,6 @@ export default function OrderPaymentScreen() {
   const [note, setNote] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const idempotencyKey = useRef<string | null>(null);
-
   const order = orderQuery.data;
   const remaining = order?.remaining_balance ?? 0;
   const amountValue = amountText ?? String(remaining);
@@ -168,29 +169,40 @@ export default function OrderPaymentScreen() {
   };
 
   const paymentMutation = useMutation({
-    mutationFn: () => {
+    mutationFn: async () => {
       if (!order) {
         throw new Error("missing order");
       }
-      idempotencyKey.current = idempotencyKey.current ?? Crypto.randomUUID();
+
+      const payload = {
+        method,
+        amount,
+        ...(note.trim() !== "" ? { note: note.trim() } : {}),
+      };
+      const idempotencyKey = await getPaymentIdempotencyKey(
+        order.id,
+        "payment",
+        JSON.stringify(payload)
+      );
 
       return recordPayment(
         order.id,
-        {
-          method,
-          amount,
-          ...(note.trim() !== "" ? { note: note.trim() } : {}),
-        },
-        idempotencyKey.current
+        payload,
+        idempotencyKey
       );
     },
     onSuccess: async (payment) => {
-      idempotencyKey.current = null;
+      await clearPaymentIdempotencyKey(orderId, "payment");
       setAmountText(null);
       setNote("");
       setFormError(null);
       setSuccessMessage(`Pembayaran ${formatIDR(payment.amount)} tercatat.`);
-      await queryClient.invalidateQueries({ queryKey: ["order", orderId] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["order", orderId] }),
+        queryClient.invalidateQueries({ queryKey: ["orders"] }),
+        queryClient.invalidateQueries({ queryKey: ["home-recent-orders"] }),
+        queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] }),
+      ]);
     },
     onError: (error: unknown) => {
       setSuccessMessage(null);

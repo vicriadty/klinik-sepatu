@@ -143,4 +143,25 @@ describe("usePhotoStore", () => {
     expect(usePhotoStore.getState().drafts).toEqual({});
     expect(usePhotoStore.getState().queue).toHaveLength(1);
   });
+
+  it("removes drafts for a deleted shoe", () => {
+    usePhotoStore.setState({
+      drafts: {
+        "item-1": [
+          {
+            id: "photo-1",
+            uri: "file:///draft.jpg",
+            angle: "front",
+            type: "BEFORE",
+          },
+        ],
+        "item-2": [],
+      },
+      queue: [],
+    });
+
+    usePhotoStore.getState().removeDraftsForItem("item-1");
+
+    expect(usePhotoStore.getState().drafts).toEqual({ "item-2": [] });
+  });
 });

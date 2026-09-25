@@ -84,9 +84,11 @@ describe("OrderPaymentScreen", () => {
   it("shows the server-derived balance and defaults the amount", async () => {
     await renderScreen();
 
-    expect(screen.getByText("Rp 54.000")).toBeTruthy();
-    expect(screen.getByText("BELUM DIBAYAR")).toBeTruthy();
-    expect(screen.getByPlaceholderText("0").props.value).toBe("Rp 54.000");
+    expect(await screen.findByText("Rp 54.000")).toBeTruthy();
+    expect(await screen.findByText("BELUM DIBAYAR")).toBeTruthy();
+    expect((await screen.findByPlaceholderText("0")).props.value).toBe(
+      "Rp 54.000"
+    );
   });
 
   it("records a payment with the selected method", async () => {

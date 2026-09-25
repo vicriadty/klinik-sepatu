@@ -30,12 +30,13 @@ const uploadMock = uploadItemPhoto as jest.MockedFunction<
   typeof uploadItemPhoto
 >;
 
-function seedQueue(count: number) {
+function seedQueue(count: number, orderId?: number) {
   usePhotoStore.setState({
     drafts: {},
     queue: Array.from({ length: count }, (_, index) => ({
       id: `photo-${index + 1}`,
       orderItemId: 101 + index,
+      ...(orderId !== undefined ? { orderId } : {}),
       uri: `file:///photo-${index + 1}.jpg`,
       type: "BEFORE" as const,
       status: "pending" as const,
@@ -70,6 +71,13 @@ describe("OrderSuccessScreen", () => {
       uri: "file:///photo-1.jpg",
       type: "BEFORE",
     });
+  });
+
+  it("scopes tagged photos to the created order", async () => {
+    seedQueue(1, 9);
+    await render(<OrderSuccessScreen />);
+
+    expect(await screen.findByText("Foto (1/1 terunggah)")).toBeTruthy();
   });
 
   it("keeps a failed upload retryable without blocking the order", async () => {

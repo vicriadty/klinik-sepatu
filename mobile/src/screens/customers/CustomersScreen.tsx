@@ -16,6 +16,7 @@ import { searchCustomers, type ApiCustomer } from "../../api/customers";
 import AppButton from "../../components/AppButton";
 import BottomNavigation from "../../components/BottomNavigation";
 import EmptyState from "../../components/EmptyState";
+import ScreenHeader from "../../components/ScreenHeader";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import type { AppStackParamList } from "../../navigation/types";
 import { useOrderWizardStore } from "../../order/orderWizardStore";
@@ -258,12 +259,6 @@ export default function CustomersScreen() {
   const normalizedPhone = normalizePhone(searchInput);
 
   useEffect(() => {
-    if (selectMode) {
-      navigation.setOptions({ title: "Pilih Pelanggan" });
-    }
-  }, [selectMode, navigation]);
-
-  useEffect(() => {
     const created = route.params?.created;
     const incomingSearch = route.params?.search;
 
@@ -307,20 +302,21 @@ export default function CustomersScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
       <View style={styles.header}>
-        <View style={styles.titleRow}>
-          <View>
-            <Text style={styles.title}>Pelanggan</Text>
-            <Text style={styles.subtitle}>Cari dan pilih pelanggan</Text>
-          </View>
-          <AppButton
-            title="Baru"
-            size="compact"
-            onPress={openCreateForm}
-            accessibilityLabel="Tambah Pelanggan"
-            style={styles.newButton}
-            leftIcon={<CustomersIcon name="plus" color={theme.colors.onPrimary} />}
-          />
-        </View>
+        <ScreenHeader
+          title={selectMode ? "Pilih pelanggan" : "Pelanggan"}
+          subtitle="Cari dan pilih pelanggan"
+          onBack={() => navigation.goBack()}
+          right={
+            <AppButton
+              title="Baru"
+              size="compact"
+              onPress={openCreateForm}
+              accessibilityLabel="Tambah Pelanggan"
+              style={styles.newButton}
+              leftIcon={<CustomersIcon name="plus" color={theme.colors.onPrimary} />}
+            />
+          }
+        />
         <View
           style={[
             styles.searchContainer,
@@ -381,6 +377,8 @@ export default function CustomersScreen() {
         <EmptyState
           title="Gagal memuat pelanggan."
           message="Periksa koneksi lalu coba lagi."
+          actionTitle="Coba lagi"
+          onAction={() => void customersQuery.refetch()}
         />
       ) : isEmpty ? (
         <EmptyState
@@ -464,24 +462,8 @@ const createStyles = ({
       backgroundColor: colors.canvas,
     },
     header: {
-      paddingTop: layout.statusBarHeight + spacing.md,
       paddingBottom: spacing.sm,
       gap: spacing.md,
-    },
-    titleRow: {
-      flexDirection: "row",
-      alignItems: "flex-start",
-      justifyContent: "space-between",
-      paddingHorizontal: layout.screen.gutter,
-    },
-    title: {
-      ...typography.headingLg,
-      color: colors.ink,
-    },
-    subtitle: {
-      ...typography.caption,
-      color: colors.mute,
-      fontWeight: "400",
     },
     newButton: {
       minWidth: 88,
