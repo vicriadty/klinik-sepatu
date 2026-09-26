@@ -8,7 +8,7 @@ import svgr from "vite-plugin-svgr";
 export const svgrReactComponent = () =>
   svgr({
     svgrOptions: {
-      template: (variables: any, { tpl }: any) => tpl`
+      template: (variables, { tpl }) => tpl`
 ${variables.imports};
 
 ${variables.interfaces};

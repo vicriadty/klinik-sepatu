@@ -119,15 +119,6 @@ export default function UsersPage() {
     );
   };
 
-  const confirmDelete = () => {
-    if (!deleteTarget) return;
-    const { id, name } = deleteTarget;
-    deleteMutation.mutate(id, {
-      onSuccess: () => showSuccess(`User "${name}" dihapus.`),
-      onError: showError("Gagal menghapus user."),
-    });
-  };
-
   return (
     <>
       <PageMeta

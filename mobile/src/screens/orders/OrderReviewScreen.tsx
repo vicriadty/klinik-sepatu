@@ -232,7 +232,7 @@ export default function OrderReviewScreen() {
           </View>
         </View>
 
-        {items.map((item, index) => (
+        {items.map((item) => (
           <View key={item.id} style={styles.itemCard}>
             <View style={styles.itemHeader}>
               <Text style={styles.itemTitle}>

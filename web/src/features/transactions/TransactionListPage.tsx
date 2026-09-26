@@ -70,7 +70,6 @@ export default function TransactionListPage() {
 
   useEffect(() => {
     setSearchInput(filters.search);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters.search]);
 
   useEffect(() => {

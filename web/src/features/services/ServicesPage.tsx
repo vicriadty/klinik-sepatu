@@ -102,22 +102,6 @@ export default function ServicesPage() {
     );
   };
 
-  const remove = () => {
-    if (!deleteTarget) return;
-    const { id, name } = deleteTarget;
-    deleteMutation.mutate(id, {
-      onSuccess: () => {
-        setDeleteTarget(null);
-        setFeedback({
-          variant: "success",
-          title: "Berhasil",
-          message: `Layanan "${name}" dihapus.`,
-        });
-      },
-      onError: notifyError("Gagal menghapus layanan."),
-    });
-  };
-
   return (
     <>
       <PageMeta
