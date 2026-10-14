@@ -38,8 +38,11 @@ export default function UserDropdown() {
   return (
     <div className="relative">
       <button
+        type="button"
+        aria-label={`Account menu for ${user?.name ?? "current user"}`}
+        aria-expanded={isOpen}
         onClick={toggleDropdown}
-        className="flex items-center text-gray-700 dropdown-toggle dark:text-gray-400"
+        className="focus-ring flex items-center text-gray-700 dropdown-toggle dark:text-gray-400"
       >
         <span className="mr-3 flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-brand-500 font-semibold text-white">
           {initial}

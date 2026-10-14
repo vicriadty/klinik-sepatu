@@ -17,7 +17,7 @@ export default function PeriodFilter({ value, onChange }: PeriodFilterProps) {
             key={preset}
             type="button"
             onClick={() => onChange({ preset })}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+            className={`focus-ring min-h-11 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
               value.preset === preset
                 ? "bg-brand-500 text-white shadow-theme-xs"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"

@@ -2,11 +2,13 @@ import Chart from "react-apexcharts";
 import type { ApexOptions } from "apexcharts";
 import { formatDateID } from "../../../utils/format";
 import type { OrdersPoint } from "../../../services/dashboardApi";
+import { useTheme } from "../../../context/ThemeContext";
 
 export default function OrdersChart({ data }: { data: OrdersPoint[] }) {
+  const { theme } = useTheme();
   const options: ApexOptions = {
     legend: { show: false },
-    colors: ["#9CB9FF"],
+    colors: [theme === "dark" ? "#7592FF" : "#465FFF"],
     chart: {
       fontFamily: "Outfit, sans-serif",
       type: "bar",
