@@ -96,7 +96,7 @@ export default function DateField({
             type="button"
             onClick={clear}
             aria-label="Hapus tanggal"
-            className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            className="focus-ring absolute right-10 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
           >
             <svg
               width="16"

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="231" height="48" viewBox="0 0 231 48" role="img" aria-labelledby="title">
+  <title id="title">Klinik Sepatu</title>
+  <rect x="1" y="1" width="46" height="46" rx="12" fill="#465FFF"/>
+  <path d="M13 32c6-1 10-5 12-11l2-6 6 2-2 7c-2 7-7 11-17 12l-1-4Z" fill="#fff"/>
+  <path d="M12 35h24" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+  <text x="59" y="31" fill="#1D2939" font-family="Arial, sans-serif" font-size="20" font-weight="700">Klinik Sepatu</text>
+</svg>
