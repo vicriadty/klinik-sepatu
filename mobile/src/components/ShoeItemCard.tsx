@@ -107,7 +107,7 @@ function Detail({
   );
 }
 
-const createStyles = ({ colors, spacing, typography }: Theme) =>
+const createStyles = ({ colors, layout, spacing, typography }: Theme) =>
   StyleSheet.create({
     header: {
       flexDirection: "row",
@@ -167,7 +167,7 @@ const createStyles = ({ colors, spacing, typography }: Theme) =>
       marginTop: spacing.md,
     },
     actionButton: {
-      minHeight: spacing.xl,
+      minHeight: layout.minTouchTarget,
       justifyContent: "center",
     },
     actionLabel: {

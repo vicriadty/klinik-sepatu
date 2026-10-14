@@ -11,6 +11,7 @@ import {
   Text,
   TextInput,
   View,
+  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -127,6 +128,9 @@ export default function OrdersScreen() {
   const navigation = useNavigation<Navigation>();
   const theme = useTheme();
   const styles = useThemedStyles(createStyles);
+  const { width } = useWindowDimensions();
+  const compactFilters =
+    width - theme.layout.screen.gutter * 2 < 300;
   const [searchInput, setSearchInput] = useState("");
   const [status, setStatus] = useState<OrderStatus | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | null>(
@@ -191,23 +195,17 @@ export default function OrdersScreen() {
           />
         </View>
 
-        <View style={styles.filterRow}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Hari ini"
-            accessibilityState={{ disabled: true }}
-            disabled
-            style={[styles.filterButton, styles.dateFilter]}
-          >
-            <OrdersIcon name="calendar" color={theme.colors.mute} size={16} />
-            <Text style={styles.filterLabel}>Hari ini</Text>
-          </Pressable>
+        <View style={[styles.filterRow, compactFilters && styles.filterRowStacked]}>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Status"
             accessibilityState={{ selected: openFilter === "status" }}
             onPress={() => setOpenFilter(openFilter === "status" ? null : "status")}
-            style={[styles.filterButton, styles.statusFilter]}
+            style={[
+              styles.filterButton,
+              styles.statusFilter,
+              compactFilters && styles.filterButtonStacked,
+            ]}
           >
             <Text style={styles.filterLabel} numberOfLines={1}>
               {status ? ORDER_STATUS_LABELS[status] : "Status"}
@@ -221,7 +219,11 @@ export default function OrdersScreen() {
             onPress={() =>
               setOpenFilter(openFilter === "payment" ? null : "payment")
             }
-            style={[styles.filterButton, styles.paymentFilter]}
+            style={[
+              styles.filterButton,
+              styles.paymentFilter,
+              compactFilters && styles.filterButtonStacked,
+            ]}
           >
             <Text style={styles.filterLabel} numberOfLines={1}>
               {paymentStatus
@@ -427,8 +429,11 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
       gap: spacing.sm,
       paddingHorizontal: layout.screen.gutter,
     },
+    filterRowStacked: {
+      flexDirection: "column",
+    },
     filterButton: {
-      height: 32,
+      minHeight: layout.minTouchTarget,
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
@@ -439,9 +444,8 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
       borderRadius: radius.full,
       backgroundColor: colors.card,
     },
-    dateFilter: {
-      width: 110,
-      justifyContent: "flex-start",
+    filterButtonStacked: {
+      width: "100%",
     },
     statusFilter: {
       width: 102,

@@ -24,7 +24,14 @@ export default function SummaryCard({
 
   return (
     <View style={[styles.card, highlight && styles.highlight]}>
-      <Text style={styles.value}>{value}</Text>
+      <Text
+        adjustsFontSizeToFit
+        minimumFontScale={0.72}
+        numberOfLines={1}
+        style={styles.value}
+      >
+        {value}
+      </Text>
       <Text
         style={[
           styles.label,
@@ -68,6 +75,7 @@ const createStyles = ({
     value: {
       ...typography.headingLg,
       color: colors.ink,
+      paddingRight: spacing.xl,
     },
     successLabel: {
       color: colors.success,

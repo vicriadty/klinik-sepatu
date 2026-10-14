@@ -37,6 +37,7 @@ export default function WizardProgress({
             <Pressable
               accessibilityLabel={stepLabels[index] ?? `Langkah ${index + 1}`}
               accessibilityRole={onStepPress ? "button" : "text"}
+              hitSlop={onStepPress ? 10 : 0}
               disabled={!onStepPress}
               onPress={() => onStepPress?.(index + 1)}
               style={({ pressed }) => [
@@ -84,6 +85,8 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
     label: {
       ...typography.caption,
       color: colors.mute,
+      letterSpacing: 0.8,
+      textTransform: "uppercase",
     },
     track: {
       flexDirection: "row",

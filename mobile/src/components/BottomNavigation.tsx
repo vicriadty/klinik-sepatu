@@ -5,17 +5,17 @@ import type { AppStackParamList } from "../navigation/types";
 import type { Theme } from "../theme/tokens";
 import { useThemedStyles } from "../theme/useTheme";
 
-type TabKey = "home" | "orders" | "customers" | "profile";
+type TabKey = "home" | "orders" | "customers";
 type NavigationRoute = "Home" | "Orders" | "Customers";
 export type BottomNavigationTab = TabKey;
 
-type IconName = "home" | "clipboard" | "users" | "profile";
+type IconName = "home" | "clipboard" | "users";
 
 interface TabDefinition {
   key: TabKey;
   label: string;
   icon: IconName;
-  route?: NavigationRoute;
+  route: NavigationRoute;
 }
 
 interface BottomNavigationProps {
@@ -26,7 +26,6 @@ const tabs: readonly TabDefinition[] = [
   { key: "home", label: "Beranda", icon: "home", route: "Home" },
   { key: "orders", label: "Pesanan", icon: "clipboard", route: "Orders" },
   { key: "customers", label: "Pelanggan", icon: "users", route: "Customers" },
-  { key: "profile", label: "Profil", icon: "profile" },
 ];
 
 type Navigation = NativeStackNavigationProp<AppStackParamList>;
@@ -62,12 +61,7 @@ function NavIcon({ name, color }: { name: IconName; color: string }) {
     );
   }
 
-  return (
-    <View style={iconStyles.base}>
-      <View style={[iconStyles.profileHead, { borderColor: color }]} />
-      <View style={[iconStyles.profileBody, { borderColor: color }]} />
-    </View>
-  );
+  return null;
 }
 
 export default function BottomNavigation({ active }: BottomNavigationProps) {
@@ -92,24 +86,18 @@ export default function BottomNavigation({ active }: BottomNavigationProps) {
         {tabs.map((tab) => {
           const selected = active === tab.key;
           const color = selected ? styles.active.color : styles.inactive.color;
-          const disabled = !tab.route;
 
           return (
             <Pressable
               key={tab.key}
               accessibilityRole="tab"
               accessibilityLabel={tab.label}
-              accessibilityState={{ selected, disabled }}
-              disabled={disabled}
-              onPress={() => {
-                if (tab.route) {
-                  navigate(tab.route);
-                }
-              }}
+              accessibilityState={{ selected }}
+              onPress={() => navigate(tab.route)}
               style={({ pressed }) => [
                 styles.tab,
                 selected && styles.tabSelected,
-                pressed && !disabled && styles.tabPressed,
+                pressed && styles.tabPressed,
               ]}
             >
               <NavIcon name={tab.icon} color={color} />
@@ -262,23 +250,5 @@ const iconStyles = StyleSheet.create({
     height: 5,
     borderWidth: 1.5,
     borderRadius: 5,
-  },
-  profileHead: {
-    position: "absolute",
-    top: 2,
-    left: 6,
-    width: 8,
-    height: 8,
-    borderWidth: 1.5,
-    borderRadius: 8,
-  },
-  profileBody: {
-    position: "absolute",
-    top: 12,
-    left: 3,
-    width: 14,
-    height: 7,
-    borderWidth: 1.5,
-    borderRadius: 8,
   },
 });

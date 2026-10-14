@@ -176,14 +176,27 @@ describe("OrderItemPhotosScreen", () => {
   });
 
   it("continues to review and saves the draft locally", async () => {
+    usePhotoStore.getState().addDraft("item-1", {
+      uri: "file:///photo.jpg",
+      angle: "front",
+      type: "BEFORE",
+    });
     await render(<OrderItemPhotosScreen />);
 
     await fireEvent.press(
-      screen.getByRole("button", { name: "Lanjut: tinjau pesanan" })
+      screen.getByRole("button", { name: "Review Pesanan" })
     );
     expect(mockNavigate).toHaveBeenCalledWith("OrderReview");
 
-    await fireEvent.press(screen.getByRole("button", { name: "Simpan draft" }));
+    await fireEvent.press(screen.getByRole("button", { name: "Simpan Draft" }));
     expect(mockGoBack).toHaveBeenCalledTimes(1);
+  });
+
+  it("disables review until a photo has been captured", async () => {
+    await render(<OrderItemPhotosScreen />);
+
+    const button = screen.getByRole("button", { name: "Review Pesanan" });
+    expect(button.props.accessibilityState.disabled).toBe(true);
+    expect(mockNavigate).not.toHaveBeenCalledWith("OrderReview");
   });
 });

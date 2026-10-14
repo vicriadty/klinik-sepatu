@@ -414,8 +414,8 @@ const createStyles = ({
       paddingHorizontal: layout.screen.gutter,
     },
     backButton: {
-      width: 24,
-      height: 28,
+      width: layout.minTouchTarget,
+      height: layout.minTouchTarget,
       alignItems: "center",
       justifyContent: "center",
       marginRight: spacing.md,
@@ -469,7 +469,7 @@ const createStyles = ({
       fontWeight: "400",
     },
     duplicateAction: {
-      minHeight: 36,
+      minHeight: layout.minTouchTarget,
       justifyContent: "center",
       paddingLeft: spacing.xs,
     },

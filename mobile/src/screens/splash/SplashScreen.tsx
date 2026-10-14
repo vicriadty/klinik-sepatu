@@ -24,7 +24,7 @@ export default function SplashScreen() {
             },
           ]}
         />
-        <Text style={styles.label}>Loading...</Text>
+        <Text style={styles.label}>Memuat…</Text>
       </View>
     </SafeAreaView>
   );

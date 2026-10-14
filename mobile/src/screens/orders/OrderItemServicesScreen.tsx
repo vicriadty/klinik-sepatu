@@ -139,7 +139,6 @@ export default function OrderItemServicesScreen() {
       />
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         <WizardProgress step={3} />
-        <Text style={styles.title}>Layanan</Text>
         <Text style={styles.sectionTitle}>Pilih layanan per sepatu</Text>
         <Text style={styles.helper}>
           Pilih satu atau lebih layanan. Harga berasal dari server.
@@ -246,15 +245,16 @@ export default function OrderItemServicesScreen() {
       </ScrollView>
 
       <View style={styles.footer}>
+        <Text style={styles.draftStatus}>Draft tersimpan otomatis</Text>
         <AppButton
-          title="Lanjut: ambil foto"
+          title="Ambil Foto"
           onPress={continueToPhotos}
           disabled={!allItemsReady || servicesQuery.isError}
           fullWidth
         />
         <AppButton
-          title="Simpan draft"
-          variant="ghost"
+          title="Simpan Draft"
+          variant="muted"
           size="compact"
           onPress={saveDraft}
           fullWidth
@@ -292,11 +292,6 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
     emptyContent: {
       flex: 1,
       padding: spacing.page,
-    },
-    title: {
-      ...typography.screenTitle,
-      color: colors.ink,
-      marginBottom: spacing.lg,
     },
     sectionTitle: {
       ...typography.overline,
@@ -430,6 +425,11 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
       paddingHorizontal: spacing.page,
       paddingTop: spacing.md,
       paddingBottom: spacing.sm,
+    },
+    draftStatus: {
+      ...typography.overline,
+      color: colors.mute,
+      textAlign: "center",
     },
   });
 
