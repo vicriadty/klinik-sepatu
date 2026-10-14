@@ -42,9 +42,11 @@ export default function OrderItemPhotosScreen() {
   const item = useOrderWizardStore((state) =>
     state.items.find((entry) => entry.id === itemId)
   );
+  const items = useOrderWizardStore((state) => state.items);
   const photos = usePhotoStore(
     (state) => state.drafts[itemId] ?? EMPTY_PHOTOS
   );
+  const photoDrafts = usePhotoStore((state) => state.drafts);
   const addDraft = usePhotoStore((state) => state.addDraft);
   const removeDraft = usePhotoStore((state) => state.removeDraft);
   const [angle, setAngle] = useState<PhotoAngle>("front");
@@ -149,6 +151,26 @@ export default function OrderItemPhotosScreen() {
   }
 
   const itemLabel = `${item.brand}${item.model ? ` ${item.model}` : ""}`;
+  const hasBeforePhoto = photos.some((photo) => photo.type === "BEFORE");
+  const nextPhotoItemId = items.find(
+    (entry) =>
+      entry.id !== itemId &&
+      !(photoDrafts[entry.id] ?? []).some((photo) => photo.type === "BEFORE")
+  )?.id;
+  const reviewTitle =
+    !hasBeforePhoto || !nextPhotoItemId
+      ? "Review Pesanan"
+      : "Foto Sepatu Berikutnya";
+  const continueFromPhotos = () => {
+    if (!hasBeforePhoto) return;
+
+    if (nextPhotoItemId) {
+      navigation.navigate("OrderItemPhotos", { itemId: nextPhotoItemId });
+      return;
+    }
+
+    navigation.navigate("OrderReview");
+  };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
@@ -159,7 +181,6 @@ export default function OrderItemPhotosScreen() {
       />
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         <WizardProgress step={4} />
-        <Text style={styles.title}>Foto kondisi</Text>
         <Text style={styles.sectionTitle}>Foto before · {itemLabel}</Text>
 
         <View style={styles.infoCard}>
@@ -174,7 +195,11 @@ export default function OrderItemPhotosScreen() {
           </View>
         </View>
 
-        <View style={styles.angleGrid}>
+        <View
+          accessibilityRole="radiogroup"
+          accessibilityLabel="Sudut foto"
+          style={styles.angleGrid}
+        >
           {PHOTO_ANGLES.map((option) => {
             const count = photoCountByAngle[option.value] ?? 0;
             const selected = option.value === angle;
@@ -182,8 +207,8 @@ export default function OrderItemPhotosScreen() {
             return (
               <Pressable
                 key={option.value}
-                accessibilityRole="checkbox"
-                accessibilityState={{ checked: count > 0 }}
+                accessibilityRole="radio"
+                accessibilityState={{ selected }}
                 accessibilityLabel={`Sudut ${option.label}`}
                 onPress={() => setAngle(option.value)}
                 style={[
@@ -247,9 +272,12 @@ export default function OrderItemPhotosScreen() {
           onPress={() => setAngle("damage")}
           style={styles.damageRow}
         >
-          <View style={styles.damageCopy}>
-            <Text style={styles.damageTitle}>Tambah foto kerusakan</Text>
-            <Text style={styles.damageMeta}>Opsional</Text>
+          <View style={styles.damageLeading}>
+            <WarningIcon color={theme.colors.warning} />
+            <View style={styles.damageCopy}>
+              <Text style={styles.damageTitle}>Tambah foto kerusakan</Text>
+              <Text style={styles.damageMeta}>Opsional</Text>
+            </View>
           </View>
           <ChevronIcon color={theme.colors.mute} />
         </Pressable>
@@ -260,14 +288,16 @@ export default function OrderItemPhotosScreen() {
       </ScrollView>
 
       <View style={styles.footer}>
+        <Text style={styles.draftStatus}>Draft tersimpan otomatis</Text>
         <AppButton
-          title="Lanjut: tinjau pesanan"
-          onPress={() => navigation.navigate("OrderReview")}
+          title={reviewTitle}
+          onPress={continueFromPhotos}
+          disabled={!hasBeforePhoto}
           fullWidth
         />
         <AppButton
-          title="Simpan draft"
-          variant="ghost"
+          title="Simpan Draft"
+          variant="muted"
           size="compact"
           onPress={() => navigation.goBack()}
           fullWidth
@@ -293,6 +323,14 @@ function InfoIcon({ color }: { color: string }) {
     <View pointerEvents="none" style={[iconStyles.infoIcon, { borderColor: color }]}>
       <View style={[iconStyles.infoDot, { backgroundColor: color }]} />
       <View style={[iconStyles.infoLine, { backgroundColor: color }]} />
+    </View>
+  );
+}
+
+function WarningIcon({ color }: { color: string }) {
+  return (
+    <View style={[iconStyles.warningIcon, { borderColor: color }]}>
+      <Text style={[iconStyles.warningMark, { color }]}>!</Text>
     </View>
   );
 }
@@ -325,11 +363,6 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
     emptyContent: {
       flex: 1,
       padding: spacing.page,
-    },
-    title: {
-      ...typography.screenTitle,
-      color: colors.ink,
-      marginBottom: spacing.lg,
     },
     sectionTitle: {
       ...typography.overline,
@@ -452,10 +485,16 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
       gap: spacing.md,
       borderRadius: radius.card,
       borderWidth: 1,
-      borderColor: colors.hairline,
-      backgroundColor: colors.card,
+      borderColor: colors.warning,
+      backgroundColor: colors.warningSurface,
       paddingHorizontal: spacing.md,
       marginTop: spacing.lg,
+    },
+    damageLeading: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.md,
     },
     damageCopy: {
       flex: 1,
@@ -463,11 +502,11 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
     },
     damageTitle: {
       ...typography.bodyUi,
-      color: colors.ink,
+      color: colors.warningText,
     },
     damageMeta: {
       ...typography.caption,
-      color: colors.mute,
+      color: colors.warningText,
     },
     uploadNote: {
       ...typography.caption,
@@ -483,6 +522,11 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
       paddingHorizontal: spacing.page,
       paddingTop: spacing.md,
       paddingBottom: spacing.sm,
+    },
+    draftStatus: {
+      ...typography.overline,
+      color: colors.mute,
+      textAlign: "center",
     },
   });
 
@@ -523,6 +567,19 @@ const iconStyles = StyleSheet.create({
     height: 5,
     borderRadius: 2,
     marginTop: 2,
+  },
+  warningIcon: {
+    width: 16,
+    height: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderRadius: 16,
+  },
+  warningMark: {
+    fontSize: 11,
+    lineHeight: 14,
+    fontWeight: "600",
   },
   chevronIcon: {
     width: 16,

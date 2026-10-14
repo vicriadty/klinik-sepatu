@@ -42,6 +42,7 @@ export default function OrderReviewScreen() {
   );
   const reset = useOrderWizardStore((state) => state.reset);
   const enqueueFromOrder = usePhotoStore((state) => state.enqueueFromOrder);
+  const photoDrafts = usePhotoStore((state) => state.drafts);
   const queryClient = useQueryClient();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showDiscounts, setShowDiscounts] = useState(false);
@@ -83,6 +84,10 @@ export default function OrderReviewScreen() {
   const subtotal = orderSubtotal(items, services);
   const discountValue = discountValueFor(selectedDiscount, subtotal);
   const grandTotal = subtotal - discountValue;
+  const itemMissingPhotos = items.find(
+    (item) =>
+      !(photoDrafts[item.id] ?? []).some((photo) => photo.type === "BEFORE")
+  );
 
   const createMutation = useMutation({
     mutationFn: async () => {
@@ -187,6 +192,26 @@ export default function OrderReviewScreen() {
     );
   }
 
+  if (itemMissingPhotos) {
+    return (
+      <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
+        <EmptyState
+          title="Foto sepatu belum lengkap."
+          message="Ambil minimal satu foto sebelum meninjau pesanan."
+          actionTitle="Lengkapi foto"
+          onAction={() =>
+            navigation.navigate("OrderItemPhotos", {
+              itemId: itemMissingPhotos.id,
+            })
+          }
+        />
+        <View style={styles.emptyAction}>
+          <AppButton title="Kembali" onPress={() => navigation.goBack()} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   if (servicesQuery.isLoading || discountsQuery.isLoading) {
     return <FullScreenLoader label="Menghitung total…" />;
   }
@@ -222,7 +247,6 @@ export default function OrderReviewScreen() {
       />
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         <WizardProgress step={5} />
-        <Text style={styles.title}>Review pesanan</Text>
 
         <View style={styles.customerCard}>
           <CustomerIcon color={theme.colors.mute} />
@@ -231,6 +255,10 @@ export default function OrderReviewScreen() {
             <Text style={styles.customerPhone}>{customer.phone_display}</Text>
           </View>
         </View>
+
+        <Text style={styles.sectionTitle}>
+          Ringkasan pesanan · {items.length} sepatu
+        </Text>
 
         {items.map((item) => (
           <View key={item.id} style={styles.itemCard}>
@@ -258,7 +286,6 @@ export default function OrderReviewScreen() {
           </View>
         ))}
 
-        <Text style={styles.sectionTitle}>Diskon terdaftar</Text>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Pilih diskon"
@@ -352,6 +379,7 @@ export default function OrderReviewScreen() {
       </ScrollView>
 
       <View style={styles.footer}>
+        <Text style={styles.draftStatus}>Draft tersimpan otomatis</Text>
         <AppButton
           title="Buat pesanan"
           onPress={submit}
@@ -359,8 +387,8 @@ export default function OrderReviewScreen() {
           fullWidth
         />
         <AppButton
-          title="Simpan draft"
-          variant="ghost"
+          title="Simpan Draft"
+          variant="muted"
           size="compact"
           onPress={() => navigation.goBack()}
           fullWidth
@@ -414,11 +442,6 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
     },
     emptyAction: {
       padding: spacing.xl,
-    },
-    title: {
-      ...typography.screenTitle,
-      color: colors.ink,
-      marginBottom: spacing.lg,
     },
     customerCard: {
       minHeight: layout.controlHeight,
@@ -611,6 +634,11 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
       paddingHorizontal: spacing.page,
       paddingTop: spacing.md,
       paddingBottom: spacing.sm,
+    },
+    draftStatus: {
+      ...typography.overline,
+      color: colors.mute,
+      textAlign: "center",
     },
   });
 

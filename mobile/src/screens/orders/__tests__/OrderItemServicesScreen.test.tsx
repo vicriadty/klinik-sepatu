@@ -121,7 +121,7 @@ describe("OrderItemServicesScreen", () => {
     expect(screen.getAllByText("Rp35.000")).toHaveLength(2);
 
     await fireEvent.press(
-      screen.getByRole("button", { name: "Lanjut: ambil foto" })
+      screen.getByRole("button", { name: "Ambil Foto" })
     );
 
     expect(useOrderWizardStore.getState().items).toEqual(
@@ -140,7 +140,7 @@ describe("OrderItemServicesScreen", () => {
 
     await renderScreen();
 
-    const button = screen.getByRole("button", { name: "Lanjut: ambil foto" });
+    const button = screen.getByRole("button", { name: "Ambil Foto" });
 
     expect(button.props.accessibilityState.disabled).toBe(true);
     await fireEvent.press(button);
@@ -152,7 +152,7 @@ describe("OrderItemServicesScreen", () => {
 
     await renderScreen();
     await fireEvent.press(screen.getByLabelText("Layanan Fast Clean"));
-    await fireEvent.press(screen.getByRole("button", { name: "Simpan draft" }));
+    await fireEvent.press(screen.getByRole("button", { name: "Simpan Draft" }));
 
     expect(
       useOrderWizardStore.getState().items.find((item) => item.id === firstItemId)

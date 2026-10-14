@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Text,
   View,
+  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ROLE_LABELS } from "../../api/auth";
@@ -43,8 +44,7 @@ type HomeIconName =
   | "package"
   | "clock"
   | "plus"
-  | "search"
-  | "chevron";
+  | "search";
 
 function getInitials(name?: string) {
   const words = name?.trim().split(/\s+/).filter(Boolean) ?? [];
@@ -117,33 +117,6 @@ function HomeIcon({
             height: stroke,
             backgroundColor: color,
             transform: [{ rotate: "45deg" }],
-          }]}
-        />
-      </View>
-    );
-  }
-
-  if (name === "chevron") {
-    return (
-      <View style={[iconStyles.base, baseStyle]}>
-        <View
-          style={[iconStyles.line, {
-            top: px(7),
-            left: px(5),
-            width: px(9),
-            height: stroke,
-            backgroundColor: color,
-            transform: [{ rotate: "45deg" }],
-          }]}
-        />
-        <View
-          style={[iconStyles.line, {
-            top: px(13),
-            left: px(5),
-            width: px(9),
-            height: stroke,
-            backgroundColor: color,
-            transform: [{ rotate: "-45deg" }],
           }]}
         />
       </View>
@@ -278,6 +251,9 @@ export default function HomeScreen() {
   const navigation = useNavigation<Navigation>();
   const theme = useTheme();
   const styles = useThemedStyles(createStyles);
+  const { width } = useWindowDimensions();
+  const contentWidth = width - theme.layout.screen.gutter * 2;
+  const stackQuickActions = contentWidth < 340;
   const summaryQuery = useQuery({
     queryKey: ["dashboard-summary"],
     queryFn: fetchDashboardSummary,
@@ -315,7 +291,9 @@ export default function HomeScreen() {
         <View style={styles.greetingHeader}>
           <View style={styles.greetingCopy}>
             <Text style={styles.greetingEyebrow}>Selamat pagi</Text>
-            <Text style={styles.greetingName}>{userName}</Text>
+            <Text numberOfLines={2} style={styles.greetingName}>
+              {userName}
+            </Text>
             {roleLabel ? <Text style={styles.role}>{roleLabel}</Text> : null}
           </View>
           <View style={styles.greetingActions}>
@@ -372,12 +350,14 @@ export default function HomeScreen() {
         )}
 
         <Text style={[styles.sectionTitle, styles.actionsHeading]}>Aksi cepat</Text>
-        <View style={styles.quickActions}>
+        <View
+          style={[styles.quickActions, stackQuickActions && styles.quickActionsStacked]}
+        >
           <AppButton
             title="Pesanan baru"
             onPress={() => navigation.navigate("OrderCustomer")}
             size="large"
-            style={styles.quickButton}
+            style={[styles.quickButton, stackQuickActions && styles.quickButtonStacked]}
             leftIcon={<HomeIcon name="plus" color={theme.colors.onPrimary} />}
           />
           <AppButton
@@ -385,21 +365,10 @@ export default function HomeScreen() {
             variant="secondary"
             onPress={() => navigation.navigate("Customers")}
             size="large"
-            style={styles.quickButton}
+            style={[styles.quickButton, stackQuickActions && styles.quickButtonStacked]}
             leftIcon={<HomeIcon name="search" color={theme.colors.ink} />}
           />
         </View>
-
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Lihat semua pesanan"
-          onPress={() => navigation.navigate("Orders")}
-          style={({ pressed }) => [styles.ordersAction, pressed && styles.pressed]}
-        >
-          <HomeIcon name="clipboard" color={theme.colors.ink} size={20} />
-          <Text style={styles.ordersActionLabel}>Lihat semua pesanan</Text>
-          <HomeIcon name="chevron" color={theme.colors.stone} size={18} />
-        </Pressable>
 
         <View style={styles.recentHeader}>
           <Text style={styles.sectionTitle}>Pesanan terbaru</Text>
@@ -407,7 +376,7 @@ export default function HomeScreen() {
             accessibilityRole="button"
             accessibilityLabel="Lihat semua pesanan"
             onPress={() => navigation.navigate("Orders")}
-            hitSlop={8}
+            hitSlop={12}
           >
             <Text style={styles.recentLink}>Lihat semua</Text>
           </Pressable>
@@ -506,6 +475,8 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
       marginBottom: spacing.xl,
     },
     greetingCopy: {
+      flex: 1,
+      minWidth: 0,
       gap: spacing.xxs,
     },
     greetingActions: {
@@ -557,34 +528,19 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
     quickActions: {
       flexDirection: "row",
       gap: spacing.sm,
-      padding: spacing.sm,
       marginTop: spacing.sm,
-      borderWidth: 1,
-      borderColor: colors.hairline,
-      borderRadius: radius.md,
-      backgroundColor: colors.card,
+    },
+    quickActionsStacked: {
+      flexDirection: "column",
     },
     quickButton: {
       flex: 1,
       minHeight: 62,
       paddingHorizontal: spacing.md,
     },
-    ordersAction: {
-      minHeight: layout.controlHeight + spacing.xs,
-      flexDirection: "row",
-      alignItems: "center",
-      gap: spacing.lg,
-      paddingHorizontal: spacing.lg,
-      marginTop: spacing.sm,
-      borderWidth: 1,
-      borderColor: colors.hairline,
-      borderRadius: radius.md,
-      backgroundColor: colors.card,
-    },
-    ordersActionLabel: {
-      ...typography.button,
-      flex: 1,
-      color: colors.ink,
+    quickButtonStacked: {
+      flex: 0,
+      width: "100%",
     },
     pressed: {
       opacity: 0.7,

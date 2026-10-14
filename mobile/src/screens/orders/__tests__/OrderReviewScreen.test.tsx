@@ -106,6 +106,19 @@ function seedWizard() {
     discountId: null,
     idempotencyKey: null,
   });
+  usePhotoStore.setState({
+    drafts: {
+      "item-1": [
+        {
+          id: "photo-1",
+          uri: "file:///photo.jpg",
+          angle: "front",
+          type: "BEFORE",
+        },
+      ],
+    },
+    queue: [],
+  });
 }
 
 function renderScreen() {
@@ -149,6 +162,22 @@ describe("OrderReviewScreen", () => {
     expect(blocked.props.accessibilityState).toMatchObject({ disabled: true });
   });
 
+  it("routes back to photos when an item has no photo", async () => {
+    seedWizard();
+    usePhotoStore.setState({ drafts: {}, queue: [] });
+
+    await renderScreen();
+
+    expect(await screen.findByText("Foto sepatu belum lengkap.")).toBeTruthy();
+    await fireEvent.press(
+      screen.getByRole("button", { name: "Lengkapi foto" })
+    );
+
+    expect(mockNavigate).toHaveBeenCalledWith("OrderItemPhotos", {
+      itemId: "item-1",
+    });
+  });
+
   it("creates the order with an idempotency key and resets the wizard", async () => {
     seedWizard();
     usePhotoStore.setState({ drafts: {}, queue: [] });
@@ -184,7 +213,6 @@ describe("OrderReviewScreen", () => {
       remaining_balance: 60000,
       created_at: null,
     });
-
     await renderScreen();
     await fireEvent.press(
       await screen.findByRole("button", { name: "Buat pesanan" })
@@ -222,7 +250,7 @@ describe("OrderReviewScreen", () => {
     await renderScreen();
 
     await fireEvent.press(
-      await screen.findByRole("button", { name: "Simpan draft" })
+      await screen.findByRole("button", { name: "Simpan Draft" })
     );
 
     expect(mockGoBack).toHaveBeenCalledTimes(1);

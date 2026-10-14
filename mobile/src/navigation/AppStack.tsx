@@ -24,80 +24,80 @@ export default function AppStack() {
 
   return (
     <View style={styles.container}>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: theme.colors.canvas },
-        }}
-      >
-      <Stack.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{ title: "Beranda" }}
-      />
-      <Stack.Screen
-        name="Customers"
-        component={CustomersScreen}
-        options={{ title: "Pelanggan" }}
-      />
-      <Stack.Screen
-        name="CustomerForm"
-        component={CustomerFormScreen}
-        options={{ title: "Pelanggan Baru", presentation: "modal" }}
-      />
-      <Stack.Screen
-        name="OrderCustomer"
-        component={OrderCustomerScreen}
-        options={{ title: "Order Baru" }}
-      />
-      <Stack.Screen
-        name="OrderItems"
-        component={OrderItemsScreen}
-        options={{ title: "Pesanan baru" }}
-      />
-      <Stack.Screen
-        name="OrderItemForm"
-        component={OrderItemFormScreen}
-        options={{ title: "Sepatu", presentation: "modal" }}
-      />
-      <Stack.Screen
-        name="OrderItemServices"
-        component={OrderItemServicesScreen}
-        options={{ title: "Pesanan baru" }}
-      />
-      <Stack.Screen
-        name="OrderItemPhotos"
-        component={OrderItemPhotosScreen}
-        options={{ title: "Pesanan baru" }}
-      />
-      <Stack.Screen
-        name="OrderReview"
-        component={OrderReviewScreen}
-        options={{ title: "Pesanan baru" }}
-      />
-      <Stack.Screen
-        name="OrderSuccess"
-        component={OrderSuccessScreen}
-        options={{
-          gestureEnabled: false,
-        }}
-      />
-      <Stack.Screen
-        name="OrderPayment"
-        component={OrderPaymentScreen}
-        options={{ title: "Pembayaran" }}
-      />
-      <Stack.Screen
-        name="Orders"
-        component={OrdersScreen}
-        options={{ title: "Pesanan" }}
-      />
-      <Stack.Screen
-        name="OrderDetail"
-        component={OrderDetailScreen}
-        options={{ title: "Detail Order" }}
-      />
-      </Stack.Navigator>
+      <View style={styles.navigator}>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: theme.colors.canvas },
+          }}
+        >
+          <Stack.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{ title: "Beranda" }}
+          />
+          <Stack.Screen
+            name="Customers"
+            component={CustomersScreen}
+            options={{ title: "Pelanggan" }}
+          />
+          <Stack.Screen
+            name="CustomerForm"
+            component={CustomerFormScreen}
+            options={{ title: "Pelanggan Baru", presentation: "modal" }}
+          />
+          <Stack.Screen
+            name="OrderCustomer"
+            component={OrderCustomerScreen}
+            options={{ title: "Order Baru" }}
+          />
+          <Stack.Screen
+            name="OrderItems"
+            component={OrderItemsScreen}
+            options={{ title: "Pesanan baru" }}
+          />
+          <Stack.Screen
+            name="OrderItemForm"
+            component={OrderItemFormScreen}
+            options={{ title: "Sepatu", presentation: "modal" }}
+          />
+          <Stack.Screen
+            name="OrderItemServices"
+            component={OrderItemServicesScreen}
+            options={{ title: "Pesanan baru" }}
+          />
+          <Stack.Screen
+            name="OrderItemPhotos"
+            component={OrderItemPhotosScreen}
+            options={{ title: "Pesanan baru" }}
+          />
+          <Stack.Screen
+            name="OrderReview"
+            component={OrderReviewScreen}
+            options={{ title: "Pesanan baru" }}
+          />
+          <Stack.Screen
+            name="OrderSuccess"
+            component={OrderSuccessScreen}
+            options={{ gestureEnabled: false }}
+          />
+          <Stack.Screen
+            name="OrderPayment"
+            component={OrderPaymentScreen}
+            options={{ title: "Pembayaran" }}
+          />
+          <Stack.Screen
+            name="Orders"
+            component={OrdersScreen}
+            options={{ title: "Pesanan" }}
+          />
+          <Stack.Screen
+            name="OrderDetail"
+            component={OrderDetailScreen}
+            options={{ title: "Detail Order" }}
+          />
+        </Stack.Navigator>
+      </View>
       <OfflineBanner />
     </View>
   );
@@ -105,6 +105,9 @@ export default function AppStack() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  navigator: {
     flex: 1,
   },
 });

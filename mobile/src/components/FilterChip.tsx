@@ -28,9 +28,12 @@ export default function FilterChip({
   );
 }
 
-const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
+const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
   StyleSheet.create({
     chip: {
+      minHeight: layout.minTouchTarget,
+      alignItems: "center",
+      justifyContent: "center",
       borderRadius: radius.full,
       borderWidth: 1,
       borderColor: colors.hairline,

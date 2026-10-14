@@ -437,6 +437,7 @@ export default function OrderDetailScreen() {
                   search: order.customer?.phone ?? "",
                 })
               }
+              style={styles.customerActionButton}
             >
               <Text style={styles.customerAction}>Lihat pelanggan</Text>
             </Pressable>
@@ -801,6 +802,10 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
       color: colors.link,
       flexShrink: 1,
       textAlign: "right",
+    },
+    customerActionButton: {
+      minHeight: layout.minTouchTarget,
+      justifyContent: "center",
     },
     sectionTitle: {
       ...typography.section,

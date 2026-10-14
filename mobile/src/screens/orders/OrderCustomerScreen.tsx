@@ -4,7 +4,6 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   Pressable,
   StyleSheet,
@@ -19,8 +18,6 @@ import EmptyState from "../../components/EmptyState";
 import WizardProgress from "../../components/WizardProgress";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import type { AppStackParamList } from "../../navigation/types";
-import { deletePhotoFiles } from "../../order/photoFiles";
-import { usePhotoStore } from "../../order/photoStore";
 import { useOrderWizardStore } from "../../order/orderWizardStore";
 import type { Theme } from "../../theme/tokens";
 import { useTheme, useThemedStyles } from "../../theme/useTheme";
@@ -302,11 +299,7 @@ export default function OrderCustomerScreen() {
   const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const customer = useOrderWizardStore((state) => state.customer);
-  const items = useOrderWizardStore((state) => state.items);
   const setCustomer = useOrderWizardStore((state) => state.setCustomer);
-  const reset = useOrderWizardStore((state) => state.reset);
-  const clearDrafts = usePhotoStore((state) => state.clearDrafts);
-  const hasDraft = customer !== null || items.length > 0;
   const [searchInput, setSearchInput] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const search = useDebouncedValue(searchInput.trim(), 300);
@@ -331,30 +324,6 @@ export default function OrderCustomerScreen() {
   const isInitialLoading = customersQuery.isLoading;
   const isEmpty =
     !isInitialLoading && !customersQuery.isError && customers.length === 0;
-
-  const discardDraft = () => {
-    Alert.alert(
-      "Mulai order baru?",
-      "Draft order yang tersimpan akan dihapus.",
-      [
-        { text: "Batal", style: "cancel" },
-        {
-          text: "Ya, mulai baru",
-          style: "destructive",
-          onPress: () => {
-            const drafts = usePhotoStore.getState().drafts;
-            deletePhotoFiles(
-              Object.values(drafts)
-                .flat()
-                .map((photo) => photo.uri)
-            );
-            clearDrafts();
-            reset();
-          },
-        },
-      ]
-    );
-  };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
@@ -421,13 +390,6 @@ export default function OrderCustomerScreen() {
                 </Pressable>
               ) : null}
             </View>
-            {hasDraft ? (
-              <View style={styles.draftNotice}>
-                <Text style={styles.draftNoticeText}>
-                  Draft order tersimpan dan dipulihkan otomatis.
-                </Text>
-              </View>
-            ) : null}
           </View>
         }
         ListEmptyComponent={
@@ -487,7 +449,7 @@ export default function OrderCustomerScreen() {
           );
         }}
         ListFooterComponent={
-          <View style={styles.footer}>
+          <View style={styles.listFooter}>
             {customersQuery.isFetchingNextPage ? (
               <ActivityIndicator
                 size="small"
@@ -523,36 +485,25 @@ export default function OrderCustomerScreen() {
                 Nomor akan dinormalisasi ke format +62 oleh sistem.
               </Text>
             </View>
-
-            <Text style={styles.draftStatus}>Draft tersimpan otomatis</Text>
-
-            <View style={styles.actions}>
-              <AppButton
-                title="Lanjut: pilih sepatu"
-                onPress={() => navigation.navigate("OrderItems")}
-                disabled={!customer}
-                fullWidth
-              />
-              <AppButton
-                title="Simpan draft"
-                variant="ghost"
-                size="compact"
-                onPress={() => navigation.goBack()}
-                fullWidth
-              />
-              {hasDraft ? (
-                <AppButton
-                  title="Mulai Baru"
-                  variant="ghost"
-                  size="compact"
-                  onPress={discardDraft}
-                  fullWidth
-                />
-              ) : null}
-            </View>
           </View>
         }
       />
+      <View style={styles.fixedFooter}>
+        <Text style={styles.draftStatus}>Draft tersimpan otomatis</Text>
+        <AppButton
+          title="Pilih Sepatu"
+          onPress={() => navigation.navigate("OrderItems")}
+          disabled={!customer}
+          fullWidth
+        />
+        <AppButton
+          title="Simpan Draft"
+          variant="muted"
+          size="compact"
+          onPress={() => navigation.goBack()}
+          fullWidth
+        />
+      </View>
     </SafeAreaView>
   );
 }
@@ -576,8 +527,8 @@ const createStyles = ({
       paddingHorizontal: layout.screen.gutter,
     },
     backButton: {
-      width: 24,
-      height: 28,
+      width: layout.minTouchTarget,
+      height: layout.minTouchTarget,
       alignItems: "center",
       justifyContent: "center",
       marginRight: spacing.md,
@@ -622,19 +573,6 @@ const createStyles = ({
       borderRadius: radius.sm,
       backgroundColor: colors.card,
       marginBottom: spacing.lg,
-    },
-    draftNotice: {
-      marginTop: spacing.lg,
-      padding: spacing.md,
-      borderWidth: 1,
-      borderColor: colors.ink,
-      borderRadius: radius.md,
-      backgroundColor: colors.bone,
-    },
-    draftNoticeText: {
-      ...typography.caption,
-      color: colors.ink,
-      fontWeight: "400",
     },
     searchFocused: {
       borderColor: colors.info,
@@ -702,8 +640,8 @@ const createStyles = ({
     loader: {
       marginTop: spacing.xxl,
     },
-    footer: {
-      paddingBottom: spacing.xl,
+    listFooter: {
+      paddingBottom: spacing.lg,
     },
     footerLoader: {
       marginBottom: spacing.md,
@@ -744,11 +682,16 @@ const createStyles = ({
     draftStatus: {
       ...typography.overline,
       color: colors.mute,
-      marginTop: spacing.xxxl,
+      textAlign: "center",
     },
-    actions: {
-      marginTop: spacing.md,
+    fixedFooter: {
       gap: spacing.sm,
+      borderTopWidth: 1,
+      borderTopColor: colors.hairline,
+      backgroundColor: colors.canvas,
+      paddingHorizontal: layout.screen.gutter,
+      paddingTop: spacing.md,
+      paddingBottom: spacing.sm,
     },
   });
 

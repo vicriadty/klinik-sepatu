@@ -10,7 +10,13 @@ import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import type { Theme } from "../theme/tokens";
 import { useTheme, useThemedStyles } from "../theme/useTheme";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "link";
+export type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "ghost"
+  | "danger"
+  | "link"
+  | "muted";
 export type ButtonSize = "compact" | "standard" | "large";
 
 interface AppButtonProps {
@@ -48,7 +54,7 @@ export default function AppButton({
   const showDisabled = disabled && !loading;
 
   const spinnerColor =
-    variant === "primary" || variant === "danger"
+    variant === "primary" || variant === "danger" || variant === "muted"
       ? theme.colors.onPrimary
       : variant === "link"
         ? theme.colors.link
@@ -58,11 +64,13 @@ export default function AppButton({
       ? styles.primaryPressed
       : variant === "danger"
         ? styles.dangerPressed
-      : variant === "link"
-        ? styles.linkPressed
-        : styles.neutralPressed;
+        : variant === "muted"
+          ? styles.mutedPressed
+          : variant === "link"
+            ? styles.linkPressed
+            : styles.neutralPressed;
   const variantLabelStyle =
-    variant === "primary" || variant === "danger"
+    variant === "primary" || variant === "danger" || variant === "muted"
       ? styles.primaryLabel
       : variant === "link"
         ? styles.linkLabel
@@ -104,6 +112,7 @@ export default function AppButton({
 
 const createStyles = ({
   colors,
+  layout,
   radius,
   spacing,
   typography,
@@ -116,7 +125,7 @@ const createStyles = ({
       paddingHorizontal: spacing.xl,
     },
     compact: {
-      minHeight: 36,
+      minHeight: layout.compactButtonHeight,
       paddingHorizontal: spacing.lg,
     },
     standard: {
@@ -148,11 +157,17 @@ const createStyles = ({
     danger: {
       backgroundColor: colors.danger,
     },
+    muted: {
+      backgroundColor: colors.stone,
+    },
     primaryPressed: {
       backgroundColor: colors.primaryPressed,
     },
     dangerPressed: {
       opacity: 0.85,
+    },
+    mutedPressed: {
+      backgroundColor: colors.mute,
     },
     neutralPressed: {
       backgroundColor: colors.bone,

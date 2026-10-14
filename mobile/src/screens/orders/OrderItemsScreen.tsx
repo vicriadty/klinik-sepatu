@@ -23,7 +23,6 @@ export default function OrderItemsScreen() {
   const customer = useOrderWizardStore((state) => state.customer);
   const items = useOrderWizardStore((state) => state.items);
   const removeItem = useOrderWizardStore((state) => state.removeItem);
-  const photoDrafts = usePhotoStore((state) => state.drafts);
   const removeDraftsForItem = usePhotoStore((state) => state.removeDraftsForItem);
 
   const continueOrder = () => {
@@ -31,14 +30,10 @@ export default function OrderItemsScreen() {
       (item) => item.serviceIds.length === 0
     );
 
-    if (itemWithoutServices) {
-      navigation.navigate("OrderItemServices", {
-        itemId: itemWithoutServices.id,
-      });
-      return;
-    }
+    const itemId = itemWithoutServices?.id ?? items[0]?.id;
+    if (!itemId) return;
 
-    navigation.navigate("OrderReview");
+    navigation.navigate("OrderItemServices", { itemId });
   };
 
   const confirmRemove = (id: string, label: string) => {
@@ -66,7 +61,6 @@ export default function OrderItemsScreen() {
       />
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         <WizardProgress step={2} />
-        <Text style={styles.title}>Sepatu</Text>
 
         {customer ? (
           <Pressable
@@ -100,13 +94,9 @@ export default function OrderItemsScreen() {
         ) : (
           items.map((item, index) => {
             const label = `${item.brand}${item.model ? ` ${item.model}` : ""}`;
-            const photos = (photoDrafts[item.id] ?? []).length;
 
             return (
-              <View
-                key={item.id}
-                style={styles.shoeCard}
-              >
+              <View key={item.id} style={styles.shoeCard}>
                 <View style={styles.cardHeader}>
                   <Text style={styles.cardTitle}>Sepatu {index + 1}</Text>
                   <Pressable
@@ -151,30 +141,6 @@ export default function OrderItemsScreen() {
                   ) : null}
                 </Pressable>
 
-                <View style={styles.cardActions}>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={`Foto (${photos})`}
-                    onPress={() =>
-                      navigation.navigate("OrderItemPhotos", {
-                        itemId: item.id,
-                      })
-                    }
-                    style={styles.actionButton}
-                  >
-                    <Text style={styles.actionLabel}>Foto ({photos})</Text>
-                  </Pressable>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel="Ubah"
-                    onPress={() =>
-                      navigation.navigate("OrderItemForm", { itemId: item.id })
-                    }
-                    style={styles.actionButton}
-                  >
-                    <Text style={styles.actionLabel}>Ubah</Text>
-                  </Pressable>
-                </View>
               </View>
             );
           })
@@ -192,14 +158,14 @@ export default function OrderItemsScreen() {
       <View style={styles.footer}>
         <Text style={styles.draftStatus}>Draft tersimpan otomatis</Text>
         <AppButton
-          title="Lanjut: pilih layanan"
+          title="Pilih Layanan"
           onPress={continueOrder}
           disabled={items.length === 0}
           fullWidth
         />
         <AppButton
-          title="Simpan draft"
-          variant="ghost"
+          title="Simpan Draft"
+          variant="muted"
           size="compact"
           onPress={() => navigation.goBack()}
           fullWidth
@@ -263,11 +229,6 @@ const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
       paddingHorizontal: spacing.page,
       paddingTop: spacing.lg,
       paddingBottom: spacing.xl,
-    },
-    title: {
-      ...typography.screenTitle,
-      color: colors.ink,
-      marginBottom: spacing.md,
     },
     customerCard: {
       minHeight: 64,
@@ -370,23 +331,6 @@ const createStyles = ({ colors, radius, spacing, typography }: Theme) =>
     note: {
       ...typography.caption,
       color: colors.mute,
-    },
-    cardActions: {
-      flexDirection: "row",
-      gap: spacing.xs,
-      marginTop: spacing.md,
-      borderTopWidth: 1,
-      borderTopColor: colors.hairline,
-      paddingTop: spacing.sm,
-    },
-    actionButton: {
-      minHeight: 44,
-      justifyContent: "center",
-      paddingHorizontal: spacing.sm,
-    },
-    actionLabel: {
-      ...typography.caption,
-      color: colors.link,
     },
     footer: {
       gap: spacing.sm,

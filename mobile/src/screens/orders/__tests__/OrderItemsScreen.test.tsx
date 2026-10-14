@@ -72,7 +72,7 @@ describe("OrderItemsScreen", () => {
     await renderScreen();
 
     const button = screen.getByRole("button", {
-      name: "Lanjut: pilih layanan",
+      name: "Pilih Layanan",
     });
 
     expect(button.props.accessibilityState.disabled).toBe(true);
@@ -85,22 +85,22 @@ describe("OrderItemsScreen", () => {
     await renderScreen();
 
     await fireEvent.press(
-      screen.getByRole("button", { name: "Lanjut: pilih layanan" })
+      screen.getByRole("button", { name: "Pilih Layanan" })
     );
 
     expect(mockNavigate).toHaveBeenCalledWith("OrderItemServices", { itemId });
   });
 
-  it("navigates to review when every item is ready", async () => {
+  it("opens the service step even when every item is already configured", async () => {
     useOrderWizardStore.getState().setCustomer(customer);
-    seedItem([1]);
+    const itemId = seedItem([1]);
 
     await renderScreen();
     await fireEvent.press(
-      screen.getByRole("button", { name: "Lanjut: pilih layanan" })
+      screen.getByRole("button", { name: "Pilih Layanan" })
     );
 
-    expect(mockNavigate).toHaveBeenCalledWith("OrderReview");
+    expect(mockNavigate).toHaveBeenCalledWith("OrderItemServices", { itemId });
   });
 
   it("opens the shoe form and the service picker", async () => {
