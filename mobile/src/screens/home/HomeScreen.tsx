@@ -25,6 +25,7 @@ import BottomNavigation from "../../components/BottomNavigation";
 import EmptyState from "../../components/EmptyState";
 import FullScreenLoader from "../../components/FullScreenLoader";
 import LogoutButton from "../../components/LogoutButton";
+import NativeIcon from "../../components/NativeIcon";
 import SummaryCard from "../../components/SummaryCard";
 import StatusPill from "../../components/StatusPill";
 import type { AppStackParamList } from "../../navigation/types";
@@ -38,14 +39,6 @@ import { useTheme, useThemedStyles } from "../../theme/useTheme";
 import { formatIDR } from "../../utils/format";
 
 type Navigation = NativeStackNavigationProp<AppStackParamList, "Home">;
-type HomeIconName =
-  | "clipboard"
-  | "loader"
-  | "package"
-  | "clock"
-  | "plus"
-  | "search";
-
 function getInitials(name?: string) {
   const words = name?.trim().split(/\s+/).filter(Boolean) ?? [];
   const initials = words.slice(0, 2).map((word) => word[0]).join("");
@@ -55,195 +48,6 @@ function getInitials(name?: string) {
 
 function formatHomeCurrency(value: number) {
   return formatIDR(value).replace("Rp", "Rp ");
-}
-
-function HomeIcon({
-  name,
-  color,
-  size = 22,
-}: {
-  name: HomeIconName;
-  color: string;
-  size?: number;
-}) {
-  const scale = size / 22;
-  const px = (value: number) => value * scale;
-  const stroke = Math.max(1, 1.5 * scale);
-  const baseStyle = { width: size, height: size };
-
-  if (name === "plus") {
-    return (
-      <View style={[iconStyles.base, baseStyle]}>
-        <View
-          style={[iconStyles.line, {
-            top: px(10),
-            left: px(2),
-            width: px(18),
-            height: stroke,
-            backgroundColor: color,
-          }]}
-        />
-        <View
-          style={[iconStyles.line, {
-            top: px(2),
-            left: px(10),
-            width: stroke,
-            height: px(18),
-            backgroundColor: color,
-          }]}
-        />
-      </View>
-    );
-  }
-
-  if (name === "search") {
-    return (
-      <View style={[iconStyles.base, baseStyle]}>
-        <View
-          style={[iconStyles.circle, {
-            top: px(2),
-            left: px(2),
-            width: px(15),
-            height: px(15),
-            borderColor: color,
-            borderWidth: stroke,
-          }]}
-        />
-        <View
-          style={[iconStyles.line, {
-            top: px(15),
-            left: px(15),
-            width: px(7),
-            height: stroke,
-            backgroundColor: color,
-            transform: [{ rotate: "45deg" }],
-          }]}
-        />
-      </View>
-    );
-  }
-
-  if (name === "clock") {
-    return (
-      <View style={[iconStyles.base, baseStyle]}>
-        <View
-          style={[iconStyles.circle, {
-            top: px(3),
-            left: px(3),
-            width: px(16),
-            height: px(16),
-            borderColor: color,
-            borderWidth: stroke,
-          }]}
-        />
-        <View
-          style={[iconStyles.line, {
-            top: px(7),
-            left: px(10),
-            width: stroke,
-            height: px(6),
-            backgroundColor: color,
-          }]}
-        />
-        <View
-          style={[iconStyles.line, {
-            top: px(12),
-            left: px(10),
-            width: px(5),
-            height: stroke,
-            backgroundColor: color,
-          }]}
-        />
-      </View>
-    );
-  }
-
-  if (name === "loader") {
-    return (
-      <View style={[iconStyles.base, baseStyle]}>
-        <View
-          style={[iconStyles.circle, {
-            top: px(3),
-            left: px(3),
-            width: px(16),
-            height: px(16),
-            borderColor: color,
-            borderTopColor: "transparent",
-            borderWidth: stroke,
-            transform: [{ rotate: "35deg" }],
-          }]}
-        />
-      </View>
-    );
-  }
-
-  if (name === "package") {
-    return (
-      <View style={[iconStyles.base, baseStyle]}>
-        <View
-          style={[iconStyles.box, {
-            top: px(5),
-            left: px(3),
-            width: px(16),
-            height: px(13),
-            borderColor: color,
-            borderWidth: stroke,
-          }]}
-        />
-        <View
-          style={[iconStyles.line, {
-            top: px(3),
-            left: px(7),
-            width: px(8),
-            height: stroke,
-            backgroundColor: color,
-          }]}
-        />
-        <View
-          style={[iconStyles.line, {
-            top: px(13),
-            left: px(8),
-            width: px(4),
-            height: stroke,
-            backgroundColor: color,
-            transform: [{ rotate: "45deg" }],
-          }]}
-        />
-        <View
-          style={[iconStyles.line, {
-            top: px(11),
-            left: px(11),
-            width: px(7),
-            height: stroke,
-            backgroundColor: color,
-            transform: [{ rotate: "-45deg" }],
-          }]}
-        />
-      </View>
-    );
-  }
-
-  return (
-    <View style={[iconStyles.base, baseStyle]}>
-      <View style={[iconStyles.clipboardBody, {
-        top: px(3),
-        left: px(4),
-        width: px(14),
-        height: px(17),
-        borderColor: color,
-        borderWidth: stroke,
-        borderRadius: px(2),
-      }]} />
-      <View style={[iconStyles.line, {
-        top: px(2),
-        left: px(7),
-        width: px(8),
-        height: px(3),
-        borderRadius: px(1),
-        backgroundColor: color,
-      }]} />
-    </View>
-  );
 }
 
 export default function HomeScreen() {
@@ -320,24 +124,24 @@ export default function HomeScreen() {
             <SummaryCard
               label="Pesanan hari ini"
               value={String(summary.orders_today)}
-              icon={<HomeIcon name="clipboard" color={theme.colors.mute} size={18} />}
+              icon={<NativeIcon name="clipboard" color={theme.colors.mute} size={18} />}
             />
             <SummaryCard
               label="Sedang diproses"
               value={String(summary.in_progress)}
-              icon={<HomeIcon name="loader" color={theme.colors.mute} size={18} />}
+              icon={<NativeIcon name="loader" color={theme.colors.mute} size={18} />}
             />
             <SummaryCard
               label="Siap diambil"
               value={String(summary.ready_for_pickup)}
-              icon={<HomeIcon name="package" color={theme.colors.success} size={18} />}
+              icon={<NativeIcon name="package" color={theme.colors.success} size={18} />}
               tone="success"
             />
             <SummaryCard
               label="Belum dibayar"
               value={formatHomeCurrency(summary.outstanding_payment)}
               highlight={summary.outstanding_payment > 0}
-              icon={<HomeIcon name="clock" color={theme.colors.warning} size={18} />}
+              icon={<NativeIcon name="clock" color={theme.colors.warning} size={18} />}
               tone="warning"
             />
             {summary.revenue_today !== undefined && (
@@ -358,7 +162,7 @@ export default function HomeScreen() {
             onPress={() => navigation.navigate("OrderCustomer")}
             size="large"
             style={[styles.quickButton, stackQuickActions && styles.quickButtonStacked]}
-            leftIcon={<HomeIcon name="plus" color={theme.colors.onPrimary} />}
+            leftIcon={<NativeIcon name="plus" color={theme.colors.onPrimary} />}
           />
           <AppButton
             title="Cari pelanggan"
@@ -366,7 +170,7 @@ export default function HomeScreen() {
             onPress={() => navigation.navigate("Customers")}
             size="large"
             style={[styles.quickButton, stackQuickActions && styles.quickButtonStacked]}
-            leftIcon={<HomeIcon name="search" color={theme.colors.ink} />}
+            leftIcon={<NativeIcon name="search" color={theme.colors.ink} />}
           />
         </View>
 
@@ -611,23 +415,3 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
       color: colors.mute,
     },
   });
-
-const iconStyles = StyleSheet.create({
-  base: {
-    position: "relative",
-  },
-  line: {
-    position: "absolute",
-  },
-  circle: {
-    position: "absolute",
-    borderRadius: 99,
-  },
-  box: {
-    position: "absolute",
-    borderRadius: 2,
-  },
-  clipboardBody: {
-    position: "absolute",
-  },
-});
