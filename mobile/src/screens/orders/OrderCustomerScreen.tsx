@@ -411,7 +411,7 @@ export default function OrderCustomerScreen() {
               title="Belum ada pelanggan dipilih."
               message="Cari pelanggan lama atau buat pelanggan baru."
             />
-          ) : null
+            ) : undefined
         }
         renderItem={({ item }) => {
           const selected = customer?.id === item.id;

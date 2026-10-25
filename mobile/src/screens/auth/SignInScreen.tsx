@@ -150,7 +150,7 @@ export default function SignInScreen() {
                     onBlur={onBlur}
                     error={errors.password?.message}
                     editable={!pending}
-                    onSubmitEditing={onSubmit}
+                    onSubmitEditing={() => void onSubmit()}
                     returnKeyType="done"
                   />
                 )}

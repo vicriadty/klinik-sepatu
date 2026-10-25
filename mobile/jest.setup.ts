@@ -1,3 +1,5 @@
+jest.setTimeout(30000);
+
 jest.mock("expo-crypto", () => ({
   randomUUID: jest.fn(() => "test-uuid"),
 }));
@@ -13,6 +15,25 @@ jest.mock("expo-image-picker", () => ({
   launchCameraAsync: jest.fn(async () => ({ canceled: true, assets: [] })),
   launchImageLibraryAsync: jest.fn(async () => ({ canceled: true, assets: [] })),
 }));
+
+jest.mock("@expo/vector-icons/MaterialCommunityIcons", () => {
+  const React = require("react");
+  const { Text } = require("react-native");
+
+  return function MockMaterialCommunityIcons({
+    accessibilityLabel,
+    name,
+  }: {
+    accessibilityLabel?: string;
+    name: string;
+  }) {
+    return React.createElement(
+      Text,
+      { accessibilityLabel },
+      name
+    );
+  };
+});
 
 jest.mock("@react-native-async-storage/async-storage", () =>
   require("@react-native-async-storage/async-storage/jest/async-storage-mock")

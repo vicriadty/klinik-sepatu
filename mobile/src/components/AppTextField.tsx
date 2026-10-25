@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  type TextInputInstance,
   View,
   type TextInputProps,
 } from "react-native";
@@ -21,7 +22,7 @@ interface AppTextFieldProps extends TextInputProps {
   labelStyle?: StyleProp<TextStyle>;
 }
 
-const AppTextField = forwardRef<TextInput, AppTextFieldProps>(
+const AppTextField = forwardRef<TextInputInstance, AppTextFieldProps>(
   (
     {
       label,
@@ -42,6 +43,7 @@ const AppTextField = forwardRef<TextInput, AppTextFieldProps>(
     const theme = useTheme();
     const styles = useThemedStyles(createStyles);
     const [focused, setFocused] = useState(false);
+    const multiline = inputProps.multiline === true;
 
     return (
       <View style={[styles.container, containerStyle]}>
@@ -58,7 +60,7 @@ const AppTextField = forwardRef<TextInput, AppTextFieldProps>(
           {leading ? <View style={styles.leading}>{leading}</View> : null}
           <TextInput
             ref={ref}
-            style={[styles.input, style]}
+            style={[styles.input, !multiline && styles.inputSingleLine, style]}
             placeholderTextColor={theme.colors.stone}
             onFocus={(event) => {
               setFocused(true);
@@ -108,11 +110,17 @@ const createStyles = ({
     },
     input: {
       flex: 1,
-      minHeight: layout.controlHeight - spacing.xs / 2,
       paddingHorizontal: 0,
-      paddingVertical: spacing.sm,
+      paddingVertical: 0,
+      textAlignVertical: "center",
+      includeFontPadding: false,
       ...typography.body,
       color: colors.ink,
+    },
+    inputSingleLine: {
+      height: layout.controlHeight - 2,
+      // Poppins renders slightly below the optical center in native TextInput.
+      transform: [{ translateY: -2 }],
     },
     inputFocused: {
       borderColor: colors.focus,

@@ -367,7 +367,7 @@ export default function OrdersScreen() {
                 color={theme.colors.ink}
                 style={styles.footerLoader}
               />
-            ) : null
+            ) : undefined
           }
         />
       )}
