@@ -4,6 +4,7 @@ import OfflineBanner from "../components/OfflineBanner";
 import CustomerFormScreen from "../screens/customers/CustomerFormScreen";
 import CustomersScreen from "../screens/customers/CustomersScreen";
 import HomeScreen from "../screens/home/HomeScreen";
+import SettingsScreen from "../screens/settings/SettingsScreen";
 import OrderCustomerScreen from "../screens/orders/OrderCustomerScreen";
 import OrderDetailScreen from "../screens/orders/OrderDetailScreen";
 import OrderItemFormScreen from "../screens/orders/OrderItemFormScreen";
@@ -14,6 +15,7 @@ import OrderPaymentScreen from "../screens/orders/OrderPaymentScreen";
 import OrderReviewScreen from "../screens/orders/OrderReviewScreen";
 import OrderSuccessScreen from "../screens/orders/OrderSuccessScreen";
 import OrdersScreen from "../screens/orders/OrdersScreen";
+import HistoryScreen from "../screens/orders/HistoryScreen";
 import { useTheme } from "../theme/useTheme";
 import type { AppStackParamList } from "./types";
 
@@ -40,6 +42,16 @@ export default function AppStack() {
             name="Customers"
             component={CustomersScreen}
             options={{ title: "Pelanggan" }}
+          />
+          <Stack.Screen
+            name="History"
+            component={HistoryScreen}
+            options={{ title: "Riwayat" }}
+          />
+          <Stack.Screen
+            name="Settings"
+            component={SettingsScreen}
+            options={{ title: "Settings" }}
           />
           <Stack.Screen
             name="CustomerForm"

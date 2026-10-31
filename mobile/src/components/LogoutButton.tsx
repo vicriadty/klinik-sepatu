@@ -1,11 +1,22 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
+import type { StyleProp, ViewStyle } from "react-native";
 import { logout } from "../api/auth";
 import { useAuthStore } from "../auth/useAuthStore";
 import type { Theme } from "../theme/tokens";
 import { useTheme, useThemedStyles } from "../theme/useTheme";
 
-export default function LogoutButton() {
+interface LogoutButtonProps {
+  label?: string;
+  icon?: ReactNode;
+  style?: StyleProp<ViewStyle>;
+}
+
+export default function LogoutButton({
+  label = "Keluar",
+  icon,
+  style,
+}: LogoutButtonProps) {
   const signOut = useAuthStore((state) => state.signOut);
   const theme = useTheme();
   const styles = useThemedStyles(createStyles);
@@ -25,15 +36,18 @@ export default function LogoutButton() {
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel="Keluar"
+      accessibilityLabel={label}
       disabled={pending}
       onPress={handlePress}
-      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.button, style, pressed && styles.pressed]}
     >
       {pending ? (
         <ActivityIndicator size="small" color={theme.colors.ink} />
       ) : (
-        <Text style={styles.label}>Keluar</Text>
+        <>
+          {icon}
+          <Text style={styles.label}>{label}</Text>
+        </>
       )}
     </Pressable>
   );

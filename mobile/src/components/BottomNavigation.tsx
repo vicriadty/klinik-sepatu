@@ -6,14 +6,14 @@ import type { AppStackParamList } from "../navigation/types";
 import type { Theme } from "../theme/tokens";
 import { useThemedStyles } from "../theme/useTheme";
 
-type TabKey = "home" | "orders" | "customers";
-type NavigationRoute = "Home" | "Orders" | "Customers";
+type TabKey = "home" | "orders" | "customers" | "history";
+type NavigationRoute = "Home" | "Orders" | "Customers" | "History";
 export type BottomNavigationTab = TabKey;
 
 interface TabDefinition {
   key: TabKey;
   label: string;
-  icon: "home" | "clipboard" | "users";
+  icon: "home" | "clipboard" | "users" | "history";
   route: NavigationRoute;
 }
 
@@ -25,6 +25,7 @@ const tabs: readonly TabDefinition[] = [
   { key: "home", label: "Beranda", icon: "home", route: "Home" },
   { key: "orders", label: "Pesanan", icon: "clipboard", route: "Orders" },
   { key: "customers", label: "Pelanggan", icon: "users", route: "Customers" },
+  { key: "history", label: "Riwayat", icon: "history", route: "History" },
 ];
 
 type Navigation = NativeStackNavigationProp<AppStackParamList>;
@@ -42,7 +43,11 @@ export default function BottomNavigation({ active }: BottomNavigationProps) {
       navigation.navigate("Orders");
       return;
     }
-    navigation.navigate("Customers");
+    if (route === "Customers") {
+      navigation.navigate("Customers");
+      return;
+    }
+    navigation.navigate("History");
   };
 
   return (

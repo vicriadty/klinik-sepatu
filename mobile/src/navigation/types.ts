@@ -5,6 +5,8 @@ export type AuthStackParamList = {
 export type AppStackParamList = {
   Home: undefined;
   Customers: { created?: string; search?: string; select?: boolean } | undefined;
+  History: undefined;
+  Settings: undefined;
   CustomerForm: { select?: boolean } | undefined;
   OrderCustomer: undefined;
   OrderItems: undefined;
