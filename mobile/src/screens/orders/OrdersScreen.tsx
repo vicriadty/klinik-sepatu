@@ -11,7 +11,6 @@ import {
   Text,
   TextInput,
   View,
-  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -25,6 +24,7 @@ import AppButton from "../../components/AppButton";
 import BottomNavigation from "../../components/BottomNavigation";
 import EmptyState from "../../components/EmptyState";
 import FilterChip from "../../components/FilterChip";
+import NativeIcon from "../../components/NativeIcon";
 import StatusPill, { type PillTone } from "../../components/StatusPill";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import type { AppStackParamList } from "../../navigation/types";
@@ -64,73 +64,10 @@ function paymentTone(status: PaymentStatus): PillTone {
   return status === "PAID" ? "success" : "warning";
 }
 
-type OrdersIconName = "search" | "plus" | "calendar" | "chevron";
-
-function OrdersIcon({
-  name,
-  color,
-  size = 18,
-}: {
-  name: OrdersIconName;
-  color: string;
-  size?: number;
-}) {
-  if (name === "plus") {
-    return (
-      <View
-        pointerEvents="none"
-        style={[iconStyles.base, { width: size, height: size }]}
-      >
-        <View style={[iconStyles.line, { top: size / 2, left: 1, width: size - 2, backgroundColor: color }]} />
-        <View style={[iconStyles.line, { top: 1, left: size / 2, height: size - 2, backgroundColor: color }]} />
-      </View>
-    );
-  }
-
-  if (name === "search") {
-    return (
-      <View
-        pointerEvents="none"
-        style={[iconStyles.base, { width: size, height: size }]}
-      >
-        <View style={[iconStyles.circle, { width: size - 5, height: size - 5, borderColor: color }]} />
-        <View style={[iconStyles.line, { top: size - 4, left: size - 5, width: 7, backgroundColor: color, transform: [{ rotate: "45deg" }] }]} />
-      </View>
-    );
-  }
-
-  if (name === "calendar") {
-    return (
-      <View
-        pointerEvents="none"
-        style={[iconStyles.base, { width: size, height: size }]}
-      >
-        <View style={[iconStyles.calendar, { width: size - 2, height: size - 3, borderColor: color }]} />
-        <View style={[iconStyles.line, { top: 5, left: 1, width: size - 4, backgroundColor: color }]} />
-        <View style={[iconStyles.line, { top: 1, left: 4, height: 4, backgroundColor: color }]} />
-        <View style={[iconStyles.line, { top: 1, right: 4, height: 4, backgroundColor: color }]} />
-      </View>
-    );
-  }
-
-  return (
-    <View
-      pointerEvents="none"
-      style={[iconStyles.base, { width: size, height: size }]}
-    >
-      <View style={[iconStyles.line, { top: 6, left: 4, width: 8, backgroundColor: color, transform: [{ rotate: "45deg" }] }]} />
-      <View style={[iconStyles.line, { top: 11, left: 4, width: 8, backgroundColor: color, transform: [{ rotate: "-45deg" }] }]} />
-    </View>
-  );
-}
-
 export default function OrdersScreen() {
   const navigation = useNavigation<Navigation>();
   const theme = useTheme();
   const styles = useThemedStyles(createStyles);
-  const { width } = useWindowDimensions();
-  const compactFilters =
-    width - theme.layout.screen.gutter * 2 < 300;
   const [searchInput, setSearchInput] = useState("");
   const [status, setStatus] = useState<OrderStatus | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | null>(
@@ -176,12 +113,12 @@ export default function OrdersScreen() {
             onPress={() => navigation.navigate("OrderCustomer")}
             accessibilityLabel="Buat pesanan baru"
             style={styles.newButton}
-            leftIcon={<OrdersIcon name="plus" color={theme.colors.onPrimary} />}
+            leftIcon={<NativeIcon name="plus" color={theme.colors.onPrimary} size={18} />}
           />
         </View>
 
         <View style={styles.searchContainer}>
-          <OrdersIcon name="search" color={theme.colors.mute} />
+          <NativeIcon name="search" color={theme.colors.mute} size={18} />
           <TextInput
             value={searchInput}
             onChangeText={setSearchInput}
@@ -195,43 +132,37 @@ export default function OrdersScreen() {
           />
         </View>
 
-        <View style={[styles.filterRow, compactFilters && styles.filterRowStacked]}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Status"
-            accessibilityState={{ selected: openFilter === "status" }}
-            onPress={() => setOpenFilter(openFilter === "status" ? null : "status")}
-            style={[
-              styles.filterButton,
-              styles.statusFilter,
-              compactFilters && styles.filterButtonStacked,
-            ]}
-          >
-            <Text style={styles.filterLabel} numberOfLines={1}>
-              {status ? ORDER_STATUS_LABELS[status] : "Status"}
-            </Text>
-            <OrdersIcon name="chevron" color={theme.colors.stone} size={16} />
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Pembayaran"
-            accessibilityState={{ selected: openFilter === "payment" }}
-            onPress={() =>
-              setOpenFilter(openFilter === "payment" ? null : "payment")
-            }
-            style={[
-              styles.filterButton,
-              styles.paymentFilter,
-              compactFilters && styles.filterButtonStacked,
-            ]}
-          >
-            <Text style={styles.filterLabel} numberOfLines={1}>
-              {paymentStatus
-                ? PAYMENT_STATUS_LABELS[paymentStatus]
-                : "Pembayaran"}
-            </Text>
-            <OrdersIcon name="chevron" color={theme.colors.stone} size={16} />
-          </Pressable>
+        <View style={styles.statusTabs} accessibilityLabel="Status">
+          {ORDER_STATUSES.map((option) => (
+            <Pressable
+              key={option}
+              accessibilityRole="tab"
+              accessibilityLabel={ORDER_STATUS_LABELS[option]}
+              accessibilityState={{
+                selected: status === option || (status === null && option === "RECEIVED"),
+              }}
+              onPress={() => {
+                setStatus(status === option ? null : option);
+                setOpenFilter(null);
+              }}
+              style={[
+                styles.statusTab,
+                (status === option || (status === null && option === "RECEIVED")) &&
+                  styles.statusTabSelected,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.statusTabLabel,
+                  (status === option || (status === null && option === "RECEIVED")) &&
+                    styles.statusTabLabelSelected,
+                ]}
+                numberOfLines={1}
+              >
+                {ORDER_STATUS_LABELS[option]}
+              </Text>
+            </Pressable>
+          ))}
         </View>
 
         {openFilter ? (
@@ -293,84 +224,98 @@ export default function OrdersScreen() {
 
       <View style={styles.listHeader}>
         <Text style={styles.listTitle}>Daftar pesanan</Text>
-        <Text style={styles.sortLabel}>Terbaru</Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Pembayaran"
+          accessibilityState={{ selected: openFilter === "payment" }}
+          onPress={() => setOpenFilter(openFilter === "payment" ? null : "payment")}
+          hitSlop={8}
+        >
+          <Text style={styles.sortLabel}>
+            {paymentStatus ? PAYMENT_STATUS_LABELS[paymentStatus] : "Terbaru"}
+          </Text>
+        </Pressable>
       </View>
 
-      {ordersQuery.isLoading ? (
-        <ActivityIndicator
-          size="large"
-          color={theme.colors.ink}
-          style={styles.loader}
-        />
-      ) : ordersQuery.isError ? (
-        <EmptyState
-          title="Gagal memuat order."
-          message="Periksa koneksi lalu coba lagi."
-          actionTitle="Coba lagi"
-          onAction={() => void ordersQuery.refetch()}
-        />
-      ) : isEmpty ? (
-        <EmptyState
-          title="Belum ada order."
-          message="Order baru akan muncul di sini."
-        />
-      ) : (
-        <FlatList
-          style={styles.list}
-          data={orders}
-          keyExtractor={(item) => String(item.id)}
-          contentContainerStyle={styles.listContent}
-          keyboardShouldPersistTaps="handled"
-          onEndReachedThreshold={0.4}
-          onEndReached={() => {
-            if (ordersQuery.hasNextPage && !ordersQuery.isFetchingNextPage) {
-              void ordersQuery.fetchNextPage();
-            }
-          }}
-          renderItem={({ item }) => (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`Order ${item.order_number}`}
-              onPress={() =>
-                navigation.navigate("OrderDetail", { orderId: item.id })
+      <View style={styles.body}>
+        {ordersQuery.isLoading ? (
+          <View style={styles.stateContent}>
+            <ActivityIndicator size="large" color={theme.colors.ink} />
+          </View>
+        ) : ordersQuery.isError ? (
+          <View style={styles.stateContent}>
+            <EmptyState
+              title="Gagal memuat order."
+              message="Periksa koneksi lalu coba lagi."
+              actionTitle="Coba lagi"
+              onAction={() => void ordersQuery.refetch()}
+            />
+          </View>
+        ) : isEmpty ? (
+          <View style={styles.stateContent}>
+            <EmptyState
+              title="Belum ada order."
+              message="Order baru akan muncul di sini."
+            />
+          </View>
+        ) : (
+          <FlatList
+            style={styles.list}
+            data={orders}
+            keyExtractor={(item) => String(item.id)}
+            contentContainerStyle={styles.listContent}
+            keyboardShouldPersistTaps="handled"
+            onEndReachedThreshold={0.4}
+            onEndReached={() => {
+              if (ordersQuery.hasNextPage && !ordersQuery.isFetchingNextPage) {
+                void ordersQuery.fetchNextPage();
               }
-              style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
-            >
-              <View style={styles.rowHeader}>
-                <Text style={styles.orderNumber}>{item.order_number}</Text>
-                <StatusPill
-                  label={ORDER_STATUS_LABELS[item.status].toUpperCase()}
-                  tone={statusTone(item.status)}
-                  appearance="solid"
-                  compact
-                  style={styles.orderStatus}
+            }}
+            renderItem={({ item }) => (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Order ${item.order_number}`}
+                onPress={() =>
+                  navigation.navigate("OrderDetail", { orderId: item.id })
+                }
+                style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+              >
+                <View style={styles.rowHeader}>
+                  <Text style={styles.orderNumber}>{item.order_number}</Text>
+                  <StatusPill
+                    label={ORDER_STATUS_LABELS[item.status].toUpperCase()}
+                    tone={statusTone(item.status)}
+                    appearance="solid"
+                    compact
+                    style={styles.orderStatus}
+                  />
+                </View>
+                <Text style={styles.customer} numberOfLines={1}>
+                  {item.customer?.name ?? "Pelanggan"} · {item.items_count ?? item.items?.length ?? 0} sepatu
+                </Text>
+                <View style={styles.rowFooter}>
+                  <StatusPill
+                    label={PAYMENT_DISPLAY_LABELS[item.payment_status]}
+                    tone={paymentTone(item.payment_status)}
+                    appearance="text"
+                    style={styles.paymentStatus}
+                  />
+                  <Text style={styles.total}>{formatOrderCurrency(item.grand_total)}</Text>
+                </View>
+              </Pressable>
+            )}
+            ListFooterComponent={
+              ordersQuery.isFetchingNextPage ? (
+                <ActivityIndicator
+                  size="small"
+                  color={theme.colors.ink}
+                  style={styles.footerLoader}
                 />
-              </View>
-              <Text style={styles.customer} numberOfLines={1}>
-                {item.customer?.name ?? "Pelanggan"} · {item.items_count ?? item.items?.length ?? 0} sepatu
-              </Text>
-              <View style={styles.rowFooter}>
-                <StatusPill
-                  label={PAYMENT_DISPLAY_LABELS[item.payment_status]}
-                  tone={paymentTone(item.payment_status)}
-                  appearance="text"
-                  style={styles.paymentStatus}
-                />
-                <Text style={styles.total}>{formatOrderCurrency(item.grand_total)}</Text>
-              </View>
-            </Pressable>
-          )}
-          ListFooterComponent={
-            ordersQuery.isFetchingNextPage ? (
-              <ActivityIndicator
-                size="small"
-                color={theme.colors.ink}
-                style={styles.footerLoader}
-              />
-            ) : undefined
-          }
-        />
-      )}
+              ) : undefined
+            }
+          />
+        )}
+      </View>
       <BottomNavigation active="orders" />
     </SafeAreaView>
   );
@@ -409,7 +354,7 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
       height: 46,
       flexDirection: "row",
       alignItems: "center",
-      gap: spacing.lg,
+      gap: spacing.md,
       marginHorizontal: layout.screen.gutter,
       paddingHorizontal: spacing.lg,
       borderWidth: 1,
@@ -421,41 +366,39 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
       flex: 1,
       height: 44,
       paddingHorizontal: 0,
+      paddingVertical: 0,
+      includeFontPadding: false,
+      textAlignVertical: "center",
       ...typography.body,
       color: colors.ink,
     },
-    filterRow: {
-      flexDirection: "row",
-      gap: spacing.sm,
-      paddingHorizontal: layout.screen.gutter,
-    },
-    filterRowStacked: {
-      flexDirection: "column",
-    },
-    filterButton: {
-      minHeight: layout.minTouchTarget,
+    statusTabs: {
+      height: 40,
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "space-between",
-      gap: spacing.sm,
-      paddingHorizontal: spacing.md,
+      marginHorizontal: layout.screen.gutter,
+      padding: 1,
       borderWidth: 1,
       borderColor: colors.hairline,
-      borderRadius: radius.full,
+      borderRadius: radius.md,
       backgroundColor: colors.card,
     },
-    filterButtonStacked: {
-      width: "100%",
-    },
-    statusFilter: {
-      width: 102,
-    },
-    paymentFilter: {
+    statusTab: {
       flex: 1,
+      height: 38,
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: radius.sm,
     },
-    filterLabel: {
-      ...typography.button,
-      color: colors.ink,
+    statusTabSelected: {
+      backgroundColor: colors.primary,
+    },
+    statusTabLabel: {
+      ...typography.overline,
+      color: colors.mute,
+    },
+    statusTabLabelSelected: {
+      color: colors.onPrimary,
     },
     filterMenu: {
       paddingTop: spacing.xs,
@@ -468,8 +411,17 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      marginTop: spacing.xl,
+      marginTop: spacing.sm,
       marginBottom: spacing.sm,
+      paddingHorizontal: layout.screen.gutter,
+    },
+    body: {
+      flex: 1,
+    },
+    stateContent: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
       paddingHorizontal: layout.screen.gutter,
     },
     listTitle: {
@@ -484,7 +436,7 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
       marginTop: spacing.xxl,
     },
     listContent: {
-      paddingHorizontal: spacing.lg,
+      paddingHorizontal: layout.screen.gutter,
       paddingBottom: spacing.xl,
     },
     list: {
@@ -542,25 +494,3 @@ const createStyles = ({ colors, layout, radius, spacing, typography }: Theme) =>
       marginVertical: spacing.md,
     },
   });
-
-const iconStyles = StyleSheet.create({
-  base: {
-    position: "relative",
-  },
-  line: {
-    position: "absolute",
-    height: 1.5,
-  },
-  circle: {
-    position: "absolute",
-    borderWidth: 1.5,
-    borderRadius: 99,
-  },
-  calendar: {
-    position: "absolute",
-    top: 2,
-    left: 1,
-    borderWidth: 1.5,
-    borderRadius: 2,
-  },
-});

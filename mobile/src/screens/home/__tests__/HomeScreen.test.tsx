@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react-native";
+import { fireEvent, render, screen } from "@testing-library/react-native";
 import { fetchDashboardSummary } from "../../../api/dashboard";
 import { fetchOrders } from "../../../api/orders";
 import HomeScreen from "../HomeScreen";
@@ -84,5 +84,22 @@ describe("HomeScreen", () => {
     await renderScreen();
 
     expect(await screen.findByText("Gagal memuat ringkasan.")).toBeTruthy();
+  });
+
+  it("opens the profile menu with settings and logout", async () => {
+    summaryMock.mockResolvedValue({
+      orders_today: 1,
+      in_progress: 0,
+      ready_for_pickup: 0,
+      outstanding_payment: 0,
+    });
+
+    await renderScreen();
+    await screen.findByText("Ringkasan hari ini");
+
+    await fireEvent.press(screen.getByLabelText("Profil Pengguna"));
+
+    expect(screen.getByText("Settings")).toBeTruthy();
+    expect(screen.getByText("Logout")).toBeTruthy();
   });
 });
