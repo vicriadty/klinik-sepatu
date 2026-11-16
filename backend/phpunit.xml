@@ -33,6 +33,7 @@
         <server name="DB_USERNAME" value="" force="true"/>
         <server name="DB_PASSWORD" value="" force="true"/>
         <server name="DB_URL" value="" force="true"/>
+        <server name="QUEUE_CONNECTION" value="sync" force="true"/>
         <env name="DB_HOST" value="" force="true"/>
         <env name="DB_PORT" value="" force="true"/>
         <env name="DB_USERNAME" value="" force="true"/>
